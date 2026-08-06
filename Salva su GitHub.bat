@@ -24,15 +24,41 @@ if errorlevel 1 (
 )
 
 REM --- C'e' qualcosa da salvare? ---------------------------------------------
+REM  Due casi distinti: file modificati non ancora committati, oppure commit
+REM  gia' pronti in locale ma non ancora caricati su GitHub.
+set "DA_COMMITTARE="
 git status --porcelain > "%TEMP%\ac_stato.txt"
-for %%A in ("%TEMP%\ac_stato.txt") do if %%~zA==0 (
-    del "%TEMP%\ac_stato.txt" >nul 2>&1
-    echo   Non ci sono modifiche da salvare: la cartella e' identica a GitHub.
+for %%A in ("%TEMP%\ac_stato.txt") do if not %%~zA==0 set "DA_COMMITTARE=1"
+del "%TEMP%\ac_stato.txt" >nul 2>&1
+
+if defined DA_COMMITTARE goto :ci_sono_modifiche
+
+REM --- Niente da committare: restano commit da caricare? ---------------------
+for /f %%N in ('git rev-list --count @{u}..HEAD 2^>nul') do set "IN_ATTESA=%%N"
+if not defined IN_ATTESA set "IN_ATTESA=0"
+
+if "%IN_ATTESA%"=="0" (
+    echo   Non c'e' niente da salvare: la cartella e' identica a GitHub.
     echo.
     pause
     exit /b 0
 )
-del "%TEMP%\ac_stato.txt" >nul 2>&1
+
+echo   Nessun file nuovo da salvare, ma ci sono %IN_ATTESA% modifiche
+echo   gia' pronte da caricare su GitHub.
+echo.
+echo   Carico...
+git push
+if errorlevel 1 goto :errore
+echo.
+echo   ----------------------------------------------------
+echo   Fatto: tutto e' su GitHub.
+echo   ----------------------------------------------------
+echo.
+pause
+exit /b 0
+
+:ci_sono_modifiche
 
 echo   File modificati:
 echo.
