@@ -1,0 +1,71 @@
+# =============================================================================
+# Autoscuola Cruscotto - stack di produzione con HTTPS automatico.
+#
+#   1. impostare DOMINIO e EMAIL nel file .env accanto a questo compose
+#   2. puntare il record DNS A del dominio all'IP del server
+#   3. docker compose -f deploy/docker-compose.yml up -d
+#
+# Caddy ottiene e rinnova da solo il certificato Let's Encrypt: nessun cron di
+# certbot, nessun rinnovo dimenticato che manda offline il sito a scadenza.
+# =============================================================================
+
+services:
+
+  applicazione:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: cruscotto:ultima
+    restart: unless-stopped
+    environment:
+      AC_JWT_SECRET: ${AC_JWT_SECRET:?impostare AC_JWT_SECRET nel file .env}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AC_AI_MODEL: ${AC_AI_MODEL:-claude-sonnet-5}
+      AC_AI_RATE: ${AC_AI_RATE:-400}
+    volumes:
+      # Il database vive su un volume, non nell'immagine: aggiornare
+      # l'applicazione non deve toccare i dati degli allievi.
+      - dati:/app/data
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8080/api/salute',timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO: ${DOMINIO:?impostare DOMINIO nel file .env}
+      EMAIL: ${EMAIL:?impostare EMAIL nel file .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-dati:/data
+      - caddy-config:/config
+    depends_on:
+      - applicazione
+
+  # Backup notturno del database sul volume host ./backup.
+  # Gira nello stesso contenitore dell'app per avere accesso al volume dati.
+  backup:
+    image: cruscotto:ultima
+    restart: unless-stopped
+    entrypoint: >
+      sh -c "while true; do
+               sleep 86400;
+               python /app/scripts/backup.py --destinazione /app/data/backup --comprimi --tieni 14;
+             done"
+    volumes:
+      - dati:/app/data
+    depends_on:
+      - applicazione
+
+volumes:
+  dati:
+  caddy-dati:
+  caddy-config:

@@ -1,0 +1,113 @@
+ """Per il personale la Home diventa la dashboard degli allievi.
+
+Il problema: nascondere le voci dal menu non bastava. L'amministratore poteva
+comunque arrivare alla schermata pensata per lo studente e vedere il proprio
+indice di prontezza, i propri punti deboli e le proprie schede, che per un
+insegnante non significano niente.
+
+La correzione: le rotte da studente, per chi e' staff, vengono dirottate sulla
+dashboard con le statistiche di TUTTI gli allievi.
+"""
+import shutil
+from pathlib import Path
+
+D = Path("C:/cruscotto")
+APP = D / "frontend" / "app.js"
+
+RITOCCHI = [
+    # 1. Dirottamento delle rotte da studente
+    ("""async function instrada() {
+  if (!S.access) { $('#schermata-login').classList.add('attiva'); return; }
+  const rotta = location.hash.replace('#', '') || '/home';
+  const [base] = rotta.split('?');
+  const h = ROTTE[base] || ROTTE['/home'];
+  try { await h(); } catch (e) { avviso(e.message); }
+}""",
+     """const SOLO_ALLIEVO = ['/home', '/esercitazione', '/statistiche'];
+
+function isStaff() {
+  return !!S.utente && ['admin', 'istruttore', 'superadmin'].includes(S.utente.ruolo);
+}
+
+async function instrada() {
+  if (!S.access) { $('#schermata-login').classList.add('attiva'); return; }
+  const rotta = location.hash.replace('#', '') || '/home';
+  const [base] = rotta.split('?');
+  // L'insegnante non ha una schermata da studente: la sua "home" e' la
+  // dashboard con le statistiche degli allievi, non le proprie. Le rotte
+  // pensate per chi studia vengono quindi dirottate.
+  const h = (isStaff() && SOLO_ALLIEVO.includes(base))
+    ? mostraAdmin
+    : (ROTTE[base] || ROTTE['/home']);
+  try { await h(); } catch (e) { avviso(e.message); }
+}""",
+     "rotte da studente dirottate sulla dashboard"),
+
+    # 2. Nasconde anche la voce "Le mie statistiche" nel menu utente
+    ("""    $$('#nav-desktop a[href="#/esercitazione"], #nav-desktop a[href="#/statistiche"],'
+      + '.tabbar a[href="#/esercitazione"], .tabbar a[href="#/statistiche"]')
+      .forEach(a => a.classList.add('d-none'));""",
+     """    $$('#nav-desktop a[href="#/esercitazione"], #nav-desktop a[href="#/statistiche"],'
+      + '.tabbar a[href="#/esercitazione"], .tabbar a[href="#/statistiche"],'
+      + '.dropdown-menu a[href="#/statistiche"]')
+      .forEach(a => a.classList.add('d-none'));
+    // "Home" per l'insegnante significa la panoramica dell'autoscuola.
+    $$('#nav-desktop a[href="#/home"], .tabbar a[href="#/home"]').forEach(a => {
+      if (a.querySelector('span')) a.lastChild.textContent = 'Panoramica';
+      else a.textContent = 'Panoramica';
+    });""",
+     "voce 'Le mie statistiche' nascosta e Home rinominata"),
+]
+
+
+def main():
+    print()
+    print("  CORREZIONE RUOLO AMMINISTRATORE")
+    print("  " + "-" * 58)
+
+    if not APP.exists():
+        print(f"  Non trovo {APP}")
+        return 1
+
+    testo = APP.read_text(encoding="utf-8")
+    originale = testo
+    for cerca, nuovo, desc in RITOCCHI:
+        if nuovo in testo:
+            print(f"  = gia' a posto  {desc}")
+            continue
+        if cerca not in testo:
+            print(f"  ! punto non trovato: {desc}")
+            continue
+        testo = testo.replace(cerca, nuovo)
+        print(f"  v applicato     {desc}")
+
+    if testo == originale:
+        print("\n  Nessuna modifica necessaria.")
+    else:
+        shutil.copy2(APP, APP.with_suffix(".js.bak2"))
+        APP.write_text(testo, encoding="utf-8")
+        print("\n  v app.js aggiornato (copia di sicurezza in app.js.bak2)")
+
+    print()
+    print("  " + "-" * 58)
+    print("  Cosa cambia per l'amministratore:")
+    print("   - Home mostra la panoramica dell'autoscuola: allievi, ore di")
+    print("     studio, simulazioni superate, colli di bottiglia, domande")
+    print("     piu' sbagliate. Non piu' l'indice di prontezza personale.")
+    print("   - le voci Esercitati, Statistiche e 'Le mie statistiche'")
+    print("     restano visibili solo agli allievi")
+    print("   - il pulsante Gestione porta a orario, presenze e anagrafica")
+    print()
+    print("  Chiudi la finestra nera del server, riavvia Avvia.bat e")
+    print("  ricarica la pagina nel browser con CTRL+F5.")
+    print()
+    return 0
+
+
+if __name__ == "__main__":
+    codice = main()
+    try:
+        input("  Premi INVIO per chiudere...")
+    except EOFError:
+        pass
+    raise SystemExit(codice)

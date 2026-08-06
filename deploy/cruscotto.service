@@ -1,0 +1,54 @@
+# =============================================================================
+# Unit systemd per l'installazione senza Docker (server Linux tradizionale).
+#
+#   sudo cp deploy/cruscotto.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now cruscotto
+#   sudo journalctl -u cruscotto -f
+# =============================================================================
+
+[Unit]
+Description=Autoscuola Cruscotto
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cruscotto
+Group=cruscotto
+WorkingDirectory=/opt/autoscuola-cruscotto
+Environment=PYTHONPATH=/opt/autoscuola-cruscotto/backend
+Environment=AC_DB=/opt/autoscuola-cruscotto/data/autoscuola.db
+Environment=AC_MEDIA=/opt/autoscuola-cruscotto/data/media
+Environment=AC_FRONTEND=/opt/autoscuola-cruscotto/frontend
+# I segreti stanno in un file separato con permessi 600, non in questa unit
+# che e' leggibile da chiunque.
+EnvironmentFile=-/etc/cruscotto/segreti.env
+
+ExecStart=/opt/autoscuola-cruscotto/.venv/bin/python -m uvicorn app.main:app \
+          --host 127.0.0.1 --port 8080 --workers 4 \
+          --proxy-headers --forwarded-allow-ips '*'
+
+Restart=always
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=20
+
+# --- Irrobustimento -----------------------------------------------------------
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# L'unica cartella scrivibile e' quella dei dati: nemmeno un bug
+# nell'applicazione puo' modificare il proprio stesso codice.
+ReadWritePaths=/opt/autoscuola-cruscotto/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+
+[Install]
+WantedBy=multi-user.target

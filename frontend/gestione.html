@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestione autoscuola - Cruscotto</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="/app/styles.css" rel="stylesheet">
+<link href="/app/animazioni.css?v=1" rel="stylesheet">
+<style>
+  /* Colori presi dal tema comune (styles.css): cosi' questa pagina segue
+     chiaro e scuro insieme al resto dell'app, invece di restare bianca. */
+  body { background:var(--ac-fondo, #f6f8fc); color:var(--ac-testo, #0f172a);
+         font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  .card-ac { background:var(--ac-superficie, #fff);
+             border:1px solid var(--ac-bordo, #e6ebf3); border-radius:16px;
+             box-shadow:var(--ac-ombra, 0 1px 2px rgba(15,23,42,.04)); }
+  .sezione { display:none; }
+  .sezione.attiva { display:block; }
+  .griglia-orario { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  @media (max-width:991px){ .griglia-orario { grid-template-columns:1fr; } }
+  .col-giorno { background:var(--ac-superficie, #fff);
+                border:1px solid var(--ac-bordo, #e6ebf3); border-radius:14px;
+                padding:8px; min-height:120px; }
+  .fascia { background:var(--ac-blu-chiaro, #eff4ff);
+            border-left:4px solid var(--ac-blu, #1d4ed8); border-radius:9px;
+            padding:6px 8px; margin-bottom:6px; font-size:.8rem; cursor:pointer;
+            color:var(--ac-testo, #0f172a); transition:transform .12s ease; }
+  .fascia:hover { transform:translateX(2px); }
+  .fascia.rev { background:rgba(217,119,6,.14); border-left-color:#d97706; }
+  .fascia.spenta { opacity:.45; }
+  .riga-allievo { border-bottom:1px solid var(--ac-bordo, #eef2f7); }
+  .riga-allievo:hover { background:var(--ac-blu-chiaro, #f8fafc); }
+  .credenziali { font-family:ui-monospace,Consolas,monospace; font-size:1.15rem;
+                 background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:12px; }
+  .pill { font-size:.7rem; padding:.15rem .5rem; border-radius:999px;
+          background:var(--ac-blu-chiaro, #e2e8f0); color:var(--ac-tenue, #64748b); }
+  .barra { height:8px; background:var(--ac-bordo, #e2e8f0); border-radius:999px; overflow:hidden; }
+  .barra > span { display:block; height:100%; border-radius:999px; }
+  /* Righe delle lezioni: devono sembrare cliccabili, perche' lo sono. */
+  .riga-lezione {
+    background: var(--ac-superficie, #fff);
+    border: 1px solid var(--ac-bordo, #e6ebf3);
+    color: var(--ac-testo, #0f172a);
+    border-left: 4px solid var(--ac-blu, #1d4ed8);
+    transition: background .16s ease, transform .16s ease, border-color .16s ease;
+  }
+  .riga-lezione:hover {
+    background: var(--ac-blu-chiaro, #eff4ff);
+    transform: translateX(3px);
+  }
+  .riga-lezione.fatta { border-left-color: #059669; }
+  .riga-lezione.scelta {
+    background: var(--ac-blu-chiaro, #eff4ff);
+    border-color: var(--ac-blu, #1d4ed8);
+  }
+  .riga-lezione .apri-presenze {
+    font-size: .72rem; font-weight: 600; color: var(--ac-blu, #1d4ed8);
+  }
+  .riga-lezione .freccia {
+    font-size: 1.15rem; line-height: 1; color: var(--ac-tenue, #64748b);
+    margin-left: .35rem;
+  }
+
+  .navbar { background:var(--ac-superficie, #fff) !important;
+            border-bottom:1px solid var(--ac-bordo, #e6ebf3) !important; }
+  .nav-pills .nav-link { color:var(--ac-tenue, #64748b); border-radius:999px; font-weight:600; }
+  .nav-pills .nav-link.active { background:var(--ac-blu, #1d4ed8); color:#fff; }
+  .table { --bs-table-color:var(--ac-testo, #0f172a); --bs-table-bg:transparent;
+           --bs-table-border-color:var(--ac-bordo, #e6ebf3); }
+  .modal-content, .form-control, .form-select {
+    background:var(--ac-superficie, #fff); color:var(--ac-testo, #0f172a);
+    border-color:var(--ac-bordo, #e6ebf3); }
+</style>
+</head>
+<body>
+
+<nav class="navbar bg-white border-bottom sticky-top">
+  <div class="container-xl">
+    <span class="navbar-brand fw-semibold">Gestione autoscuola</span>
+    <div class="d-flex gap-2 align-items-center">
+      <span class="text-muted small" id="chi"></span>
+      <a class="btn btn-sm btn-outline-secondary" href="/">Torna ai quiz</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-xl py-3">
+  <ul class="nav nav-pills gap-1 mb-3" id="menu">
+    <li class="nav-item"><button class="nav-link active" data-sez="orario">Orario lezioni</button></li>
+    <li class="nav-item"><button class="nav-link" data-sez="presenze">Presenze</button></li>
+    <li class="nav-item"><button class="nav-link" data-sez="allievi">Allievi</button></li>
+    <li class="nav-item"><button class="nav-link" data-sez="video">Videocorsi e dirette</button></li>
+    <li class="nav-item"><button class="nav-link" data-sez="analisi">Analisi classi</button></li>
+  </ul>
+
+  <div id="avvisi"></div>
+
+  <!-- ============ ORARIO ============ -->
+  <section id="sez-orario" class="sezione attiva">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h2 class="h5 mb-0">Orario settimanale</h2>
+        <p class="text-muted small mb-0">Le fasce si ripetono ogni settimana. Clicca una fascia per modificarla.</p>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btn-nuova-fascia">Aggiungi fascia oraria</button>
+    </div>
+    <div class="griglia-orario" id="griglia-orario"></div>
+  </section>
+
+  <!-- ============ PRESENZE ============ -->
+  <section id="sez-presenze" class="sezione">
+    <div class="row g-3">
+      <div class="col-12 col-lg-5">
+        <div class="card-ac p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 mb-0">Lezioni in calendario</h2>
+            <button class="btn btn-sm btn-outline-primary" id="btn-genera">Genera dall'orario</button>
+          </div>
+          <div class="row g-2 mb-2">
+            <div class="col-6"><input type="date" class="form-control form-control-sm" id="lez-dal"></div>
+            <div class="col-6"><input type="date" class="form-control form-control-sm" id="lez-al"></div>
+          </div>
+          <div id="elenco-lezioni" style="max-height:65vh;overflow:auto"></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-7">
+        <div class="card-ac p-3" id="pannello-presenze">
+          <p class="text-muted mb-0">Scegli una lezione per registrare le presenze.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ALLIEVI ============ -->
+  <section id="sez-allievi" class="sezione">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h2 class="h5 mb-0">Allievi iscritti</h2>
+        <p class="text-muted small mb-0" id="riassunto-allievi"></p>
+      </div>
+      <div class="d-flex gap-2">
+        <input class="form-control form-control-sm" id="cerca-allievo" placeholder="Cerca nome o telefono" style="width:200px">
+        <button class="btn btn-primary btn-sm" id="btn-nuovo-allievo">Nuova iscrizione</button>
+      </div>
+    </div>
+    <div id="elenco-allievi"></div>
+  </section>
+
+  <!-- ============ VIDEO ============ -->
+  <section id="sez-video" class="sezione">
+    <div class="row g-3">
+      <div class="col-12 col-lg-5">
+        <div class="card-ac p-3 mb-3">
+          <h2 class="h6">Aggiungi videolezione</h2>
+          <ul class="nav nav-tabs mb-3" id="tab-video">
+            <li class="nav-item"><button class="nav-link active" data-modo="link">Da link</button></li>
+            <li class="nav-item"><button class="nav-link" data-modo="file">Carica file</button></li>
+          </ul>
+          <input class="form-control form-control-sm mb-2" id="v-titolo" placeholder="Titolo della lezione">
+          <select class="form-select form-select-sm mb-2" id="v-listato"></select>
+          <div id="modo-link">
+            <input class="form-control form-control-sm mb-2" id="v-url" placeholder="Link YouTube, Drive o Vimeo">
+            <input type="number" class="form-control form-control-sm mb-2" id="v-durata" placeholder="Durata in minuti">
+            <p class="text-muted" style="font-size:.75rem">Incolla il link della pagina: lo converto io nel formato giusto per la riproduzione.</p>
+          </div>
+          <div id="modo-file" class="d-none">
+            <input type="file" class="form-control form-control-sm mb-2" id="v-file" accept="video/*">
+            <div class="progress mb-2 d-none" id="barra-upload" style="height:6px">
+              <div class="progress-bar" style="width:0%"></div>
+            </div>
+            <p class="text-muted" style="font-size:.75rem">Il file resta sul computer dell'autoscuola. Limite 2 GB.</p>
+          </div>
+          <button class="btn btn-primary btn-sm w-100" id="btn-salva-video">Salva lezione</button>
+        </div>
+        <div class="card-ac p-3">
+          <h2 class="h6">Programma una diretta</h2>
+          <input class="form-control form-control-sm mb-2" id="l-titolo" placeholder="Titolo">
+          <select class="form-select form-select-sm mb-2" id="l-listato"></select>
+          <input type="datetime-local" class="form-control form-control-sm mb-2" id="l-inizio">
+          <input class="form-control form-control-sm mb-2" id="l-url" placeholder="Link Meet, Zoom o YouTube Live">
+          <button class="btn btn-outline-primary btn-sm w-100" id="btn-salva-live">Programma</button>
+        </div>
+      </div>
+      <div class="col-12 col-lg-7">
+        <div class="card-ac p-3">
+          <h2 class="h6">Materiale pubblicato</h2>
+          <div id="elenco-video"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ANALISI ============ -->
+  <section id="sez-analisi" class="sezione">
+    <h2 class="h5 mb-1">Come vanno le classi</h2>
+    <p class="text-muted small" id="nota-metodo"></p>
+    <div class="card-ac p-3 mb-3">
+      <h3 class="h6 text-uppercase text-muted">Cosa dicono i dati</h3>
+      <div id="osservazioni"></div>
+    </div>
+    <div class="card-ac p-3 mb-3">
+      <h3 class="h6 text-uppercase text-muted">Confronto fra le fasce orarie</h3>
+      <div class="table-responsive"><table class="table table-sm align-middle" id="tab-analisi"></table></div>
+    </div>
+    <div class="card-ac p-3">
+      <h3 class="h6 text-uppercase text-muted">Mattina, pomeriggio, sera</h3>
+      <div class="table-responsive"><table class="table table-sm align-middle" id="tab-parti"></table></div>
+    </div>
+  </section>
+</div>
+
+<!-- Finestra fascia oraria -->
+<div class="modal fade" id="m-fascia" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Fascia oraria</h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small">Giorno</label>
+        <select class="form-select" id="f-giorno"></select></div>
+      <div class="col-6"><label class="form-label small">Dalle</label>
+        <input type="time" class="form-control" id="f-inizio"></div>
+      <div class="col-6"><label class="form-label small">Alle</label>
+        <input type="time" class="form-control" id="f-fine"></div>
+      <div class="col-6"><label class="form-label small">Categoria</label>
+        <select class="form-select" id="f-listato"></select></div>
+      <div class="col-6"><label class="form-label small">Aula</label>
+        <input class="form-control" id="f-aula" placeholder="Aula 1"></div>
+      <div class="col-12"><label class="form-label small">Docente</label>
+        <input class="form-control" id="f-docente"></div>
+      <div class="col-12"><label class="form-label small">Note</label>
+        <input class="form-control" id="f-note"></div>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <button class="btn btn-outline-danger" id="btn-elimina-fascia">Elimina</button>
+    <button class="btn btn-primary" id="btn-salva-fascia">Salva</button>
+  </div>
+</div></div></div>
+
+<!-- Finestra allievo -->
+<div class="modal fade" id="m-allievo"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="tit-allievo">Nuova iscrizione</h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label small">Nome</label><input class="form-control" id="a-nome"></div>
+      <div class="col-md-6"><label class="form-label small">Cognome</label><input class="form-control" id="a-cognome"></div>
+      <div class="col-md-6"><label class="form-label small">Telefono</label><input class="form-control" id="a-telefono"></div>
+      <div class="col-md-6"><label class="form-label small">Email</label><input class="form-control" id="a-email"></div>
+      <div class="col-12"><label class="form-label small">Indirizzo</label><input class="form-control" id="a-indirizzo"></div>
+      <div class="col-md-6"><label class="form-label small">Codice fiscale</label><input class="form-control" id="a-cf"></div>
+      <div class="col-md-6"><label class="form-label small">Patenti
+        <span class="text-muted" style="font-size:.72rem">(CTRL per sceglierne piu' di una)</span></label>
+        <select class="form-select" id="a-listato" multiple size="4"></select></div>
+      <div class="col-md-4"><label class="form-label small">Ore acquistate</label>
+        <input type="number" class="form-control" id="a-ore" value="0"></div>
+      <div class="col-md-4"><label class="form-label small">Importo pagato</label>
+        <input type="number" step="0.01" class="form-control" id="a-importo"></div>
+      <div class="col-md-4"><label class="form-label small">Data esame</label>
+        <input type="date" class="form-control" id="a-esame"></div>
+      <div class="col-12"><label class="form-label small">Note</label><input class="form-control" id="a-note"></div>
+    </div>
+    <div id="box-credenziali" class="mt-3 d-none">
+      <p class="small text-muted mb-1">Credenziali di accesso, da consegnare all'allievo. Compaiono una sola volta.</p>
+      <div class="credenziali" id="credenziali"></div>
+    </div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <button class="btn btn-outline-secondary d-none" id="btn-nuova-password">Rigenera password</button>
+    <button class="btn btn-primary" id="btn-salva-allievo">Registra iscrizione</button>
+  </div>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/app/gestione.js"></script>
+<script src="/app/animazioni.js?v=1"></script>
+</body>
+</html>

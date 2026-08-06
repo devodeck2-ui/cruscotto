@@ -1,0 +1,10 @@
+# Manutenzione periodica (reaper delle sessioni). Vedi il .timer affiancato.
+[Unit]
+Description=Autoscuola Cruscotto - manutenzione
+
+[Service]
+Type=oneshot
+User=cruscotto
+WorkingDirectory=/opt/autoscuola-cruscotto/scripts
+Environment=AC_DB=/opt/autoscuola-cruscotto/data/autoscuola.db
+ExecStart=/opt/autoscuola-cruscotto/.venv/bin/python reaper_sessioni.py

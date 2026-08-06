@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+data/backup/
+data/raw/
+*.db-wal
+*.db-shm
+.env
+deploy/.env
+tests/
+docs/

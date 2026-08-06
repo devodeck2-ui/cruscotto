@@ -1,0 +1,2249 @@
+{
+ "listato": "AM",
+ "sorgente": "Domande AM italiano 04 04 2025.pdf",
+ "quesiti": [
+  {
+   "codice": "5103",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 1,
+   "domande": [
+    {
+     "codice": "26067",
+     "testo": "Il pannello integrativo raffigurato indica da che ora a che ora vale la prescrizione nei giorni lavorativi",
+     "corretta": true,
+     "immagine": "e8ed570923582cfe.jpeg"
+    },
+    {
+     "codice": "26068",
+     "testo": "Il pannello integrativo raffigurato, posto sotto il segnale DIVIETO DI SOSTA, indica che la sosta è consentita nei giorni festivi",
+     "corretta": true,
+     "immagine": "e8ed570923582cfe.jpeg"
+    },
+    {
+     "codice": "26069",
+     "testo": "Il pannello integrativo raffigurato, posto sotto il segnale PARCHEGGIO, ne indica l'orario e la limitazione ai giorni feriali",
+     "corretta": true,
+     "immagine": "e8ed570923582cfe.jpeg"
+    },
+    {
+     "codice": "26070",
+     "testo": "Il pannello integrativo raffigurato indica l'orario lavorativo di un cantiere stradale",
+     "corretta": false,
+     "immagine": "e8ed570923582cfe.jpeg"
+    },
+    {
+     "codice": "26071",
+     "testo": "Il pannello integrativo raffigurato indica la fascia oraria di validità del segnale nei giorni festivi",
+     "corretta": false,
+     "immagine": "e8ed570923582cfe.jpeg"
+    },
+    {
+     "codice": "26072",
+     "testo": "Il pannello integrativo raffigurato preavvisa la presenza di un'officina",
+     "corretta": false,
+     "immagine": "e8ed570923582cfe.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5099",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 1,
+   "domande": [
+    {
+     "codice": "26043",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la distanza tra il segnale di pericolo sotto cui è posto ed il punto d'inizio del pericolo",
+     "corretta": true,
+     "immagine": "0570324ab483caf0.jpeg"
+    },
+    {
+     "codice": "26044",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la distanza dal punto di inizio del pericolo",
+     "corretta": true,
+     "immagine": "0570324ab483caf0.jpeg"
+    },
+    {
+     "codice": "26045",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la distanza alla quale inizia il pericolo indicato nel segnale sovrastante",
+     "corretta": true,
+     "immagine": "0570324ab483caf0.jpeg"
+    },
+    {
+     "codice": "26046",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la lunghezza del tratto di strada pericoloso",
+     "corretta": false,
+     "immagine": "0570324ab483caf0.jpeg"
+    },
+    {
+     "codice": "26047",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la mancanza di segnaletica orizzontale",
+     "corretta": false,
+     "immagine": "0570324ab483caf0.jpeg"
+    },
+    {
+     "codice": "26048",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica il punto dove finisce il pericolo raffigurato dal segnale",
+     "corretta": false,
+     "immagine": "0570324ab483caf0.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5100",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 2,
+   "domande": [
+    {
+     "codice": "26049",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la lunghezza del tratto stradale nel quale si applica la prescrizione",
+     "corretta": true,
+     "immagine": "15bf21d453dfa83f.jpeg"
+    },
+    {
+     "codice": "26050",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati integra l'indicazione di pericolo del segnale sotto cui è posto",
+     "corretta": true,
+     "immagine": "15bf21d453dfa83f.jpeg"
+    },
+    {
+     "codice": "26051",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica l'inizio della prescrizione specificata dal segnale, precisandone l'estensione",
+     "corretta": true,
+     "immagine": "15bf21d453dfa83f.jpeg"
+    },
+    {
+     "codice": "26052",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati, posto sotto un segnale di pericolo, indica la distanza dall'inizio del pericolo",
+     "corretta": false,
+     "immagine": "15bf21d453dfa83f.jpeg"
+    },
+    {
+     "codice": "26053",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati esprime in metri o chilometri la distanza dal punto indicato dal segnale",
+     "corretta": false,
+     "immagine": "15bf21d453dfa83f.jpeg"
+    },
+    {
+     "codice": "26054",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la distanza di sicurezza da mantenere tra due veicoli",
+     "corretta": false,
+     "immagine": "15bf21d453dfa83f.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5101",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 3,
+   "domande": [
+    {
+     "codice": "26055",
+     "testo": "Il pannello integrativo mostrato in figura B, posto sotto il segnale DIVIETO DI SOSTA, indica la fascia oraria di validità del divieto",
+     "corretta": true,
+     "immagine": "ec4e3d244ab5a3e3.jpeg"
+    },
+    {
+     "codice": "26056",
+     "testo": "Il pannello integrativo mostrato in figura B, posto sotto il segnale DIVIETO DI TRANSITO, indica la fascia oraria in cui vale il divieto",
+     "corretta": true,
+     "immagine": "ec4e3d244ab5a3e3.jpeg"
+    },
+    {
+     "codice": "26057",
+     "testo": "Il pannello integrativo mostrato in figura B, indica le ore durante le quali vale la prescrizione",
+     "corretta": true,
+     "immagine": "ec4e3d244ab5a3e3.jpeg"
+    },
+    {
+     "codice": "26058",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati vale solo nei giorni feriali",
+     "corretta": false,
+     "immagine": "ec4e3d244ab5a3e3.jpeg"
+    },
+    {
+     "codice": "26059",
+     "testo": "Il pannello integrativo mostrato in figura A, indica la lunghezza del tratto di strada nel quale vale il divieto",
+     "corretta": false,
+     "immagine": "ec4e3d244ab5a3e3.jpeg"
+    },
+    {
+     "codice": "26060",
+     "testo": "Il pannello integrativo mostrato in figura A, indica i giorni del mese in cui è valido il segnale sotto cui è posto",
+     "corretta": false,
+     "immagine": "ec4e3d244ab5a3e3.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5105",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 4,
+   "domande": [
+    {
+     "codice": "26079",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati, posto sotto il segnale DIVIETO DI SOSTA, indica la continuazione del divieto",
+     "corretta": true,
+     "immagine": "a3d13454f49bd495.jpeg"
+    },
+    {
+     "codice": "26080",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati, posto sotto il segnale DIVIETO DI SORPASSO, indica la continuazione del divieto",
+     "corretta": true,
+     "immagine": "a3d13454f49bd495.jpeg"
+    },
+    {
+     "codice": "26081",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati, posto sotto un segnale di pericolo, ne indica la continuazione",
+     "corretta": true,
+     "immagine": "a3d13454f49bd495.jpeg"
+    },
+    {
+     "codice": "26082",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica le direzioni permesse",
+     "corretta": false,
+     "immagine": "a3d13454f49bd495.jpeg"
+    },
+    {
+     "codice": "26083",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la fine del senso unico e l'inizio del doppio senso di circolazione",
+     "corretta": false,
+     "immagine": "a3d13454f49bd495.jpeg"
+    },
+    {
+     "codice": "26084",
+     "testo": "Ciascuno dei pannelli integrativi raffigurati indica la corsia riservata agli autobus",
+     "corretta": false,
+     "immagine": "a3d13454f49bd495.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5107",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 4,
+   "domande": [
+    {
+     "codice": "26091",
+     "testo": "Il pannello integrativo raffigurato indica il rallentamento della circolazione a causa di un incidente",
+     "corretta": true,
+     "immagine": "a76a671756be3f01.jpeg"
+    },
+    {
+     "codice": "26092",
+     "testo": "Il pannello integrativo raffigurato consiglia, dove possibile, la scelta di un percorso alternativo",
+     "corretta": true,
+     "immagine": "a76a671756be3f01.jpeg"
+    },
+    {
+     "codice": "26093",
+     "testo": "Il pannello integrativo raffigurato segnala un incidente stradale e la necessità di moderare la velocità",
+     "corretta": true,
+     "immagine": "a76a671756be3f01.jpeg"
+    },
+    {
+     "codice": "26094",
+     "testo": "Il pannello integrativo raffigurato indica una strada di notevole pericolosità",
+     "corretta": false,
+     "immagine": "a76a671756be3f01.jpeg"
+    },
+    {
+     "codice": "26095",
+     "testo": "Il pannello integrativo raffigurato indica il pericolo di scontro con veicoli provenienti da destra",
+     "corretta": false,
+     "immagine": "a76a671756be3f01.jpeg"
+    },
+    {
+     "codice": "26096",
+     "testo": "Il pannello integrativo raffigurato preavvisa un tratto di strada con elevata probabilità di provocare incidenti",
+     "corretta": false,
+     "immagine": "a76a671756be3f01.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5110",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 5,
+   "domande": [
+    {
+     "codice": "26109",
+     "testo": "Il segnale raffigurato indica corsia di destra chiusa per lavori in corso",
+     "corretta": true,
+     "immagine": "5fc48b19e3ff308a.jpeg"
+    },
+    {
+     "codice": "26110",
+     "testo": "Il segnale raffigurato indica riduzione da due a una corsia di marcia",
+     "corretta": true,
+     "immagine": "5fc48b19e3ff308a.jpeg"
+    },
+    {
+     "codice": "26111",
+     "testo": "Il segnale raffigurato è posto in prossimità di un cantiere stradale",
+     "corretta": true,
+     "immagine": "5fc48b19e3ff308a.jpeg"
+    },
+    {
+     "codice": "26112",
+     "testo": "Il segnale raffigurato obbliga ad effettuare l'inversione di marcia",
+     "corretta": false,
+     "immagine": "5fc48b19e3ff308a.jpeg"
+    },
+    {
+     "codice": "26113",
+     "testo": "Il segnale raffigurato obbliga a dare la precedenza ai veicoli provenienti dalla corsia di destra",
+     "corretta": false,
+     "immagine": "5fc48b19e3ff308a.jpeg"
+    },
+    {
+     "codice": "26114",
+     "testo": "Il segnale raffigurato preavvisa un cambio di carreggiata",
+     "corretta": false,
+     "immagine": "5fc48b19e3ff308a.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5114",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 6,
+   "domande": [
+    {
+     "codice": "26133",
+     "testo": "Ciascuno dei segnali raffigurati indica che la circolazione nel tratto di strada in cui è posto il segnale è a senso unico",
+     "corretta": true,
+     "immagine": "5f65016615fae3c6.jpeg"
+    },
+    {
+     "codice": "26134",
+     "testo": "Ciascuno dei segnali raffigurati indica che non è permesso marciare in senso opposto al segnale nel tratto di strada in cui è posto",
+     "corretta": true,
+     "immagine": "5f65016615fae3c6.jpeg"
+    },
+    {
+     "codice": "26135",
+     "testo": "Ciascuno dei segnali raffigurati indica l'obbligo di percorrere il tratto di strada in cui è posto, secondo il senso della freccia",
+     "corretta": true,
+     "immagine": "5f65016615fae3c6.jpeg"
+    },
+    {
+     "codice": "26136",
+     "testo": "Il segnale mostrato in figura A indica che è obbligatorio svoltare a sinistra",
+     "corretta": false,
+     "immagine": "5f65016615fae3c6.jpeg"
+    },
+    {
+     "codice": "26137",
+     "testo": "Ciascuno dei segnali raffigurati indica l'obbligo di svoltare nel senso della freccia",
+     "corretta": false,
+     "immagine": "5f65016615fae3c6.jpeg"
+    },
+    {
+     "codice": "26138",
+     "testo": "I segnali raffigurati, disposti in coppia, indicano che non si può girare né a destra né a sinistra dopo di loro",
+     "corretta": false,
+     "immagine": "5f65016615fae3c6.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5115",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 7,
+   "domande": [
+    {
+     "codice": "26139",
+     "testo": "Il segnale raffigurato è installato sui veicoli per lavori stradali, fermi o in movimento",
+     "corretta": true,
+     "immagine": "2c74a5f529e4fbb0.jpeg"
+    },
+    {
+     "codice": "26140",
+     "testo": "Il segnale raffigurato indica il lato dal quale il veicolo su cui è applicato deve essere sorpassato",
+     "corretta": true,
+     "immagine": "2c74a5f529e4fbb0.jpeg"
+    },
+    {
+     "codice": "26141",
+     "testo": "Il segnale raffigurato è posto su macchinari per la manutenzione stradale in sosta sulla carreggiata",
+     "corretta": true,
+     "immagine": "2c74a5f529e4fbb0.jpeg"
+    },
+    {
+     "codice": "26142",
+     "testo": "Il segnale raffigurato indica circolazione rotatoria",
+     "corretta": false,
+     "immagine": "2c74a5f529e4fbb0.jpeg"
+    },
+    {
+     "codice": "26143",
+     "testo": "Il segnale raffigurato indica l'obbligo di svolta a destra",
+     "corretta": false,
+     "immagine": "2c74a5f529e4fbb0.jpeg"
+    },
+    {
+     "codice": "26144",
+     "testo": "Il segnale raffigurato obbliga a sorpassare l'ostacolo sulla sinistra",
+     "corretta": false,
+     "immagine": "2c74a5f529e4fbb0.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5116",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 7,
+   "domande": [
+    {
+     "codice": "26145",
+     "testo": "Il segnale raffigurato indica l'inizio di una zona riservata alla circolazione dei pedoni, delle biciclette e dei veicoli di emergenza",
+     "corretta": true,
+     "immagine": "71ca82334fda00b9.jpeg"
+    },
+    {
+     "codice": "26146",
+     "testo": "Il segnale raffigurato, nel pannello integrativo, contiene particolari limitazioni o eccezioni",
+     "corretta": true,
+     "immagine": "71ca82334fda00b9.jpeg"
+    },
+    {
+     "codice": "26147",
+     "testo": "Il segnale raffigurato, nel pannello integrativo, contiene eccezioni per la circolazione di veicoli per il carico e lo scarico merci",
+     "corretta": true,
+     "immagine": "71ca82334fda00b9.jpeg"
+    },
+    {
+     "codice": "26148",
+     "testo": "Il segnale raffigurato indica una zona residenziale fuori dai centri urbani",
+     "corretta": false,
+     "immagine": "71ca82334fda00b9.jpeg"
+    },
+    {
+     "codice": "26149",
+     "testo": "Il segnale raffigurato indica una pista ciclabile",
+     "corretta": false,
+     "immagine": "71ca82334fda00b9.jpeg"
+    },
+    {
+     "codice": "26150",
+     "testo": "Il segnale raffigurato permette il transito dei ciclomotori",
+     "corretta": false,
+     "immagine": "71ca82334fda00b9.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5117",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 8,
+   "domande": [
+    {
+     "codice": "26151",
+     "testo": "Il segnale raffigurato indica l'inizio di una zona a traffico limitato",
+     "corretta": true,
+     "immagine": "a9a6e2850d7e9b0c.jpeg"
+    },
+    {
+     "codice": "26152",
+     "testo": "Il segnale raffigurato indica l'inizio dell'area in cui la circolazione può essere limitata",
+     "corretta": true,
+     "immagine": "a9a6e2850d7e9b0c.jpeg"
+    },
+    {
+     "codice": "26153",
+     "testo": "Il segnale raffigurato indica l'inizio dell'area dove possono circolare solo particolari categorie di veicoli",
+     "corretta": true,
+     "immagine": "a9a6e2850d7e9b0c.jpeg"
+    },
+    {
+     "codice": "26154",
+     "testo": "Il segnale raffigurato preavvisa una zona pedonale",
+     "corretta": false,
+     "immagine": "a9a6e2850d7e9b0c.jpeg"
+    },
+    {
+     "codice": "26155",
+     "testo": "Il segnale raffigurato indica una pista ciclabile",
+     "corretta": false,
+     "immagine": "a9a6e2850d7e9b0c.jpeg"
+    },
+    {
+     "codice": "26156",
+     "testo": "Il segnale raffigurato comporta il divieto di inversione di marcia",
+     "corretta": false,
+     "immagine": "a9a6e2850d7e9b0c.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5118",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 9,
+   "domande": [
+    {
+     "codice": "26157",
+     "testo": "Il segnale raffigurato indica un attraversamento pedonale non regolato da semaforo",
+     "corretta": true,
+     "immagine": "8e6a5d88d00151bd.jpeg"
+    },
+    {
+     "codice": "26158",
+     "testo": "Il segnale raffigurato si trova in corrispondenza di un attraversamento pedonale",
+     "corretta": true,
+     "immagine": "8e6a5d88d00151bd.jpeg"
+    },
+    {
+     "codice": "26159",
+     "testo": "Il segnale raffigurato comporta di moderare la velocità e di fermarsi se necessario",
+     "corretta": true,
+     "immagine": "8e6a5d88d00151bd.jpeg"
+    },
+    {
+     "codice": "26160",
+     "testo": "Il segnale raffigurato preavvisa un viale pedonale",
+     "corretta": false,
+     "immagine": "8e6a5d88d00151bd.jpeg"
+    },
+    {
+     "codice": "26161",
+     "testo": "Il segnale raffigurato impone di usare i segnali acustici per avvertire i pedoni",
+     "corretta": false,
+     "immagine": "8e6a5d88d00151bd.jpeg"
+    },
+    {
+     "codice": "26162",
+     "testo": "Il segnale raffigurato vieta il transito ai pedoni",
+     "corretta": false,
+     "immagine": "8e6a5d88d00151bd.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5119",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 10,
+   "domande": [
+    {
+     "codice": "26163",
+     "testo": "Il segnale raffigurato indica l'inizio di una strada riservata alla circolazione dei veicoli a motore",
+     "corretta": true,
+     "immagine": "aeec4dd2be5cae98.jpeg"
+    },
+    {
+     "codice": "26164",
+     "testo": "Il segnale raffigurato viene posto all'inizio di una strada riservata alla circolazione dei veicoli a motore",
+     "corretta": true,
+     "immagine": "aeec4dd2be5cae98.jpeg"
+    },
+    {
+     "codice": "26165",
+     "testo": "Il segnale raffigurato indica una corsia riservata alle autovetture",
+     "corretta": false,
+     "immagine": "aeec4dd2be5cae98.jpeg"
+    },
+    {
+     "codice": "26166",
+     "testo": "Il segnale raffigurato non permette il transito dei quadricicli a motore",
+     "corretta": false,
+     "immagine": "aeec4dd2be5cae98.jpeg"
+    },
+    {
+     "codice": "26167",
+     "testo": "Il segnale raffigurato obbliga i veicoli a motore a disporsi in un'unica fila",
+     "corretta": false,
+     "immagine": "aeec4dd2be5cae98.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5120",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 10,
+   "domande": [
+    {
+     "codice": "26168",
+     "testo": "Il segnale raffigurato indica che una pista ciclabile attraversa la carreggiata",
+     "corretta": true,
+     "immagine": "818c8106fa3ca4e4.jpeg"
+    },
+    {
+     "codice": "26169",
+     "testo": "Il segnale raffigurato è abbinato alle strisce di attraversamento ciclabile",
+     "corretta": true,
+     "immagine": "818c8106fa3ca4e4.jpeg"
+    },
+    {
+     "codice": "26170",
+     "testo": "Il segnale raffigurato invita ad usare prudenza perché possiamo trovare ciclisti che attraversano la carreggiata",
+     "corretta": true,
+     "immagine": "818c8106fa3ca4e4.jpeg"
+    },
+    {
+     "codice": "26171",
+     "testo": "Il segnale raffigurato indica l'inizio di una pista ciclabile",
+     "corretta": false,
+     "immagine": "818c8106fa3ca4e4.jpeg"
+    },
+    {
+     "codice": "26172",
+     "testo": "Il segnale raffigurato indica una zona esclusa al transito di veicoli a motore",
+     "corretta": false,
+     "immagine": "818c8106fa3ca4e4.jpeg"
+    },
+    {
+     "codice": "26173",
+     "testo": "Il segnale raffigurato indica una pista ciclabile vicina al marciapiede",
+     "corretta": false,
+     "immagine": "818c8106fa3ca4e4.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5121",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 11,
+   "domande": [
+    {
+     "codice": "26174",
+     "testo": "Il segnale raffigurato indica come devono essere utilizzate le corsie costituenti la carreggiata",
+     "corretta": true,
+     "immagine": "770ed88297114d2f.jpeg"
+    },
+    {
+     "codice": "26175",
+     "testo": "Il segnale raffigurato riserva la corsia di destra agli autobus dei servizi pubblici urbani",
+     "corretta": true,
+     "immagine": "770ed88297114d2f.jpeg"
+    },
+    {
+     "codice": "26176",
+     "testo": "Il segnale raffigurato indica che le corsie di sinistra sono destinate al transito normale",
+     "corretta": true,
+     "immagine": "770ed88297114d2f.jpeg"
+    },
+    {
+     "codice": "26177",
+     "testo": "Il segnale raffigurato permette ai taxi di percorrere la corsia di destra",
+     "corretta": false,
+     "immagine": "770ed88297114d2f.jpeg"
+    },
+    {
+     "codice": "26178",
+     "testo": "Il segnale raffigurato delimita, con la striscia gialla, una pista ciclabile",
+     "corretta": false,
+     "immagine": "770ed88297114d2f.jpeg"
+    },
+    {
+     "codice": "26179",
+     "testo": "Il segnale raffigurato prescrive sempre la marcia per file parallele",
+     "corretta": false,
+     "immagine": "770ed88297114d2f.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5160",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 12,
+   "domande": [
+    {
+     "codice": "26434",
+     "testo": "Nella situazione raffigurata, il tram passa per primo",
+     "corretta": true,
+     "immagine": "af2e361a20bd0f1b.jpeg"
+    },
+    {
+     "codice": "26435",
+     "testo": "Nella situazione raffigurata, il tram ha la precedenza rispetto agli altri veicoli",
+     "corretta": true,
+     "immagine": "af2e361a20bd0f1b.jpeg"
+    },
+    {
+     "codice": "26436",
+     "testo": "Nella situazione raffigurata, il veicolo M attende il transito del veicolo O",
+     "corretta": true,
+     "immagine": "af2e361a20bd0f1b.jpeg"
+    },
+    {
+     "codice": "26437",
+     "testo": "Nella situazione raffigurata, il veicolo M attraversa l'incrocio insieme al tram",
+     "corretta": false,
+     "immagine": "af2e361a20bd0f1b.jpeg"
+    },
+    {
+     "codice": "26438",
+     "testo": "Nella situazione raffigurata, il veicolo O attende il transito di tutti gli altri veicoli",
+     "corretta": false,
+     "immagine": "af2e361a20bd0f1b.jpeg"
+    },
+    {
+     "codice": "26439",
+     "testo": "Nella situazione raffigurata, il veicolo A dà la precedenza al tram ma non al veicolo M",
+     "corretta": false,
+     "immagine": "af2e361a20bd0f1b.jpeg"
+    },
+    {
+     "codice": "26320",
+     "testo": "Nella situazione raffigurata il veicolo B ha il diritto di precedenza",
+     "corretta": true,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26321",
+     "testo": "Nella situazione raffigurata il veicolo H passa per secondo",
+     "corretta": true,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26323",
+     "testo": "Nella situazione raffigurata il veicolo B passa per primo",
+     "corretta": true,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26324",
+     "testo": "Nella situazione raffigurata il veicolo C dà la precedenza al veicolo H",
+     "corretta": true,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26325",
+     "testo": "Nella situazione raffigurata il veicolo H passa per primo",
+     "corretta": false,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26326",
+     "testo": "Nella situazione raffigurata i veicoli B e C passano per primi",
+     "corretta": false,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26327",
+     "testo": "Nella situazione raffigurata il veicolo H ha la precedenza perché è un autobus",
+     "corretta": false,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26328",
+     "testo": "Nella situazione raffigurata il veicolo C passa per primo",
+     "corretta": false,
+     "immagine": "10cd24d9ab1b4415.jpeg"
+    },
+    {
+     "codice": "26329",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo N passa per ultimo",
+     "corretta": true,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    },
+    {
+     "codice": "26330",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo B passa dopo il veicolo P",
+     "corretta": true,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    },
+    {
+     "codice": "26331",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo D passa prima degli altri veicoli",
+     "corretta": true,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    },
+    {
+     "codice": "26332",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo P passa prima del veicolo B",
+     "corretta": true,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    },
+    {
+     "codice": "26333",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato i veicoli D e N passano contemporaneamente",
+     "corretta": false,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    },
+    {
+     "codice": "26334",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato i veicoli D e B passano contemporaneamente",
+     "corretta": false,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    },
+    {
+     "codice": "26335",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato i veicoli B e D passano per primi",
+     "corretta": false,
+     "immagine": "d61d2c992cc65dec.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5147",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 14,
+   "domande": [
+    {
+     "codice": "26336",
+     "testo": "Nell'incrocio raffigurato il veicolo A ha la destra occupata in relazione alla sua direzione",
+     "corretta": true,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26337",
+     "testo": "Nell'incrocio raffigurato il veicolo H ha la destra occupata",
+     "corretta": true,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26338",
+     "testo": "Nell'incrocio raffigurato il veicolo C ha la destra occupata",
+     "corretta": true,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26339",
+     "testo": "Nell'incrocio raffigurato il veicolo D ha diritto di precedenza sul veicolo C",
+     "corretta": true,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26340",
+     "testo": "Nell'incrocio raffigurato il veicolo D è il primo ad attraversare l'incrocio",
+     "corretta": true,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26341",
+     "testo": "Nell'incrocio raffigurato il veicolo D dà la precedenza al veicolo C",
+     "corretta": false,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26342",
+     "testo": "Nell'incrocio raffigurato il veicolo C attraversa per primo",
+     "corretta": false,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26343",
+     "testo": "Nell'incrocio raffigurato il veicolo A attraversa l'incrocio prima del veicolo C",
+     "corretta": false,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26344",
+     "testo": "Nell'incrocio raffigurato i veicoli C e H passano per primi",
+     "corretta": false,
+     "immagine": "a5828b612ea7f27c.jpeg"
+    },
+    {
+     "codice": "26345",
+     "testo": "Nell'attraversare l'incrocio raffigurato il veicolo L passa per primo",
+     "corretta": true,
+     "immagine": "2fd340a669148c78.jpeg"
+    },
+    {
+     "codice": "26346",
+     "testo": "Nell'attraversare l'incrocio raffigurato il veicolo A ha diritto di precedenza sul veicolo D",
+     "corretta": true,
+     "immagine": "2fd340a669148c78.jpeg"
+    },
+    {
+     "codice": "26347",
+     "testo": "Nell'attraversare l'incrocio raffigurato il veicolo L ha la destra libera",
+     "corretta": true,
+     "immagine": "2fd340a669148c78.jpeg"
+    },
+    {
+     "codice": "26348",
+     "testo": "Nell'attraversare l'incrocio raffigurato il veicolo C ha la destra occupata",
+     "corretta": true,
+     "immagine": "2fd340a669148c78.jpeg"
+    },
+    {
+     "codice": "26349",
+     "testo": "Nell'attraversare l'incrocio raffigurato il veicolo A passa per ultimo",
+     "corretta": false,
+     "immagine": "2fd340a669148c78.jpeg"
+    },
+    {
+     "codice": "26350",
+     "testo": "Nell'attraversare l'incrocio raffigurato il veicolo A ha la destra libera",
+     "corretta": false,
+     "immagine": "2fd340a669148c78.jpeg"
+    },
+    {
+     "codice": "26351",
+     "testo": "Nell'attraversare l'incrocio raffigurato i veicoli A e C passano per primi",
+     "corretta": false,
+     "immagine": "2fd340a669148c78.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5149",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 16,
+   "domande": [
+    {
+     "codice": "26352",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato i veicoli L e H passano contemporaneamente per primi",
+     "corretta": true,
+     "immagine": "989a34ada0d13099.jpeg"
+    },
+    {
+     "codice": "26353",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato i veicoli L e H hanno diritto di precedenza",
+     "corretta": true,
+     "immagine": "989a34ada0d13099.jpeg"
+    },
+    {
+     "codice": "26354",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo B transita dopo il veicolo L",
+     "corretta": true,
+     "immagine": "989a34ada0d13099.jpeg"
+    },
+    {
+     "codice": "26355",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo O dà la precedenza a tutti gli altri veicoli",
+     "corretta": true,
+     "immagine": "989a34ada0d13099.jpeg"
+    },
+    {
+     "codice": "26356",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo B transita per primo",
+     "corretta": false,
+     "immagine": "989a34ada0d13099.jpeg"
+    },
+    {
+     "codice": "26357",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo H transita dopo il veicolo O",
+     "corretta": false,
+     "immagine": "989a34ada0d13099.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5150",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 17,
+   "domande": [
+    {
+     "codice": "26358",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo T transita per primo",
+     "corretta": true,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26359",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo A dà la precedenza al veicolo O",
+     "corretta": true,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26360",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo O dà la precedenza al veicolo T",
+     "corretta": true,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26361",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo O passa prima del veicolo A",
+     "corretta": true,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26362",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo T dà la precedenza al veicolo O",
+     "corretta": false,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26363",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo O dà la precedenza al veicolo A",
+     "corretta": false,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26364",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo T dà la precedenza al veicolo A",
+     "corretta": false,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    },
+    {
+     "codice": "26365",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato i veicoli A e T passano per primi",
+     "corretta": false,
+     "immagine": "0f96f7fff743f5a3.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5151",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 18,
+   "domande": [
+    {
+     "codice": "26366",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo N dà la precedenza al veicolo E",
+     "corretta": true,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    },
+    {
+     "codice": "26367",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo E dà la precedenza al veicolo L",
+     "corretta": true,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    },
+    {
+     "codice": "26368",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo R dà la precedenza ai veicoli E ed N",
+     "corretta": true,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    },
+    {
+     "codice": "26369",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo R (filobus) ha la precedenza sugli altri veicoli",
+     "corretta": false,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    },
+    {
+     "codice": "26370",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo E dà la precedenza al veicolo R",
+     "corretta": false,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    },
+    {
+     "codice": "26371",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo L dà la precedenza al veicolo R",
+     "corretta": false,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    },
+    {
+     "codice": "26372",
+     "testo": "Secondo le norme di precedenza, nell'incrocio raffigurato il veicolo E dà la precedenza al veicolo N",
+     "corretta": false,
+     "immagine": "e9892f08baccd9d5.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5152",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 19,
+   "domande": [
+    {
+     "codice": "26373",
+     "testo": "Nell'incrocio raffigurato il veicolo T passa per ultimo",
+     "corretta": true,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    },
+    {
+     "codice": "26374",
+     "testo": "Nell'incrocio raffigurato il veicolo R passa per primo",
+     "corretta": true,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    },
+    {
+     "codice": "26375",
+     "testo": "Nell'incrocio raffigurato il veicolo A dà la precedenza al veicolo R",
+     "corretta": true,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    },
+    {
+     "codice": "26376",
+     "testo": "Nell'incrocio raffigurato il veicolo T dà la precedenza ai veicoli R ed A",
+     "corretta": true,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    },
+    {
+     "codice": "26377",
+     "testo": "Nell'incrocio raffigurato il veicolo T passa prima del veicolo R",
+     "corretta": false,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    },
+    {
+     "codice": "26378",
+     "testo": "Nell'incrocio raffigurato i veicoli transitano nell'ordine: R, T, A",
+     "corretta": false,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    },
+    {
+     "codice": "26379",
+     "testo": "Nell'incrocio raffigurato il veicolo T passa prima degli altri veicoli",
+     "corretta": false,
+     "immagine": "3a3f84c8470c7a05.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5153",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 20,
+   "domande": [
+    {
+     "codice": "26380",
+     "testo": "Nell'incrocio raffigurato vale la regola generale della precedenza ai veicoli provenienti da destra",
+     "corretta": true,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26381",
+     "testo": "Nell'incrocio raffigurato l'ordine di passaggio dei veicoli è: R, D, F",
+     "corretta": true,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26382",
+     "testo": "Nell'incrocio raffigurato il conducente che ha la precedenza deve assicurarsi che gli altri siano disposti a dargliela",
+     "corretta": true,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26383",
+     "testo": "Nell'incrocio raffigurato tutti i conducenti devono moderare la velocità avvicinandosi all'area di incrocio",
+     "corretta": true,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26384",
+     "testo": "Nell'incrocio raffigurato il filobus passa per primo",
+     "corretta": false,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26385",
+     "testo": "Nell'incrocio raffigurato l'ordine di passaggio dei veicoli è: F, R, D",
+     "corretta": false,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26386",
+     "testo": "Nell'incrocio raffigurato se i veicoli rispettano i limiti di velocità non hanno l'obbligo di moderare la velocità",
+     "corretta": false,
+     "immagine": "03d82402f007fbcc.jpeg"
+    },
+    {
+     "codice": "26387",
+     "testo": "Nell'incrocio raffigurato l'ordine di precedenza è stabilito dalla velocità con cui i veicoli giungono all'incrocio",
+     "corretta": false,
+     "immagine": "03d82402f007fbcc.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5154",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 21,
+   "domande": [
+    {
+     "codice": "26388",
+     "testo": "Nell'intersezione raffigurata l'ordine di passaggio dei veicoli è: N, A, R",
+     "corretta": true,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26389",
+     "testo": "Nell'intersezione raffigurata tutti i veicoli devono usare la massima prudenza",
+     "corretta": true,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26390",
+     "testo": "Nell'intersezione raffigurata i veicoli A ed R devono, se necessario, fermarsi",
+     "corretta": true,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26391",
+     "testo": "Nell'intersezione raffigurata il veicolo N deve, comunque, usare prudenza",
+     "corretta": true,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26392",
+     "testo": "Nell'intersezione raffigurata il veicolo N non ha l'obbligo di moderare la velocità e di usare prudenza",
+     "corretta": false,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26393",
+     "testo": "Nell'intersezione raffigurata l'ordine di precedenza dei veicoli è: R, A, N",
+     "corretta": false,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26394",
+     "testo": "Nell'intersezione raffigurata se A non dà la precedenza, N deve suonare e procedere ugualmente",
+     "corretta": false,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    },
+    {
+     "codice": "26395",
+     "testo": "Nell'intersezione raffigurata l'ordine di precedenza dei veicoli è: N, R, A",
+     "corretta": false,
+     "immagine": "2e5f3fdfb461dbad.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5156",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 22,
+   "domande": [
+    {
+     "codice": "26404",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo T passa per primo perché circola su rotaie",
+     "corretta": true,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26405",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo A passa subito dopo il veicolo T",
+     "corretta": true,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26406",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo S attende il passaggio dei veicoli T e A",
+     "corretta": true,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26407",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, i veicoli passano nel seguente ordine: T, A, S",
+     "corretta": true,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26408",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo A passa per primo",
+     "corretta": false,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26409",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, i veicoli passano nel seguente ordine: A, T, S",
+     "corretta": false,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26410",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo S passa subito dopo il veicolo T",
+     "corretta": false,
+     "immagine": "4700e88733cb128f.jpeg"
+    },
+    {
+     "codice": "26411",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, i veicoli A e S passano contemporaneamente dopo il passaggio del veicolo T",
+     "corretta": false,
+     "immagine": "4700e88733cb128f.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5157",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 23,
+   "domande": [
+    {
+     "codice": "26412",
+     "testo": "Nell'incrocio raffigurato, il veicolo B ha il diritto di precedenza",
+     "corretta": true,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26413",
+     "testo": "Nell'incrocio raffigurato, i veicoli passano nel seguente ordine: B, T, S",
+     "corretta": true,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26414",
+     "testo": "Nell'incrocio raffigurato, il veicolo S passa per ultimo",
+     "corretta": true,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26415",
+     "testo": "Nell'incrocio raffigurato, tutti i conducenti hanno l'obbligo di essere prudenti per evitare incidenti",
+     "corretta": true,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26416",
+     "testo": "Nell'incrocio raffigurato, i veicoli passano nel seguente ordine: S, B, T",
+     "corretta": false,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26417",
+     "testo": "Nell'incrocio raffigurato, il veicolo B dà la precedenza al veicolo T",
+     "corretta": false,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26418",
+     "testo": "Nell'incrocio raffigurato, nessuno dei veicoli deve moderare la velocità",
+     "corretta": false,
+     "immagine": "35f823f698c1fd98.jpeg"
+    },
+    {
+     "codice": "26419",
+     "testo": "Nell'incrocio raffigurato, i veicoli B e S passano contemporaneamente",
+     "corretta": false,
+     "immagine": "35f823f698c1fd98.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5158",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 24,
+   "domande": [
+    {
+     "codice": "26420",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo P passa per primo",
+     "corretta": true,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26421",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo D dà la precedenza al veicolo P",
+     "corretta": true,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26422",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo B attende che siano passati i veicoli P e D",
+     "corretta": true,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26423",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo L dà la precedenza al veicolo B",
+     "corretta": true,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26424",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo P attende che siano transitati i veicoli D e B",
+     "corretta": false,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26425",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo P attende il passaggio degli altri tre veicoli",
+     "corretta": false,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26426",
+     "testo": "Giungendo all'incrocio raffigurato, il veicolo P ha la destra occupata in relazione alla sua direzione",
+     "corretta": false,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    },
+    {
+     "codice": "26427",
+     "testo": "Giungendo all'incrocio raffigurato, i veicoli D e L passano per primi",
+     "corretta": false,
+     "immagine": "b26fd7170cf3c9f4.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5159",
+   "titolo": "Norme sulla precedenza",
+   "pagina": 25,
+   "domande": [
+    {
+     "codice": "26428",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo E passa per primo",
+     "corretta": true,
+     "immagine": "e13f3710de8a9443.jpeg"
+    },
+    {
+     "codice": "26429",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo C passa subito dopo il veicolo E",
+     "corretta": true,
+     "immagine": "e13f3710de8a9443.jpeg"
+    },
+    {
+     "codice": "26430",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, i veicoli passano nel seguente ordine: E, C, M",
+     "corretta": true,
+     "immagine": "e13f3710de8a9443.jpeg"
+    },
+    {
+     "codice": "26431",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo M ha la destra libera",
+     "corretta": false,
+     "immagine": "e13f3710de8a9443.jpeg"
+    },
+    {
+     "codice": "26432",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, il veicolo C attende il transito del veicolo M",
+     "corretta": false,
+     "immagine": "e13f3710de8a9443.jpeg"
+    },
+    {
+     "codice": "26433",
+     "testo": "Dovendo attraversare l'incrocio raffigurato, i veicoli M e E passano contemporaneamente",
+     "corretta": false,
+     "immagine": "e13f3710de8a9443.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5123",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 26,
+   "domande": [
+    {
+     "codice": "26186",
+     "testo": "Quando il semaforo emette luce verde nella nostra direzione possiamo svoltare a sinistra, ma dando la precedenza ai veicoli provenienti di fronte",
+     "corretta": true,
+     "immagine": "441ab3bd54c09b6e.jpeg"
+    },
+    {
+     "codice": "26187",
+     "testo": "Quando il semaforo emette luce verde nella nostra direzione, svoltando a destra dobbiamo dare la precedenza ai pedoni che attraversano",
+     "corretta": true,
+     "immagine": "441ab3bd54c09b6e.jpeg"
+    },
+    {
+     "codice": "26188",
+     "testo": "Quando il semaforo emette luce verde nella nostra direzione possiamo attraversare l'incrocio, usando comunque prudenza",
+     "corretta": true,
+     "immagine": "441ab3bd54c09b6e.jpeg"
+    },
+    {
+     "codice": "26189",
+     "testo": "Quando il semaforo emette luce verde nella nostra direzione possiamo svoltare a sinistra solo quando compare il giallo",
+     "corretta": false,
+     "immagine": "441ab3bd54c09b6e.jpeg"
+    },
+    {
+     "codice": "26190",
+     "testo": "Quando il semaforo emette luce verde nella nostra direzione possiamo svoltare solo se la strada è divisa in corsie",
+     "corretta": false,
+     "immagine": "441ab3bd54c09b6e.jpeg"
+    },
+    {
+     "codice": "26191",
+     "testo": "Quando il semaforo emette luce verde nella nostra direzione è obbligatorio fermarsi",
+     "corretta": false,
+     "immagine": "441ab3bd54c09b6e.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5124",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 26,
+   "domande": [
+    {
+     "codice": "26192",
+     "testo": "Nei semafori raffigurati le frecce accese indicano, se verdi, le direzioni verso le quali si può proseguire",
+     "corretta": true,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26193",
+     "testo": "Nei semafori raffigurati le frecce accese indicano, se rosse, che non possiamo proseguire in quelle direzioni",
+     "corretta": true,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26194",
+     "testo": "Nei semafori raffigurati le frecce accese indicano, se gialle fisse, di sgomberare l'incrocio o di fermarsi in condizioni di sicurezza",
+     "corretta": true,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26195",
+     "testo": "Nei semafori raffigurati le frecce accese indicano, se gialle lampeggianti, di fermarci in ogni caso",
+     "corretta": false,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26196",
+     "testo": "Nei semafori raffigurati le frecce accese indicano, se verdi e rivolte verso l'alto, che si può proseguire in tutte le direzioni",
+     "corretta": false,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26197",
+     "testo": "Nei semafori raffigurati le frecce accese indicano, se rosse, di svoltare a destra ma con prudenza",
+     "corretta": false,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5126",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 27,
+   "domande": [
+    {
+     "codice": "26204",
+     "testo": "Incontrando il semaforo a tre luci di figura, è permesso il passaggio quando si accende il giallo, se non ci si può fermare in condizioni di sicurezza prima dell'incrocio",
+     "corretta": true,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26205",
+     "testo": "Incontrando il semaforo a tre luci di figura, è permesso il passaggio quando è acceso il giallo lampeggiante, usando però la massima prudenza e rallentando",
+     "corretta": true,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26206",
+     "testo": "Incontrando il semaforo a tre luci di figura, è permesso il passaggio quando il semaforo è spento, usando la massima prudenza",
+     "corretta": true,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26207",
+     "testo": "Incontrando il semaforo a tre luci di figura, è permesso il passaggio quando è accesa la luce rossa, ma nessun veicolo sta attraversando l'incrocio",
+     "corretta": false,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26208",
+     "testo": "Incontrando il semaforo a tre luci di figura, è permesso il passaggio quando si accende la luce rossa per tutte le direzioni",
+     "corretta": false,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    },
+    {
+     "codice": "26209",
+     "testo": "Incontrando il semaforo a tre luci di figura, è permesso il passaggio quando, pur essendo acceso la luce rossa, non sopraggiungano altri veicoli",
+     "corretta": false,
+     "immagine": "5d127f25eaeb84a9.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5135",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 28,
+   "domande": [
+    {
+     "codice": "26260",
+     "testo": "Con la segnaletica orizzontale raffigurata, le tre corsie consentono tutte di proseguire diritto",
+     "corretta": true,
+     "immagine": "7b7ab00e204aae8f.jpeg"
+    },
+    {
+     "codice": "26261",
+     "testo": "Con la segnaletica orizzontale raffigurata, la corsia di sinistra permette di proseguire diritto o svoltare a sinistra",
+     "corretta": true,
+     "immagine": "7b7ab00e204aae8f.jpeg"
+    },
+    {
+     "codice": "26262",
+     "testo": "Con la segnaletica orizzontale raffigurata, la corsia di mezzo permette solo di proseguire diritto",
+     "corretta": true,
+     "immagine": "7b7ab00e204aae8f.jpeg"
+    },
+    {
+     "codice": "26263",
+     "testo": "Con la segnaletica orizzontale raffigurata, la corsia di destra permette solo di svoltare a destra",
+     "corretta": false,
+     "immagine": "7b7ab00e204aae8f.jpeg"
+    },
+    {
+     "codice": "26264",
+     "testo": "Con la segnaletica orizzontale raffigurata, è possibile cambiare corsia se occorre valicare la striscia continua",
+     "corretta": false,
+     "immagine": "7b7ab00e204aae8f.jpeg"
+    },
+    {
+     "codice": "26265",
+     "testo": "Con la segnaletica orizzontale raffigurata, le tre corsie consentono tutte indifferentemente di proseguire diritto o di svoltare",
+     "corretta": false,
+     "immagine": "7b7ab00e204aae8f.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5136",
+   "titolo": "Pannelli integrativi, segnali di indicazione, segnali luminosi, segnali orizzontali",
+   "pagina": 29,
+   "domande": [
+    {
+     "codice": "26266",
+     "testo": "Con la segnaletica orizzontale raffigurata, la corsia A permette solo la svolta a sinistra",
+     "corretta": true,
+     "immagine": "e0d9d2a46e1de57f.jpeg"
+    },
+    {
+     "codice": "26267",
+     "testo": "Con la segnaletica orizzontale raffigurata, la corsia B permette di proseguire diritto o di svoltare a sinistra",
+     "corretta": true,
+     "immagine": "e0d9d2a46e1de57f.jpeg"
+    },
+    {
+     "codice": "26268",
+     "testo": "Con la segnaletica orizzontale raffigurata, solo la corsia C permette di effettuare la svolta a destra",
+     "corretta": true,
+     "immagine": "e0d9d2a46e1de57f.jpeg"
+    },
+    {
+     "codice": "26269",
+     "testo": "Con la segnaletica orizzontale raffigurata, le corsie A, B e C consentono tutte di proseguire diritto",
+     "corretta": false,
+     "immagine": "e0d9d2a46e1de57f.jpeg"
+    },
+    {
+     "codice": "26270",
+     "testo": "Con la segnaletica orizzontale raffigurata, solo la corsia A permette di effettuare la svolta a sinistra",
+     "corretta": false,
+     "immagine": "e0d9d2a46e1de57f.jpeg"
+    },
+    {
+     "codice": "26271",
+     "testo": "Con la segnaletica orizzontale raffigurata, la corsia C permette solo la svolta a destra",
+     "corretta": false,
+     "immagine": "e0d9d2a46e1de57f.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5007",
+   "titolo": "Segnali di pericolo",
+   "pagina": 29,
+   "domande": [
+    {
+     "codice": "25491",
+     "testo": "Il segnale raffigurato preavvisa una curva pericolosa a destra",
+     "corretta": true,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25492",
+     "testo": "Il segnale raffigurato preavvisa un tratto di strada con visibilità limitata",
+     "corretta": true,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25493",
+     "testo": "Il segnale raffigurato richiede di moderare la velocità",
+     "corretta": true,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25494",
+     "testo": "Il segnale raffigurato è un divieto di svolta a destra",
+     "corretta": false,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25495",
+     "testo": "Il segnale raffigurato preavvisa un incrocio con obbligo di svolta a destra",
+     "corretta": false,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25496",
+     "testo": "Il segnale raffigurato preavvisa un cambio di corsia",
+     "corretta": false,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5008",
+   "titolo": "Segnali di pericolo",
+   "pagina": 30,
+   "domande": [
+    {
+     "codice": "25497",
+     "testo": "In presenza del segnale raffigurato è necessario percorrere la curva con più attenzione se la strada è bagnata",
+     "corretta": true,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25498",
+     "testo": "In presenza del segnale raffigurato è vietato sorpassare se la strada ha una corsia per ogni senso di marcia",
+     "corretta": true,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25499",
+     "testo": "In presenza del segnale raffigurato è necessario regolare la velocità in relazione alla visibilità e al raggio della curva",
+     "corretta": true,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25500",
+     "testo": "In presenza del segnale raffigurato si deve circolare il più possibile vicino alla linea che separa i sensi di marcia",
+     "corretta": false,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25501",
+     "testo": "In presenza del segnale raffigurato è permesso percorrere la curva a velocità elevata",
+     "corretta": false,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    },
+    {
+     "codice": "25502",
+     "testo": "In presenza del segnale raffigurato è permesso effettuare l'inversione di marcia",
+     "corretta": false,
+     "immagine": "b140c7126bfb62bd.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5009",
+   "titolo": "Segnali di pericolo",
+   "pagina": 31,
+   "domande": [
+    {
+     "codice": "25503",
+     "testo": "Il segnale raffigurato preavvisa una curva pericolosa a sinistra",
+     "corretta": true,
+     "immagine": "626d4fe8966fbe89.jpeg"
+    },
+    {
+     "codice": "25504",
+     "testo": "Il segnale raffigurato preavvisa un tratto di strada con visibilità limitata",
+     "corretta": true,
+     "immagine": "626d4fe8966fbe89.jpeg"
+    },
+    {
+     "codice": "25505",
+     "testo": "Il segnale raffigurato preavvisa a 150 m una curva pericolosa",
+     "corretta": true,
+     "immagine": "626d4fe8966fbe89.jpeg"
+    },
+    {
+     "codice": "25506",
+     "testo": "Il segnale raffigurato preavvisa un ostacolo da aggirare a sinistra",
+     "corretta": false,
+     "immagine": "626d4fe8966fbe89.jpeg"
+    },
+    {
+     "codice": "25507",
+     "testo": "Il segnale raffigurato è un divieto di svoltare a sinistra",
+     "corretta": false,
+     "immagine": "626d4fe8966fbe89.jpeg"
+    },
+    {
+     "codice": "25508",
+     "testo": "Il segnale raffigurato preavvisa un incrocio con obbligo di svolta a sinistra",
+     "corretta": false,
+     "immagine": "626d4fe8966fbe89.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5010",
+   "titolo": "Segnali di pericolo",
+   "pagina": 32,
+   "domande": [
+    {
+     "codice": "25509",
+     "testo": "Il segnale raffigurato preavvisa una doppia curva, la prima a destra",
+     "corretta": true,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25510",
+     "testo": "Il segnale raffigurato preavvisa a 150 m una doppia curva pericolosa",
+     "corretta": true,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25511",
+     "testo": "Il segnale raffigurato richiede di moderare la velocità",
+     "corretta": true,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25512",
+     "testo": "Il segnale raffigurato vieta la svolta a destra",
+     "corretta": false,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25513",
+     "testo": "Il segnale raffigurato preavvisa una discesa pericolosa",
+     "corretta": false,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25514",
+     "testo": "Il segnale raffigurato preavvisa un tratto di strada con superficie sdrucciolevole",
+     "corretta": false,
+     "immagine": "77a1d96a97287134.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5011",
+   "titolo": "Segnali di pericolo",
+   "pagina": 32,
+   "domande": [
+    {
+     "codice": "25515",
+     "testo": "In presenza del segnale raffigurato si deve mantenere la destra",
+     "corretta": true,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25516",
+     "testo": "In presenza del segnale raffigurato è necessario regolare la velocità in relazione alla visibilità e al raggio delle curve",
+     "corretta": true,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25517",
+     "testo": "In presenza del segnale raffigurato è vietato sorpassare se la strada ha una corsia per ogni senso di marcia",
+     "corretta": true,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25518",
+     "testo": "In presenza del segnale raffigurato è consentita l'inversione di marcia",
+     "corretta": false,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25519",
+     "testo": "In presenza del segnale raffigurato è necessario tenere una velocità moderata solo nella prima curva",
+     "corretta": false,
+     "immagine": "77a1d96a97287134.jpeg"
+    },
+    {
+     "codice": "25520",
+     "testo": "In presenza del segnale raffigurato è sempre permesso fermarsi o sostare",
+     "corretta": false,
+     "immagine": "77a1d96a97287134.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5012",
+   "titolo": "Segnali di pericolo",
+   "pagina": 33,
+   "domande": [
+    {
+     "codice": "25521",
+     "testo": "Il segnale raffigurato preavvisa una doppia curva, la prima a sinistra",
+     "corretta": true,
+     "immagine": "edf6c2344c336fe6.jpeg"
+    },
+    {
+     "codice": "25522",
+     "testo": "Il segnale raffigurato preavvisa di norma a 150 m una doppia curva pericolosa",
+     "corretta": true,
+     "immagine": "edf6c2344c336fe6.jpeg"
+    },
+    {
+     "codice": "25523",
+     "testo": "Il segnale raffigurato richiede di moderare la velocità",
+     "corretta": true,
+     "immagine": "edf6c2344c336fe6.jpeg"
+    },
+    {
+     "codice": "25524",
+     "testo": "Il segnale raffigurato preavvisa una strettoia",
+     "corretta": false,
+     "immagine": "edf6c2344c336fe6.jpeg"
+    },
+    {
+     "codice": "25525",
+     "testo": "Il segnale raffigurato preavvisa un tratto di carreggiata sdrucciolevole",
+     "corretta": false,
+     "immagine": "edf6c2344c336fe6.jpeg"
+    },
+    {
+     "codice": "25526",
+     "testo": "Il segnale raffigurato è un divieto di svolta a sinistra",
+     "corretta": false,
+     "immagine": "edf6c2344c336fe6.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5013",
+   "titolo": "Segnali di pericolo",
+   "pagina": 34,
+   "domande": [
+    {
+     "codice": "25527",
+     "testo": "Il segnale raffigurato preavvisa un passaggio a livello con barriere",
+     "corretta": true,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25528",
+     "testo": "Il segnale raffigurato precede una luce rossa fissa o due luci rosse lampeggianti",
+     "corretta": true,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25529",
+     "testo": "Il segnale raffigurato può essere seguito da un segnale acustico per avvertire della chiusura delle barriere",
+     "corretta": true,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25530",
+     "testo": "Il segnale raffigurato preavvisa una strada senza uscita",
+     "corretta": false,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25531",
+     "testo": "Il segnale raffigurato indica una deviazione obbligatoria",
+     "corretta": false,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25532",
+     "testo": "Il segnale raffigurato permette di passare tra una barra e l'altra se le semibarriere sono chiuse",
+     "corretta": false,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5014",
+   "titolo": "Segnali di pericolo",
+   "pagina": 35,
+   "domande": [
+    {
+     "codice": "25533",
+     "testo": "In presenza del segnale raffigurato è necessario moderare la velocità per essere pronti a fermarsi se le barriere sono chiuse",
+     "corretta": true,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25534",
+     "testo": "In presenza del segnale raffigurato è necessario fermarsi se sono in funzione le due luci rosse lampeggianti",
+     "corretta": true,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25535",
+     "testo": "In presenza del segnale raffigurato è necessario fermarsi se è in funzione il segnale acustico",
+     "corretta": true,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25536",
+     "testo": "In presenza del segnale raffigurato è possibile passare tra una barra e l'altra se le semibarriere sono chiuse",
+     "corretta": false,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25537",
+     "testo": "In presenza del segnale raffigurato è permesso sostare in prossimità o in corrispondenza dei binari",
+     "corretta": false,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    },
+    {
+     "codice": "25538",
+     "testo": "In presenza del segnale raffigurato è possibile attraversare i binari anche se sbarrati da cavalletti a strisce bianche e rosse",
+     "corretta": false,
+     "immagine": "6811fb7c41bd0f54.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5015",
+   "titolo": "Segnali di pericolo",
+   "pagina": 35,
+   "domande": [
+    {
+     "codice": "25539",
+     "testo": "Il segnale raffigurato preavvisa un passaggio a livello senza barriere",
+     "corretta": true,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25540",
+     "testo": "Il segnale raffigurato richiede di usare la massima prudenza",
+     "corretta": true,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25541",
+     "testo": "Il segnale raffigurato deve essere seguito dal segnale CROCE DI S. ANDREA",
+     "corretta": true,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25542",
+     "testo": "Il segnale raffigurato preavvisa una fermata del tram",
+     "corretta": false,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25543",
+     "testo": "Il segnale raffigurato preavvisa un passaggio a livello con barriere",
+     "corretta": false,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25544",
+     "testo": "Il segnale raffigurato preavvisa la presenza di binari del tram",
+     "corretta": false,
+     "immagine": "8cfef6de1907942b.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5016",
+   "titolo": "Segnali di pericolo",
+   "pagina": 36,
+   "domande": [
+    {
+     "codice": "25545",
+     "testo": "In presenza del segnale raffigurato è necessario rallentare per poter arrestare il veicolo prima dell'attraversamento ferroviario",
+     "corretta": true,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25546",
+     "testo": "In presenza del segnale raffigurato è necessario assicurarsi che non ci siano treni in arrivo sia da destra che da sinistra",
+     "corretta": true,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25547",
+     "testo": "In presenza del segnale raffigurato non è permesso sostare o fermarsi in prossimità e in corrispondenza dei binari",
+     "corretta": true,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25548",
+     "testo": "In presenza del segnale raffigurato è necessario rallentare solo in caso di nebbia",
+     "corretta": false,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25549",
+     "testo": "In presenza del segnale raffigurato è sempre obbligatorio fermarsi prima dei binari",
+     "corretta": false,
+     "immagine": "8cfef6de1907942b.jpeg"
+    },
+    {
+     "codice": "25550",
+     "testo": "In presenza del segnale raffigurato è possibile attraversare i binari anche se sbarrati da cavalletti a strisce bianche e rosse",
+     "corretta": false,
+     "immagine": "8cfef6de1907942b.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5017",
+   "titolo": "Segnali di pericolo",
+   "pagina": 37,
+   "domande": [
+    {
+     "codice": "25551",
+     "testo": "Il segnale CROCE DI S. ANDREA è posto in prossimità di un passaggio a livello",
+     "corretta": true,
+     "immagine": "65dce0976b4a9ca6.jpeg"
+    },
+    {
+     "codice": "25552",
+     "testo": "Il segnale CROCE DI S. ANDREA è posto nelle immediate vicinanze del binario",
+     "corretta": true,
+     "immagine": "65dce0976b4a9ca6.jpeg"
+    },
+    {
+     "codice": "25553",
+     "testo": "Il segnale CROCE DI S. ANDREA è posto sulla strada dopo il segnale PASSAGGIO A LIVELLO SENZA BARRIERE",
+     "corretta": true,
+     "immagine": "65dce0976b4a9ca6.jpeg"
+    },
+    {
+     "codice": "25554",
+     "testo": "Il segnale CROCE DI S. ANDREA preavvisa una sede ferroviaria con più binari",
+     "corretta": false,
+     "immagine": "65dce0976b4a9ca6.jpeg"
+    },
+    {
+     "codice": "25555",
+     "testo": "Il segnale CROCE DI S. ANDREA ha due luci rosse che si accendono alternativamente se il passaggio a livello è con semibarriere",
+     "corretta": false,
+     "immagine": "65dce0976b4a9ca6.jpeg"
+    },
+    {
+     "codice": "25556",
+     "testo": "Il segnale CROCE DI S. ANDREA è integrato con una luce verde e una rossa",
+     "corretta": false,
+     "immagine": "65dce0976b4a9ca6.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5018",
+   "titolo": "Segnali di pericolo",
+   "pagina": 38,
+   "domande": [
+    {
+     "codice": "25557",
+     "testo": "Il segnale DOPPIA CROCE DI S. ANDREA impone di fermarsi alla striscia di arresto se è in arrivo il treno",
+     "corretta": true,
+     "immagine": "982be8c0a13bd90a.jpeg"
+    },
+    {
+     "codice": "25558",
+     "testo": "Il segnale DOPPIA CROCE DI S. ANDREA segnala che la linea ferroviaria ha più di un binario",
+     "corretta": true,
+     "immagine": "982be8c0a13bd90a.jpeg"
+    },
+    {
+     "codice": "25559",
+     "testo": "Il segnale DOPPIA CROCE DI S. ANDREA invita a fare attenzione perché potrebbe arrivare un altro treno su un altro binario",
+     "corretta": true,
+     "immagine": "982be8c0a13bd90a.jpeg"
+    },
+    {
+     "codice": "25560",
+     "testo": "Il segnale DOPPIA CROCE DI S. ANDREA è posto a 150 metri dal passaggio a livello",
+     "corretta": false,
+     "immagine": "982be8c0a13bd90a.jpeg"
+    },
+    {
+     "codice": "25561",
+     "testo": "Il segnale DOPPIA CROCE DI S. ANDREA indica che la linea ferroviaria ha soltanto un binario",
+     "corretta": false,
+     "immagine": "982be8c0a13bd90a.jpeg"
+    },
+    {
+     "codice": "25562",
+     "testo": "Il segnale DOPPIA CROCE DI S. ANDREA può essere posto subito prima di un attraversamento ferroviario con semibarriere",
+     "corretta": false,
+     "immagine": "982be8c0a13bd90a.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5019",
+   "titolo": "Segnali di pericolo",
+   "pagina": 38,
+   "domande": [
+    {
+     "codice": "25563",
+     "testo": "I pannelli raffigurati sono posti prima di qualsiasi tipo di passaggio a livello",
+     "corretta": true,
+     "immagine": "fd6be85a1143b713.jpeg"
+    },
+    {
+     "codice": "25564",
+     "testo": "I pannelli raffigurati sono posti, rispettivamente, a circa 150, 100 e 50 metri dall'attraversamento ferroviario",
+     "corretta": true,
+     "immagine": "fd6be85a1143b713.jpeg"
+    },
+    {
+     "codice": "25565",
+     "testo": "I pannelli raffigurati servono ad indicare il progressivo avvicinarsi al passaggio a livello",
+     "corretta": true,
+     "immagine": "fd6be85a1143b713.jpeg"
+    },
+    {
+     "codice": "25566",
+     "testo": "I pannelli raffigurati si possono trovare solo se il passaggio a livello è con barriere o semibarriere",
+     "corretta": false,
+     "immagine": "fd6be85a1143b713.jpeg"
+    },
+    {
+     "codice": "25567",
+     "testo": "I pannelli raffigurati indicano lavori in corso",
+     "corretta": false,
+     "immagine": "fd6be85a1143b713.jpeg"
+    },
+    {
+     "codice": "25568",
+     "testo": "I pannelli raffigurati hanno tante strisce rosse quanti sono i binari del passaggio a livello",
+     "corretta": false,
+     "immagine": "fd6be85a1143b713.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5020",
+   "titolo": "Segnali di pericolo",
+   "pagina": 39,
+   "domande": [
+    {
+     "codice": "25569",
+     "testo": "In presenza del segnale raffigurato si deve tenere conto della riduzione di spazio dovuta alla circolazione dei tram",
+     "corretta": true,
+     "immagine": "877e5fff8f47d5f8.jpeg"
+    },
+    {
+     "codice": "25570",
+     "testo": "In presenza del segnale raffigurato si deve fare attenzione agli eventuali pedoni presenti alla fermata del tram",
+     "corretta": true,
+     "immagine": "877e5fff8f47d5f8.jpeg"
+    },
+    {
+     "codice": "25571",
+     "testo": "In presenza del segnale raffigurato non si deve ostacolare la marcia del tram",
+     "corretta": true,
+     "immagine": "877e5fff8f47d5f8.jpeg"
+    },
+    {
+     "codice": "25572",
+     "testo": "In presenza del segnale raffigurato è sempre vietato il sorpasso dei tram",
+     "corretta": false,
+     "immagine": "877e5fff8f47d5f8.jpeg"
+    },
+    {
+     "codice": "25573",
+     "testo": "In presenza del segnale raffigurato è vietata la marcia sopra i binari del tram",
+     "corretta": false,
+     "immagine": "877e5fff8f47d5f8.jpeg"
+    },
+    {
+     "codice": "25574",
+     "testo": "In presenza del segnale raffigurato, è sempre possibile sorpassare a destra un tram fermo per la salita o discesa dei passeggeri",
+     "corretta": false,
+     "immagine": "877e5fff8f47d5f8.jpeg"
+    }
+   ]
+  },
+  {
+   "codice": "5021",
+   "titolo": "Segnali di pericolo",
+   "pagina": 40,
+   "domande": [
+    {
+     "codice": "25575",
+     "testo": "Il segnale raffigurato preavvisa un attraversamento pedonale",
+     "corretta": true,
+     "immagine": "a93fc2ac7167a55f.jpeg"
+    },
+    {
+     "codice": "25576",
+     "testo": "Il segnale raffigurato comporta di fermarsi e dare la precedenza ai pedoni che attraversano sulle strisce",
+     "corretta": true,
+     "immagine": "a93fc2ac7167a55f.jpeg"
+    },
+    {
+     "codice": "25577",
+     "testo": "Il segnale raffigurato non permette di sorpassare un veicolo fermatosi per far attraversare i pedoni",
+     "corretta": true,
+     "immagine": "a93fc2ac7167a55f.jpeg"
+    },
+    {
+     "codice": "25578",
+     "testo": "Il segnale raffigurato preavvisa un viale pedonale",
+     "corretta": false,
+     "immagine": "a93fc2ac7167a55f.jpeg"
+    },
+    {
+     "codice": "25579",
+     "testo": "Il segnale raffigurato impone di usare i segnali acustici per avvertire i pedoni",
+     "corretta": false,
+     "immagine": "a93fc2ac7167a55f.jpeg"
+    }
+   ]
+  }
+ ]
+}

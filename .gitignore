@@ -1,0 +1,61 @@
+# ==========================================================
+#  Cruscotto Autoscuola - file da NON caricare su GitHub
+# ==========================================================
+
+# --- Segreti: mai committare ------------------------------
+# .env contiene chiavi API reali e il JWT secret.
+# Il modello condivisibile e' .env.example (con placeholder).
+.env
+.env.local
+*.pem
+*.key
+
+# --- Ambiente virtuale Python (140 MB, si ricrea) ---------
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# --- Database di lavoro ------------------------------------
+# Il DB live contiene utenti, password, token e dati allievi.
+# Nel repo c'e' solo data/autoscuola.demo.db (senza dati personali):
+# il collega lo copia in autoscuola.db al primo avvio.
+data/autoscuola.db
+data/autoscuola.db-wal
+data/autoscuola.db-shm
+data/*.db-journal
+!data/autoscuola.demo.db
+
+# --- Backup e dati generati -------------------------------
+data/backup/*
+!data/backup/.gitkeep
+*.bak
+*.bak[0-9]
+*.bak[0-9][0-9]
+*.old
+*.orig
+*~
+
+# --- Build / distribuzione --------------------------------
+build/
+dist/
+*.spec
+*.exe
+
+# --- Log ---------------------------------------------------
+*.log
+logs/
+
+# --- Sistema operativo ed editor --------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+.fuse_hidden*

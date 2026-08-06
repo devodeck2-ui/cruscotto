@@ -1,0 +1,342 @@
+/* =============================================================================
+ * Autoscuola Cruscotto - foglio di stile.
+ *
+ * Impostazione: moderno e pulito. Molto respiro, angoli morbidi, ombre appena
+ * accennate, tipografia grande. Bootstrap 5 fa il grosso del lavoro; qui c'e'
+ * il tema e i componenti specifici del quiz.
+ *
+ * Due criteri hanno guidato le scelte:
+ *   1. Si studia col telefono in mano, spesso a letto la sera. Da qui i
+ *      bersagli di tocco grandi, il contrasto alto e il tema scuro automatico.
+ *   2. Sotto timer l'occhio deve trovare subito le tre cose che contano:
+ *      la domanda, i due pulsanti, il tempo che resta. Tutto il resto e'
+ *      volutamente sottotono.
+ * ========================================================================== */
+
+:root {
+  /* Blu piu' profondo del precedente: regge meglio il bianco intorno e
+     mantiene il contrasto necessario anche sui proiettori delle aule. */
+  --ac-blu: #1d4ed8;
+  --ac-blu-scuro: #1e3a8a;
+  --ac-blu-chiaro: #eff4ff;
+  --ac-ok: #059669;
+  --ac-ko: #dc2626;
+  --ac-warn: #d97706;
+  --ac-viola: #6d28d9;
+
+  --ac-fondo: #f6f8fc;
+  --ac-superficie: #ffffff;
+  --ac-testo: #0f172a;
+  --ac-tenue: #64748b;
+  --ac-bordo: #e6ebf3;
+
+  --ac-r: 16px;
+  --ac-r-piccolo: 10px;
+  --ac-ombra: 0 1px 2px rgba(15, 23, 42, .04), 0 8px 24px rgba(15, 23, 42, .05);
+  --ac-ombra-alta: 0 2px 6px rgba(15, 23, 42, .07), 0 18px 40px rgba(15, 23, 42, .10);
+
+  --bs-primary: #1d4ed8;
+  --bs-primary-rgb: 29, 78, 216;
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* ---------------------------------------------------------------- base --- */
+
+body {
+  background: var(--ac-fondo);
+  color: var(--ac-testo);
+  font-family: var(--bs-body-font-family);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 92px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
+.text-muted { color: var(--ac-tenue) !important; }
+
+.container-xl { max-width: 1180px; }
+
+/* Titoletti di sezione: piccoli, spaziati, mai urlati. */
+.text-uppercase.text-muted {
+  letter-spacing: .07em;
+  font-size: .72rem !important;
+  font-weight: 650;
+}
+
+/* ------------------------------------------------------------ schermate --- */
+
+.schermata { display: none; }
+.schermata.attiva { display: block; animation: entra .22s cubic-bezier(.2, .7, .3, 1); }
+@keyframes entra {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ----------------------------------------------------------------- card --- */
+
+.card-ac {
+  background: var(--ac-superficie);
+  border: 1px solid var(--ac-bordo);
+  border-radius: var(--ac-r);
+  box-shadow: var(--ac-ombra);
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+.card-ac:hover { box-shadow: var(--ac-ombra-alta); }
+
+/* I tre riquadri d'azione della home si sollevano al passaggio: fa capire
+   che sono cliccabili senza aggiungere scritte. */
+#schermata-home .row .card-ac:hover { transform: translateY(-2px); }
+
+/* Numeroni delle statistiche */
+.card-ac .h2, .card-ac .h1, .card-ac .display-6 {
+  font-weight: 700;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------- navbar --- */
+
+.navbar {
+  background: rgba(255, 255, 255, .86) !important;
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--ac-bordo) !important;
+}
+.navbar-brand { letter-spacing: -.02em; }
+#nav-desktop .btn {
+  border-radius: 999px;
+  font-weight: 550;
+  color: var(--ac-tenue);
+  background: transparent;
+  padding: .38rem .9rem;
+}
+#nav-desktop .btn:hover { background: var(--ac-blu-chiaro); color: var(--ac-blu); }
+
+/* --------------------------------------------------------------- bottoni --- */
+
+.btn { border-radius: var(--ac-r-piccolo); font-weight: 600; }
+.btn-lg { border-radius: 12px; padding: .8rem 1.2rem; }
+
+.btn-primary {
+  background: var(--ac-blu);
+  border-color: var(--ac-blu);
+  box-shadow: 0 1px 2px rgba(29, 78, 216, .25);
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: var(--ac-blu-scuro);
+  border-color: var(--ac-blu-scuro);
+}
+.btn-outline-primary { color: var(--ac-blu); border-color: #c7d7fb; }
+.btn-outline-primary:hover { background: var(--ac-blu); border-color: var(--ac-blu); }
+
+.badge { font-weight: 600; border-radius: 999px; padding: .35em .7em; }
+
+/* ----------------------------------------------------------------- quiz --- */
+
+.domanda-testo {
+  font-size: 1.18rem;
+  line-height: 1.55;
+  font-weight: 550;
+  letter-spacing: -.01em;
+}
+@media (min-width: 768px) { .domanda-testo { font-size: 1.38rem; line-height: 1.5; } }
+
+.img-quiz {
+  max-height: 200px;
+  width: auto;
+  margin: 0 auto;
+  display: block;
+  border-radius: 12px;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* I due pulsanti sono l'elemento piu' importante della schermata: grandi,
+   distanti, impossibili da sbagliare col pollice. */
+.btn-vf {
+  font-size: 1.3rem;
+  font-weight: 750;
+  padding: 1.05rem 1rem;
+  border-width: 2px;
+  border-radius: 14px;
+  letter-spacing: .06em;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn-vf:active { transform: scale(.97); }
+.btn-vf.selezionato {
+  box-shadow: inset 0 0 0 3px rgba(29, 78, 216, .3);
+  transform: scale(.985);
+}
+
+#timer { font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+#timer.critico { color: var(--ac-ko); animation: pulsa 1s infinite; }
+@keyframes pulsa { 50% { opacity: .4; } }
+
+.progress { border-radius: 999px; background: #e8edf7; }
+.progress-bar { background: var(--ac-blu); }
+
+/* Mappa della scheda: colpo d'occhio sullo stato di ogni domanda. */
+.griglia-nav { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+@media (max-width: 575px) { .griglia-nav { grid-template-columns: repeat(6, 1fr); } }
+.cella-nav {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 9px;
+  font-size: .78rem; font-weight: 650;
+  cursor: pointer; user-select: none;
+  background: #eef2f9; color: #64748b;
+  border: 2px solid transparent;
+  transition: transform .12s ease;
+}
+.cella-nav:hover { transform: scale(1.08); }
+.cella-nav.risposta { background: #dbe7ff; color: #1e40af; }
+.cella-nav.dubbio   { background: #fef3c7; color: #92400e; }
+.cella-nav.giusta   { background: #d1fae5; color: #065f46; }
+.cella-nav.errata   { background: #fee2e2; color: #991b1b; }
+.cella-nav.corrente { border-color: var(--ac-blu); }
+
+/* ------------------------------------------------------------- AI tutor --- */
+
+.pannello-tutor {
+  border-left: 4px solid var(--ac-viola);
+  background: #faf7ff;
+  border-radius: 0 var(--ac-r-piccolo) var(--ac-r-piccolo) 0;
+  line-height: 1.6;
+}
+.pannello-tutor p:last-child { margin-bottom: 0; }
+.bolla-utente { background: var(--ac-blu); color: #fff; border-radius: 14px 14px 4px 14px; }
+.bolla-ai     { background: #f1f5f9; border-radius: 14px 14px 14px 4px; }
+
+.puntini::after { content: '.'; animation: puntini 1.2s steps(4, end) infinite; }
+@keyframes puntini { 0% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } }
+
+/* ----------------------------------------------------------- statistiche --- */
+
+.barra-arg { height: 8px; border-radius: 999px; background: #e8edf7; overflow: hidden; }
+.barra-arg > span { display: block; height: 100%; border-radius: 999px; }
+
+.table { --bs-table-border-color: var(--ac-bordo); }
+.table > :not(caption) > * > * { padding: .7rem .6rem; }
+.table thead th {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ac-tenue); font-weight: 650; border-bottom-width: 1px;
+}
+
+/* ----------------------------------------------------------- barra sotto --- */
+
+.tabbar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 1030;
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-top: 1px solid var(--ac-bordo);
+  padding: .35rem .2rem calc(.35rem + env(safe-area-inset-bottom));
+  display: flex; justify-content: space-around;
+}
+.tabbar a {
+  flex: 1; text-align: center; text-decoration: none;
+  font-size: .68rem; font-weight: 550; color: var(--ac-tenue);
+  padding: .35rem 0; line-height: 1.35; border-radius: 12px;
+  transition: color .15s ease, background .15s ease;
+}
+.tabbar a.attivo { color: var(--ac-blu); font-weight: 700; background: var(--ac-blu-chiaro); }
+.tabbar a span { display: block; font-size: 1.25rem; }
+@media (min-width: 992px) { .tabbar { display: none; } body { padding-bottom: 28px; } }
+
+/* ---------------------------------------------------------------- login --- */
+
+#schermata-login {
+  min-height: 100dvh;
+  background:
+    radial-gradient(1100px 620px at 12% -10%, rgba(59, 130, 246, .45), transparent 60%),
+    linear-gradient(160deg, #0b1220 0%, #14204a 55%, #1e3a8a 100%);
+}
+#schermata-login .card-ac { box-shadow: 0 24px 60px rgba(2, 6, 23, .42); border: none; }
+
+/* -------------------------------------------------------------- extra --- */
+
+.offline-badge { position: fixed; top: 10px; right: 10px; z-index: 1080; display: none; }
+body.offline .offline-badge { display: block; }
+
+#avviso-live { border-radius: var(--ac-r); border: none; box-shadow: var(--ac-ombra); }
+
+/* Chi preferisce meno movimento non deve subirlo. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+@media print { .tabbar, .btn, #ass-fab, #ass-pannello { display: none !important; } }
+
+/* =========================================================================
+ * TEMA SCURO
+ * Si attiva da solo seguendo l'impostazione del telefono o del computer.
+ * Serve davvero: gli allievi ripassano la sera a letto, e uno schermo bianco
+ * al buio stanca in pochi minuti.
+ * ====================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ac-fondo: #0b1220;
+    --ac-superficie: #131c2f;
+    --ac-testo: #e8eefb;
+    --ac-tenue: #94a3b8;
+    --ac-bordo: #243149;
+    --ac-blu: #4f83f1;
+    --ac-blu-scuro: #3b6fe0;
+    --ac-blu-chiaro: #1b2942;
+    --ac-ombra: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 30px rgba(0, 0, 0, .35);
+    --ac-ombra-alta: 0 2px 8px rgba(0, 0, 0, .55), 0 22px 46px rgba(0, 0, 0, .45);
+
+    --bs-body-bg: #0b1220;
+    --bs-body-color: #e8eefb;
+    --bs-secondary-color: #94a3b8;
+    --bs-border-color: #243149;
+    --bs-emphasis-color: #f8fafc;
+    --bs-heading-color: #e8eefb;
+    --bs-link-color: #7aa5f7;
+    --bs-link-hover-color: #a8c4fa;
+  }
+
+  .navbar { background: rgba(19, 28, 47, .88) !important; }
+  .tabbar { background: rgba(19, 28, 47, .94); }
+
+  .card, .modal-content, .dropdown-menu, .list-group-item, .accordion-item {
+    background-color: var(--ac-superficie);
+    color: var(--ac-testo);
+    border-color: var(--ac-bordo);
+  }
+  .dropdown-item { color: var(--ac-testo); }
+  .dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--ac-blu-chiaro); color: #fff;
+  }
+  .dropdown-divider { border-color: var(--ac-bordo); }
+
+  .form-control, .form-select {
+    background-color: #0f1829; color: var(--ac-testo); border-color: var(--ac-bordo);
+  }
+  .form-control:focus, .form-select:focus {
+    background-color: #0f1829; color: var(--ac-testo);
+    border-color: var(--ac-blu); box-shadow: 0 0 0 .2rem rgba(79, 131, 241, .25);
+  }
+  .form-control::placeholder { color: #64748b; }
+  .form-check-input { background-color: #0f1829; border-color: #33415c; }
+
+  .table { --bs-table-color: var(--ac-testo); --bs-table-bg: transparent;
+           --bs-table-border-color: var(--ac-bordo); }
+
+  .btn-light { background: #1c2942; border-color: #2a3a58; color: var(--ac-testo); }
+  .btn-light:hover { background: #24344f; border-color: #34456a; color: #fff; }
+  .btn-outline-secondary { color: #b6c3d9; border-color: #33415c; }
+  .btn-outline-primary { color: #8fb2f8; border-color: #33507f; }
+  .text-bg-light { background: #1c2942 !important; color: var(--ac-testo) !important; }
+
+  .cella-nav { background: #1b2942; color: #93a4bf; }
+  .cella-nav.risposta { background: #1e3566; color: #bcd0ff; }
+  .cella-nav.dubbio   { background: #4a3410; color: #fcd9a0; }
+  .cella-nav.giusta   { background: #10402f; color: #96e7c4; }
+  .cella-nav.errata   { background: #4c1d21; color: #f6b3b3; }
+
+  .pannello-tutor { background: #1d1733; }
+  .bolla-ai { background: #1b2942; color: var(--ac-testo); }
+  .barra-arg, .progress { background: #1b2942; }
+  .img-quiz { background: #fff; padding: 6px; }  /* i segnali restano leggibili */
+
+  .border-bottom, .border-top { border-color: var(--ac-bordo) !important; }
+}

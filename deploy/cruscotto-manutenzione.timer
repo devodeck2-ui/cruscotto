@@ -1,0 +1,10 @@
+[Unit]
+Description=Esegue la manutenzione di Autoscuola Cruscotto ogni minuto
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target

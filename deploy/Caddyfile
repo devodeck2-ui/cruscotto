@@ -1,0 +1,37 @@
+# Reverse proxy con TLS automatico.
+# Le variabili DOMINIO ed EMAIL arrivano dall'ambiente del contenitore.
+
+{$DOMINIO} {
+	encode zstd gzip
+
+	# Certificato Let's Encrypt: emesso e rinnovato automaticamente.
+	tls {$EMAIL}
+
+	# Le immagini del listato sono content-addressed (il nome e' l'hash del
+	# contenuto): non cambiano mai, quindi si possono cachare per sempre.
+	@media path /media/*
+	header @media Cache-Control "public, max-age=31536000, immutable"
+
+	# Il service worker NON va cachato: e' il file che governa
+	# l'aggiornamento di tutto il resto.
+	@sw path /sw.js
+	header @sw Cache-Control "no-cache"
+
+	# Le risposte delle API non devono mai finire in una cache condivisa:
+	# contengono dati personali degli allievi.
+	@api path /api/*
+	header @api Cache-Control "private, no-store"
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		X-Frame-Options           "DENY"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	reverse_proxy applicazione:8080 {
+		health_uri      /api/salute
+		health_interval 30s
+	}
+}

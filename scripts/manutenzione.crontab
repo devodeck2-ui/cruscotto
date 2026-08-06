@@ -1,0 +1,28 @@
+# =============================================================================
+# Autoscuola Cruscotto - pianificazione della manutenzione
+#
+# Installazione:
+#     crontab scripts/manutenzione.crontab
+#
+# Sostituire /opt/autoscuola-cruscotto con il percorso reale di installazione.
+# Tutti gli script scrivono una riga per evento su stdout: cron la inoltra via
+# mail all'utente, oppure la si dirotta su syslog come negli esempi.
+# =============================================================================
+
+PROGETTO=/opt/autoscuola-cruscotto
+PYTHON=/usr/bin/python3
+
+# Chiusura delle sessioni orfane: ogni minuto.
+# E' l'unico job ad alta frequenza; costa una UPDATE su indice parziale.
+* * * * * cd $PROGETTO/scripts && $PYTHON reaper_sessioni.py 2>&1 | logger -t cruscotto-reaper
+
+# Backup consistente ogni notte alle 03:15, con rotazione a 14 copie.
+15 3 * * * cd $PROGETTO/scripts && $PYTHON backup.py --comprimi --tieni 14 2>&1 | logger -t cruscotto-backup
+
+# Verifica settimanale della coerenza degli aggregati (lunedi' alle 04:00).
+# Non modifica nulla: segnala soltanto se rollup e ricalcolo divergono.
+0 4 * * 1 cd $PROGETTO/scripts && $PYTHON ricostruisci_aggregati.py --verifica 2>&1 | logger -t cruscotto-verifica
+
+# Pre-generazione notturna delle spiegazioni AI per le domande piu' critiche.
+# Domenica alle 02:00, quando nessuno sta usando la piattaforma.
+0 2 * * 0 cd $PROGETTO/scripts && $PYTHON pregenera_spiegazioni.py --listato B --quante 150 2>&1 | logger -t cruscotto-ai

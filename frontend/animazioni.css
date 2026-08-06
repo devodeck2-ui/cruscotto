@@ -1,0 +1,169 @@
+/* =============================================================================
+ * Animazioni e micro-interazioni.
+ *
+ * File separato di proposito: se un'animazione desse fastidio si toglie il
+ * collegamento a questo foglio e l'app torna esattamente com'era, senza
+ * rimettere mano al resto della grafica.
+ *
+ * Regola che ho seguito: il movimento deve dire qualcosa. Comparire dal basso
+ * significa "sto arrivando ora", l'onda sul pulsante conferma il tocco su
+ * schermi che non vibrano, il numero che sale fa notare che quel dato e'
+ * cambiato. Niente animazioni decorative che allungano l'attesa.
+ * ========================================================================== */
+
+/* ------------------------------------------- comparsa durante lo scorrimento */
+
+.rivela {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .55s cubic-bezier(.2, .7, .3, 1),
+              transform .55s cubic-bezier(.2, .7, .3, 1);
+  will-change: opacity, transform;
+}
+.rivela.visibile { opacity: 1; transform: none; }
+
+/* Le righe di una tabella entrano una dopo l'altra, non tutte insieme:
+   l'occhio segue l'elenco invece di subirlo. */
+.rivela-riga { opacity: 0; animation: entra-riga .45s ease forwards; }
+@keyframes entra-riga {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------- cambio schermata */
+
+.schermata.attiva { animation: schermata-entra .32s cubic-bezier(.2, .7, .3, 1); }
+@keyframes schermata-entra {
+  from { opacity: 0; transform: translateY(12px) scale(.995); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------------ pulsanti */
+
+/* Onda al tocco: su telefono sostituisce il ritorno tattile che manca. */
+.btn { position: relative; overflow: hidden; }
+.onda {
+  position: absolute; border-radius: 50%; transform: scale(0);
+  background: currentColor; opacity: .28; pointer-events: none;
+  animation: onda .55s ease-out forwards;
+}
+@keyframes onda { to { transform: scale(2.6); opacity: 0; } }
+
+.btn:active { transform: translateY(1px); }
+.btn-primary:hover { box-shadow: 0 6px 18px rgba(29, 78, 216, .28); }
+
+/* --------------------------------------------------------------------- quiz */
+
+/* Risposta giusta: un impulso verde breve. Sbagliata: una scossa, la stessa
+   che tutti riconoscono come "no". Durano poco perche' sotto timer ogni
+   decimo di secondo conta. */
+.esito-giusto { animation: impulso-ok .5s ease; }
+.esito-sbagliato { animation: scossa .38s ease; }
+@keyframes impulso-ok {
+  0%   { box-shadow: 0 0 0 0 rgba(5, 150, 105, .45); }
+  70%  { box-shadow: 0 0 0 14px rgba(5, 150, 105, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+}
+@keyframes scossa {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(2px); }
+}
+
+/* La cella della mappa si accende quando cambia stato. */
+.cella-nav { transition: background .25s ease, color .25s ease, transform .12s ease; }
+.cella-nav.appena { animation: pop .3s ease; }
+@keyframes pop { 50% { transform: scale(1.22); } }
+
+/* Barra di avanzamento fluida invece che a scatti. */
+#barra-avanzamento, .progress-bar { transition: width .45s cubic-bezier(.2, .7, .3, 1); }
+
+/* ------------------------------------------------------------------- numeri */
+
+.numero-anima { font-variant-numeric: tabular-nums; }
+
+/* -------------------------------------------------------------- assistente */
+
+#ass-fab { transition: transform .2s cubic-bezier(.2, .7, .3, 1), box-shadow .2s ease; }
+#ass-fab:hover { transform: scale(1.08) rotate(-6deg); }
+#ass-fab:active { transform: scale(.94); }
+#ass-pannello.aperto { animation: pannello-entra .26s cubic-bezier(.2, .7, .3, 1); }
+@keyframes pannello-entra {
+  from { opacity: 0; transform: translateY(14px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+#ass-corpo .msg { animation: bolla-entra .3s ease; }
+@keyframes bolla-entra {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------------- varie */
+
+html { scroll-behavior: smooth; }
+
+.card-ac { transition: box-shadow .22s ease, transform .22s cubic-bezier(.2, .7, .3, 1); }
+
+/* Le fasce orarie e le righe degli allievi rispondono al passaggio: si capisce
+   che si possono aprire senza doverlo scrivere da nessuna parte. */
+.fascia:hover { transform: translateX(3px); }
+.riga-allievo { transition: background .18s ease; }
+
+/* Caricamento: al posto del vuoto, un'ombra che scorre. */
+.scheletro {
+  background: linear-gradient(90deg, rgba(148, 163, 184, .12) 25%,
+              rgba(148, 163, 184, .22) 37%, rgba(148, 163, 184, .12) 63%);
+  background-size: 400% 100%;
+  animation: scorri 1.3s ease infinite;
+  border-radius: 10px; min-height: 14px;
+}
+@keyframes scorri { from { background-position: 100% 50%; } to { background-position: 0 50%; } }
+
+/* Chi ha chiesto meno movimento nelle impostazioni di accessibilita' non deve
+   subirlo comunque: qui si spegne tutto, comparse comprese. */
+@media (prefers-reduced-motion: reduce) {
+  .rivela { opacity: 1 !important; transform: none !important; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* =============================================================================
+ * Passaggio fra schermate: dissolvenza gestita dal browser.
+ * L'istantanea che esce e quella che entra si sovrappongono per un attimo,
+ * quindi non si vede mai un vuoto in mezzo.
+ * ========================================================================== */
+
+::view-transition-old(root) {
+  animation: vt-esce .26s cubic-bezier(.4, 0, .2, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-entra .34s cubic-bezier(.16, .84, .32, 1) both;
+}
+@keyframes vt-esce {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(-10px) scale(.994); }
+}
+@keyframes vt-entra {
+  from { opacity: 0; transform: translateY(16px) scale(.994); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Con le View Transitions attive la vecchia animazione sarebbe di troppo:
+   si sommerebbe alla dissolvenza e il movimento risulterebbe doppio. */
+.usa-vt .schermata.attiva { animation: none; }
+
+/* La barra in alto resta ferma mentre il contenuto scorre: e' il punto di
+   riferimento fisso che rende il passaggio leggibile invece che confuso. */
+.navbar { view-transition-name: barra-alta; }
+::view-transition-old(barra-alta),
+::view-transition-new(barra-alta) { animation: none; mix-blend-mode: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}
