@@ -4,6 +4,26 @@ Piattaforma SaaS didattica per autoscuole italiane: quiz ministeriali, videocors
 
 **27.737 domande ministeriali** su 9 listati (B, AM, Superiori, CQC, CAP, Revisioni), 637 immagini, 8.080 domande illustrate.
 
+## Primo avvio dopo un clone da GitHub
+
+Il repository **non** contiene il database di lavoro (`data/autoscuola.db`): dentro
+ci sono utenti reali e token di sessione. Al suo posto trovi
+`data/autoscuola.demo.db`, con tutte le 27.737 domande, le immagini e i sei
+account dimostrativi, ma senza dati personali.
+
+```bash
+# Windows (PowerShell)
+copy data\autoscuola.demo.db data\autoscuola.db
+
+# macOS / Linux
+cp data/autoscuola.demo.db data/autoscuola.db
+
+cp .env.example .env      # poi inserisci la tua ANTHROPIC_API_KEY
+```
+
+Poi si procede con l'avvio normale qui sotto. L'ambiente virtuale `.venv/` non e'
+nel repository: l'avviatore lo ricrea da solo al primo lancio.
+
 ## Avvio
 
 ### Windows
