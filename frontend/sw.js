@@ -7,9 +7,9 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v106';
+const VERSIONE = 'cruscotto-v107';
 const SHELL = ['/', '/app/index.html', '/app/app.js', '/app/styles.css',
-               '/manifest.webmanifest', '/app/assets/icon.svg'];
+               '/manifest.webmanifest', '/app/assets/icon-192.png?v=2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSIONE)
