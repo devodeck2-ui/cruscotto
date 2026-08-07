@@ -99,7 +99,11 @@
 @keyframes strada-scorre { to { background-position: -32px 0; } }
 
 /* Logo della barra di navigazione: piccola vita al passaggio del mouse. */
-.logo-navbar { transition: transform .22s cubic-bezier(.2, .7, .3, 1); }
+.logo-navbar {
+  border-radius: 7px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  transition: transform .22s cubic-bezier(.2, .7, .3, 1);
+}
 .logo-navbar:hover { transform: scale(1.12) rotate(-4deg); }
 
 /* La schermata di login entra con un assestamento morbido invece del

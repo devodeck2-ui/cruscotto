@@ -107,19 +107,21 @@ h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
 /* --------------------------------------------------------------- navbar --- */
 
 .navbar {
-  background: rgba(255, 255, 255, .86) !important;
+  background: linear-gradient(100deg, var(--ac-primario), var(--ac-primario-scuro)) !important;
   backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid var(--ac-bordo) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, .12) !important;
 }
-.navbar-brand { letter-spacing: -.02em; }
+.navbar-brand { letter-spacing: -.02em; color: #fff !important; }
 #nav-desktop .btn {
   border-radius: 999px;
   font-weight: 550;
-  color: var(--ac-tenue);
-  background: transparent;
+  color: rgba(255, 255, 255, .85);
+  background: rgba(255, 255, 255, .1);
   padding: .38rem .9rem;
 }
-#nav-desktop .btn:hover { background: var(--ac-primario-chiaro); color: var(--ac-primario); }
+#nav-desktop .btn:hover { background: #fff; color: var(--ac-primario); }
+#btn-utente { background: rgba(255, 255, 255, .92); }
+#badge-listato { background: rgba(255, 255, 255, .92) !important; border-color: transparent !important; }
 
 /* --------------------------------------------------------------- bottoni --- */
 
@@ -392,7 +394,8 @@ body.offline .offline-badge { display: block; }
     --bs-link-hover-color: #f8b3aa;
   }
 
-  .navbar { background: rgba(19, 28, 47, .88) !important; }
+  /* La barra resta rossa anche in tema scuro: e' il marchio, non un
+     pannello che deve adattarsi al tema come gli altri. */
   .tabbar { background: rgba(19, 28, 47, .94); }
 
   .card, .modal-content, .dropdown-menu, .list-group-item, .accordion-item {
