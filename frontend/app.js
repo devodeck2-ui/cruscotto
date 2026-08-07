@@ -194,10 +194,14 @@ function avviso(msg, tipo = 'danger') {
 /* -------------------------------- HOME ----------------------------------- */
 async function mostraHome() {
   mostra('home');
-  const [st, storico, ripasso, listati] = await Promise.all([
+  const [st, storico, ripasso, miePatenti] = await Promise.all([
     get('/api/statistiche/riepilogo'), get('/api/quiz/storico?limite=8'),
-    get('/api/quiz/da-ripassare'), get('/api/catalogo/listati'),
+    get('/api/quiz/da-ripassare'), get('/api/mie-patenti'),
   ]);
+  // Chi non ha ancora nessuna patente assegnata (caso raro: account staff,
+  // o allievo appena creato) vede comunque tutto il catalogo, cosi' la
+  // schermata non resta vuota.
+  const listati = miePatenti.listati.length ? miePatenti.listati : await get('/api/catalogo/listati');
 
   $('#saluto').textContent = 'Ciao ' + (S.utente.nome || '');
   const p = st.profilo || {};
@@ -223,9 +227,14 @@ async function mostraHome() {
 
   avvisoLive();
 
-  const l = listati.find(x => x.codice === (S.utente.listato_target || 'B'));
+  // La pillola in alto mostra tutte le patenti dell'allievo, non solo quella
+  // principale: chi prepara sia l'AM che la B deve vederle entrambe a colpo
+  // d'occhio, non scoprire le altre solo aprendo l'esercitazione.
+  $('#badge-listato').textContent = listati.map(x => x.codice).join(' · ');
+  $('#badge-listato').title = listati.length > 1
+    ? 'Le tue patenti: ' + listati.map(x => x.nome).join(', ') : (listati[0]?.nome || '');
+  const l = listati.find(x => x.codice === (S.utente.listato_target || 'B')) || listati[0];
   if (l) {
-    $('#badge-listato').textContent = l.codice;
     $('#descr-simulazione').textContent =
       `${l.domande_esame} domande in ${l.minuti_esame} minuti, massimo ${l.errori_max} errori.`;
   }
@@ -272,7 +281,10 @@ async function mostraEsercitazione() {
   mostra('esercitazione');
   const sel = $('#sel-listato');
   if (!sel.options.length) {
-    const listati = await get('/api/catalogo/listati');
+    const [tutti, mie] = await Promise.all([get('/api/catalogo/listati'), get('/api/mie-patenti')]);
+    // Solo le patenti dell'allievo, non tutto il catalogo: chi prepara la B
+    // non deve scorrere anche CQC e CAP per trovare la sua.
+    const listati = mie.codici.length ? tutti.filter(l => mie.codici.includes(l.codice)) : tutti;
     sel.innerHTML = listati.map(l =>
       `<option value="${l.codice}">${esc(l.nome)} (${l.n_domande})</option>`).join('');
     sel.value = S.utente.listato_target || 'B';
