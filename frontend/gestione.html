@@ -62,8 +62,6 @@
     margin-left: .35rem;
   }
 
-  .navbar { background:var(--ac-superficie, #fff) !important;
-            border-bottom:1px solid var(--ac-bordo, #e6ebf3) !important; }
   .nav-pills .nav-link { color:var(--ac-tenue, #64748b); border-radius:999px; font-weight:600; }
   .nav-pills .nav-link.active { background:var(--ac-primario, #e0261b); color:#fff; }
   .table { --bs-table-color:var(--ac-testo, #0f172a); --bs-table-bg:transparent;
@@ -75,15 +73,15 @@
 </head>
 <body>
 
-<nav class="navbar bg-white border-bottom sticky-top">
+<nav class="navbar border-bottom sticky-top">
   <div class="container-xl">
     <span class="navbar-brand fw-semibold d-flex align-items-center gap-2">
-      <img src="/app/assets/icon-192.png?v=2" width="26" height="26" alt="">
+      <img class="logo-navbar" src="/app/assets/icon-192.png?v=2" width="26" height="26" alt="">
       Gestione autoscuola
     </span>
     <div class="d-flex gap-2 align-items-center">
-      <span class="text-muted small" id="chi"></span>
-      <a class="btn btn-sm btn-outline-secondary" href="/">Torna ai quiz</a>
+      <span class="small" id="chi" style="color:rgba(255,255,255,.85)"></span>
+      <a class="btn btn-sm" href="/" style="background:rgba(255,255,255,.92);color:var(--ac-primario, #e0261b)">Torna ai quiz</a>
     </div>
   </div>
 </nav>
@@ -204,10 +202,12 @@
     </div>
     <div class="card-ac p-3 mb-3">
       <h3 class="h6 text-uppercase text-muted">Confronto fra le fasce orarie</h3>
+      <canvas id="gr-fasce" height="110" class="mb-3"></canvas>
       <div class="table-responsive"><table class="table table-sm align-middle" id="tab-analisi"></table></div>
     </div>
     <div class="card-ac p-3">
       <h3 class="h6 text-uppercase text-muted">Mattina, pomeriggio, sera</h3>
+      <canvas id="gr-parti" height="90" class="mb-3"></canvas>
       <div class="table-responsive"><table class="table table-sm align-middle" id="tab-parti"></table></div>
     </div>
   </section>
@@ -276,7 +276,8 @@
 </div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/app/gestione.js"></script>
-<script src="/app/animazioni.js?v=2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="/app/gestione.js?v=2"></script>
+<script src="/app/animazioni.js?v=3"></script>
 </body>
 </html>

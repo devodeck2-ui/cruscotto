@@ -13,7 +13,14 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const GIORNI = ['lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato', 'domenica'];
-const S = { utente: null, listati: [], slot: null, lezione: null, allievo: null };
+const S = { utente: null, listati: [], slot: null, lezione: null, allievo: null, grafici: {} };
+
+function disegna(id, cfg) {
+  const el = $('#' + id);
+  if (!el) return;
+  S.grafici[id]?.destroy();
+  S.grafici[id] = new Chart(el, cfg);
+}
 
 /* --------------------------------- API ----------------------------------- */
 async function api(percorso, opzioni = {}, riprova = true) {
@@ -531,6 +538,19 @@ async function caricaAnalisi() {
                                                 : '<span class="badge text-bg-warning">indicativo</span>'}</td>
       </tr>`).join('')}</tbody>`;
 
+  disegna('gr-fasce', {
+    type: 'bar',
+    data: {
+      labels: d.slot.map(s => `${s.nome_giorno.slice(0, 3)} ${s.fascia}`),
+      datasets: [
+        { label: '% errore', data: d.slot.map(s => s.prestazioni.tasso_errore_pct), backgroundColor: '#dc3545' },
+        { label: '% simulazioni superate', data: d.slot.map(s => s.prestazioni.percentuale_superate), backgroundColor: '#198754' },
+      ],
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } },
+      plugins: { legend: { position: 'bottom' } } },
+  });
+
   $('#tab-parti').innerHTML = `
     <thead><tr><th>Parte della giornata</th><th class="text-end">Lezioni</th>
       <th class="text-end">Presenze</th><th class="text-end">Media presenti</th>
@@ -545,6 +565,21 @@ async function caricaAnalisi() {
         <td class="text-end small">${p.prestazioni.tasso_errore_pct ?? '-'}%</td>
         <td class="text-end small">${p.prestazioni.ore_studio_medie}</td>
       </tr>`).join('')}</tbody>`;
+
+  disegna('gr-parti', {
+    type: 'bar',
+    data: {
+      labels: d.per_parte_giornata.map(p => p.parte.charAt(0).toUpperCase() + p.parte.slice(1)),
+      datasets: [
+        { label: '% errore', data: d.per_parte_giornata.map(p => p.prestazioni.tasso_errore_pct), backgroundColor: '#dc3545' },
+        { label: 'Media presenti', data: d.per_parte_giornata.map(p => p.media_presenti), backgroundColor: '#e0261b', yAxisID: 'y1' },
+      ],
+    },
+    options: { responsive: true, scales: {
+      y: { beginAtZero: true, max: 100, title: { display: true, text: '% errore' } },
+      y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: 'Media presenti' } },
+    }, plugins: { legend: { position: 'bottom' } } },
+  });
 }
 
 /* --------------------------------- Avvio --------------------------------- */

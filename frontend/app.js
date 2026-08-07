@@ -1066,31 +1066,38 @@ addEventListener('offline', () => document.body.classList.add('offline'));
   $('#btn-utente').textContent = S.utente.nome || 'Utente';
   $('#voce-tenant').textContent = S.utente.ragione_sociale || '';
   if (['admin', 'istruttore', 'superadmin'].includes(S.utente.ruolo)) {
-    $('#link-admin').classList.remove('d-none');
-    $('#tab-admin').classList.remove('d-none');
     // L'amministratore e' l'insegnante, non un allievo: le voci pensate per
     // chi studia (esercitazioni, statistiche personali) vengono nascoste.
     $$('#nav-desktop a[href="#/esercitazione"], #nav-desktop a[href="#/statistiche"],'
       + '.tabbar a[href="#/esercitazione"], .tabbar a[href="#/statistiche"],'
       + '.dropdown-menu a[href="#/statistiche"]')
       .forEach(a => a.classList.add('d-none'));
-    // "Home" per l'insegnante significa la panoramica dell'autoscuola.
+    // "Home" per l'insegnante diventa la panoramica dell'autoscuola (KPI,
+    // allievi, argomenti critici): prima "Panoramica" restava sulla
+    // schermata pensata per chi studia, e un secondo pulsante "Dashboard"
+    // a parte portava dove serviva davvero - due voci per lo stesso posto,
+    // una delle quali sbagliata. Ora c'e' una sola voce, corretta.
     $$('#nav-desktop a[href="#/home"], .tabbar a[href="#/home"]').forEach(a => {
+      a.setAttribute('href', '#/admin');
       if (a.querySelector('span')) a.lastChild.textContent = 'Panoramica';
       else a.textContent = 'Panoramica';
     });
-    const vg = document.createElement('a');
-    vg.className = 'btn btn-sm btn-light'; vg.href = '/app/gestione.html';
-    vg.textContent = 'Gestione';
     // Per l'insegnante "Videocorsi" vuol dire gestirli, non guardarli:
     // il link porta dritto alla sezione di caricamento e delle dirette.
     $$('#nav-desktop a[href="#/video"], .tabbar a[href="#/video"]')
       .forEach(a => a.setAttribute('href', '/app/gestione.html#video'));
-    $('#nav-desktop').appendChild(vg);
-    const tg = document.createElement('a');
-    tg.href = '/app/gestione.html';
-    tg.innerHTML = '<span>&#9776;</span>Gestione';
-    document.querySelector('.tabbar').appendChild(tg);
+    // Il vecchio pulsante "Dashboard" (nav desktop) e la voce "Gestione"
+    // della tabbar mobile diventano l'unico link alla vera gestione
+    // (orario, presenze, allievi, video, analisi) - non se ne crea uno
+    // nuovo apposta, cosi' non restano doppioni nascosti nella pagina.
+    const linkAdmin = $('#link-admin');
+    linkAdmin.setAttribute('href', '/app/gestione.html');
+    linkAdmin.textContent = 'Gestione';
+    linkAdmin.classList.remove('d-none');
+    const tabAdmin = $('#tab-admin');
+    tabAdmin.setAttribute('href', '/app/gestione.html');
+    tabAdmin.innerHTML = '<span>&#9881;</span>Gestione';
+    tabAdmin.classList.remove('d-none');
     if (!location.hash) location.hash = '#/admin';
   }
   avviaTracking();
