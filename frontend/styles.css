@@ -120,8 +120,24 @@ h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
   padding: .38rem .9rem;
 }
 #nav-desktop .btn:hover { background: #fff; color: var(--ac-primario); }
-#btn-utente { background: rgba(255, 255, 255, .92); }
-#badge-listato { background: rgba(255, 255, 255, .92) !important; border-color: transparent !important; }
+/* Pillola "Utente" e badge del listato: restano chiare sempre, anche col
+   tema scuro del telefono, perche' stanno sopra la barra rossa e non sopra
+   lo sfondo della pagina - qui il colore del testo va fissato esplicitamente
+   invece di ereditare quello (chiaro) pensato per il tema scuro. */
+#btn-utente {
+  background: rgba(255, 255, 255, .92) !important;
+  border-color: transparent !important;
+  color: var(--ac-primario) !important;
+}
+#btn-utente:hover, #btn-utente:focus {
+  background: #fff !important;
+  color: var(--ac-primario-scuro) !important;
+}
+#badge-listato {
+  background: rgba(255, 255, 255, .92) !important;
+  border-color: transparent !important;
+  color: var(--ac-primario) !important;
+}
 
 /* --------------------------------------------------------------- bottoni --- */
 
