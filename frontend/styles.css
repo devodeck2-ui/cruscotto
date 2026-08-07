@@ -39,6 +39,15 @@
   --bs-primary: #e0261b;
   --bs-primary-rgb: 224, 38, 27;
   --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --bs-link-color: #e0261b;
+  --bs-link-hover-color: #ac1811;
+  --bs-link-color-rgb: 224, 38, 27;
+  --bs-link-hover-color-rgb: 172, 24, 17;
+
+  /* Font "da segnaletica": tutto maiuscolo, condensato, per il nome
+     dell'autoscuola nella sua scheda - un richiamo diretto ai cartelli
+     stradali senza dover disegnare un logo testuale a parte. */
+  --ac-font-segnale: 'Bebas Neue', system-ui, sans-serif;
 }
 
 /* ---------------------------------------------------------------- base --- */
@@ -193,6 +202,71 @@ h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
 .cella-nav.giusta   { background: #d1fae5; color: #065f46; }
 .cella-nav.errata   { background: #fee2e2; color: #991b1b; }
 .cella-nav.corrente { border-color: var(--ac-primario); }
+
+/* ------------------------------------------------------- scheda autoscuola */
+
+/* La scheda con indirizzo, contatti e orari: prima usava lo stesso grigio
+   anonimo di ogni altra card e i link blu di default di Bootstrap, senza
+   nessun legame con il marchio. Qui si vede che e' proprio la sua scuola:
+   striscia stradale in cima, nome in stile segnaletica, icone abbinate
+   al rosso del centauro. */
+#scheda-scuola {
+  overflow: hidden;
+  position: relative;
+  padding-top: calc(1.5rem + 4px) !important;
+}
+#scheda-scuola::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background-image: repeating-linear-gradient(90deg,
+    var(--ac-primario) 0 22px, #fff 22px 30px);
+  background-size: 30px 100%;
+  animation: fascia-scorre 6s linear infinite;
+}
+@keyframes fascia-scorre { to { background-position: -30px 0; } }
+
+#scheda-scuola .ss-etichetta {
+  letter-spacing: .08em;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--ac-primario);
+}
+#scheda-scuola .ss-nome {
+  font-family: var(--ac-font-segnale);
+  font-size: 2.1rem;
+  line-height: 1;
+  letter-spacing: .02em;
+  color: var(--ac-primario);
+  text-transform: uppercase;
+}
+#scheda-scuola .ss-voce {
+  display: flex;
+  gap: .55rem;
+  align-items: flex-start;
+}
+#scheda-scuola .ss-voce svg {
+  flex: none;
+  color: var(--ac-primario);
+  margin-top: .15rem;
+}
+#scheda-scuola .ss-voce-titolo {
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--ac-tenue);
+  margin-bottom: .15rem;
+}
+#scheda-scuola .row > div + div {
+  border-left: 1px solid var(--ac-bordo);
+}
+@media (max-width: 767px) {
+  #scheda-scuola .row > div + div { border-left: none; border-top: 1px solid var(--ac-bordo); padding-top: .85rem; }
+  #scheda-scuola .ss-nome { font-size: 1.7rem; }
+}
+#scheda-scuola a { font-weight: 600; }
 
 /* ------------------------------------------------------------- AI tutor --- */
 

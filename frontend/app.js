@@ -761,32 +761,52 @@ async function schedaScuola(contenitore = '#schermata-home') {
   const el = document.createElement('div');
   el.id = 'scheda-scuola';
   el.className = 'card-ac p-4 mt-4';
+  const iconaPin = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+  const iconaTelefono = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 '
+    + '19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+  const iconaOrologio = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    + '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+
   el.innerHTML = `
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
       <div>
-        <h3 class="h6 text-uppercase text-muted mb-1">La tua autoscuola</h3>
-        <div class="h5 mb-1">${esc(s.ragione_sociale || '')}</div>
+        <h3 class="ss-etichetta mb-1">La tua autoscuola</h3>
+        <div class="ss-nome mb-1">${esc(s.ragione_sociale || '')}</div>
       </div>
       ${isStaff() ? '<button class="btn btn-sm btn-outline-secondary" id="btn-modifica-scuola">'
                     + 'Modifica scheda</button>' : ''}
     </div>
-    <p class="mb-3">${esc(s.descrizione || '')}</p>
+    <p class="mb-3 mt-2">${esc(s.descrizione || '')}</p>
     <div class="row g-3 small">
-      <div class="col-md-4">
-        <div class="text-muted text-uppercase" style="font-size:.7rem">Dove siamo</div>
-        <div>${esc(s.indirizzo || '')}</div>
-        <div>${esc(s.citta || '')}</div>
-        <a href="${esc(mappa)}" target="_blank" rel="noopener">Apri la mappa</a>
+      <div class="col-md-4 ss-voce">
+        ${iconaPin}
+        <div>
+          <div class="ss-voce-titolo">Dove siamo</div>
+          <div>${esc(s.indirizzo || '')}</div>
+          <div>${esc(s.citta || '')}</div>
+          <a href="${esc(mappa)}" target="_blank" rel="noopener">Apri la mappa</a>
+        </div>
       </div>
-      <div class="col-md-4">
-        <div class="text-muted text-uppercase" style="font-size:.7rem">Contatti</div>
-        ${s.telefono ? `<div><a href="tel:${esc(s.telefono.replace(/\s/g, ''))}">${esc(s.telefono)}</a></div>` : ''}
-        ${s.email ? `<div><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></div>` : ''}
-        ${s.sito ? `<div><a href="${esc(s.sito)}" target="_blank" rel="noopener">Sito internet</a></div>` : ''}
+      <div class="col-md-4 ss-voce">
+        ${iconaTelefono}
+        <div>
+          <div class="ss-voce-titolo">Contatti</div>
+          ${s.telefono ? `<div><a href="tel:${esc(s.telefono.replace(/\s/g, ''))}">${esc(s.telefono)}</a></div>` : ''}
+          ${s.email ? `<div><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></div>` : ''}
+          ${s.sito ? `<div><a href="${esc(s.sito)}" target="_blank" rel="noopener">Sito internet</a></div>` : ''}
+        </div>
       </div>
-      <div class="col-md-4">
-        <div class="text-muted text-uppercase" style="font-size:.7rem">Orari di segreteria</div>
-        <div>${esc(s.orari || '')}</div>
+      <div class="col-md-4 ss-voce">
+        ${iconaOrologio}
+        <div>
+          <div class="ss-voce-titolo">Orari di segreteria</div>
+          <div>${esc(s.orari || '')}</div>
+        </div>
       </div>
     </div>`;
   ($(contenitore) || $('#schermata-home')).appendChild(el);

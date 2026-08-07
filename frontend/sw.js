@@ -7,7 +7,7 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v108';
+const VERSIONE = 'cruscotto-v109';
 const SHELL = ['/', '/app/index.html', '/app/app.js', '/app/styles.css',
                '/manifest.webmanifest', '/app/assets/icon-192.png?v=2'];
 
