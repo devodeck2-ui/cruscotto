@@ -1085,17 +1085,19 @@ addEventListener('offline', () => document.body.classList.add('offline'));
     // Per l'insegnante "Videocorsi" vuol dire gestirli, non guardarli:
     // il link porta dritto alla sezione di caricamento e delle dirette.
     $$('#nav-desktop a[href="#/video"], .tabbar a[href="#/video"]')
-      .forEach(a => a.setAttribute('href', '/app/gestione.html#video'));
+      .forEach(a => a.setAttribute('href', '/app/gestione.html?v=2#video'));
     // Il vecchio pulsante "Dashboard" (nav desktop) e la voce "Gestione"
     // della tabbar mobile diventano l'unico link alla vera gestione
     // (orario, presenze, allievi, video, analisi) - non se ne crea uno
     // nuovo apposta, cosi' non restano doppioni nascosti nella pagina.
+    // Il ?v= forza il browser a scaricare la pagina aggiornata invece di
+    // tenersi quella vecchia salvata in cache (stesso problema del logo).
     const linkAdmin = $('#link-admin');
-    linkAdmin.setAttribute('href', '/app/gestione.html');
+    linkAdmin.setAttribute('href', '/app/gestione.html?v=2');
     linkAdmin.textContent = 'Gestione';
     linkAdmin.classList.remove('d-none');
     const tabAdmin = $('#tab-admin');
-    tabAdmin.setAttribute('href', '/app/gestione.html');
+    tabAdmin.setAttribute('href', '/app/gestione.html?v=2');
     tabAdmin.innerHTML = '<span>&#9881;</span>Gestione';
     tabAdmin.classList.remove('d-none');
     if (!location.hash) location.hash = '#/admin';
