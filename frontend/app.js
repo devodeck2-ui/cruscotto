@@ -693,12 +693,12 @@ async function mostraAdmin() {
       <div class="text-muted small">${k}</div><div class="h3 mb-0">${v}</div></div></div>`).join('');
 
   $('#tabella-allievi').innerHTML = `
-    <thead><tr><th>Allievo</th><th class="text-end">Prontezza</th><th class="text-end d-none d-md-table-cell">Ore</th>
+    <thead><tr><th>Allievo</th><th class="text-end">Pronto?</th><th class="text-end d-none d-md-table-cell">Ore</th>
     <th class="text-end">Errore</th><th></th></tr></thead>
     <tbody>${allievi.map(a => `<tr>
       <td><div class="small fw-semibold">${esc(a.nominativo)}</div>
           <div class="text-muted" style="font-size:.72rem">${esc(a.email)} - ${esc(a.listato_target)}</div></td>
-      <td class="text-end"><span class="badge ${a.prontezza.punteggio >= 75 ? 'text-bg-success' : a.prontezza.punteggio >= 50 ? 'text-bg-warning' : 'text-bg-danger'}">${a.prontezza.punteggio}</span></td>
+      <td class="text-end"><span class="badge ${a.prontezza.punteggio >= 75 ? 'text-bg-success' : a.prontezza.punteggio >= 50 ? 'text-bg-warning' : 'text-bg-danger'}">${a.prontezza.punteggio}%</span></td>
       <td class="text-end small d-none d-md-table-cell">${a.ore}</td>
       <td class="text-end small">${a.tasso_errore_pct ?? '-'}%</td>
       <td class="text-end"><button class="btn btn-sm btn-light" onclick="dettaglioAllievo(${a.utente_id})">Apri</button></td>
@@ -730,8 +730,8 @@ window.dettaglioAllievo = async function (id) {
         <div><h3 class="h5 mb-0">${esc(d.profilo.nominativo)}</h3>
           <p class="text-muted small mb-0">${esc(d.profilo.email)} - listato ${esc(d.profilo.listato_target)}
           ${d.profilo.data_esame ? '- esame il ' + d.profilo.data_esame : ''}</p></div>
-        <div class="text-end"><div class="h3 mb-0">${d.prontezza.punteggio}</div>
-          <div class="small text-muted">prontezza</div></div>
+        <div class="text-end"><div class="h3 mb-0">${d.prontezza.punteggio}%</div>
+          <div class="small text-muted">pronto per l'esame</div></div>
       </div>
       <hr>
       <div class="row g-3">
