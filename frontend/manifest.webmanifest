@@ -1,7 +1,7 @@
 {
-  "name": "Autoscuola Cruscotto",
-  "short_name": "Cruscotto",
-  "description": "Quiz ministeriali, videocorsi e tutor AI per la patente",
+  "name": "Autoscuola La Centauro",
+  "short_name": "La Centauro",
+  "description": "Quiz ministeriali, videocorsi e tutor AI per la patente - Autoscuola La Centauro",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -25,9 +25,9 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/app/assets/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/app/assets/icon-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
       "purpose": "any"
     }
   ],

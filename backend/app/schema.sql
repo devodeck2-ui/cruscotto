@@ -47,8 +47,14 @@ CREATE TABLE IF NOT EXISTS utenti (
     cognome        TEXT    NOT NULL,
     telefono       TEXT,
     codice_fiscale TEXT,
+    indirizzo      TEXT,                              -- vedi routers/gestione.py (anagrafica allievo)
     listato_target TEXT    NOT NULL DEFAULT 'B',     -- listato che l'allievo sta preparando
+    listati_extra  TEXT,                              -- altre patenti dell'allievo, separate da virgola (vedi routers/patenti.py)
     data_esame     TEXT,                             -- per il countdown e la priorita' SRS
+    ore_acquistate INTEGER NOT NULL DEFAULT 0,       -- pacchetto guide/ore concordato col cliente
+    importo_pagato REAL,                              -- quanto ha versato finora per il pacchetto
+    note_admin     TEXT,                              -- annotazioni libere della segreteria
+    data_iscrizione TEXT,                             -- data di iscrizione in sede (AAAA-MM-GG)
     attivo         INTEGER NOT NULL DEFAULT 1 CHECK (attivo IN (0,1)),
     ultimo_accesso TEXT,
     preferenze     TEXT    NOT NULL DEFAULT '{}' CHECK (json_valid(preferenze)),
@@ -70,6 +76,58 @@ CREATE TABLE IF NOT EXISTS refresh_token (
     created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 CREATE INDEX IF NOT EXISTS ix_refresh_utente ON refresh_token(utente_id, revocato);
+
+-- -----------------------------------------------------------------------------
+-- 1bis. AULA / CLASSI VIRTUALI (orario, lezioni concrete, presenze)
+-- Vedi routers/gestione.py. La frequenza e' libera: la presenza non e' legata
+-- a un'iscrizione fissa a un corso, ma alla singola lezione.
+-- -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS aula_slot (
+    id             INTEGER PRIMARY KEY,
+    autoscuola_id  INTEGER NOT NULL REFERENCES autoscuole(id) ON DELETE CASCADE,
+    giorno         INTEGER NOT NULL CHECK (giorno BETWEEN 0 AND 6),   -- 0=lunedi ... 6=domenica
+    ora_inizio     TEXT    NOT NULL,
+    ora_fine       TEXT    NOT NULL,
+    listato        TEXT    NOT NULL DEFAULT 'B',
+    aula           TEXT,
+    docente        TEXT,
+    note           TEXT,
+    attivo         INTEGER NOT NULL DEFAULT 1 CHECK (attivo IN (0,1)),
+    created_at     TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE INDEX IF NOT EXISTS ix_aula_slot_scuola ON aula_slot(autoscuola_id, attivo, giorno);
+
+CREATE TABLE IF NOT EXISTS aula_lezione (
+    id             INTEGER PRIMARY KEY,
+    autoscuola_id  INTEGER NOT NULL REFERENCES autoscuole(id) ON DELETE CASCADE,
+    slot_id        INTEGER          REFERENCES aula_slot(id)  ON DELETE SET NULL,
+    data           TEXT    NOT NULL,                  -- AAAA-MM-GG
+    ora_inizio     TEXT    NOT NULL,
+    ora_fine       TEXT    NOT NULL,
+    listato        TEXT    NOT NULL DEFAULT 'B',
+    argomento      TEXT,
+    docente        TEXT,
+    aula           TEXT,
+    note           TEXT,
+    stato          TEXT    NOT NULL DEFAULT 'programmata'
+                   CHECK (stato IN ('programmata','svolta','annullata')),
+    UNIQUE (autoscuola_id, data, ora_inizio, listato)
+);
+CREATE INDEX IF NOT EXISTS ix_aula_lezione_scuola ON aula_lezione(autoscuola_id, data);
+CREATE INDEX IF NOT EXISTS ix_aula_lezione_slot   ON aula_lezione(slot_id);
+
+CREATE TABLE IF NOT EXISTS aula_presenza (
+    id             INTEGER PRIMARY KEY,
+    lezione_id     INTEGER NOT NULL REFERENCES aula_lezione(id) ON DELETE CASCADE,
+    utente_id      INTEGER NOT NULL REFERENCES utenti(id)       ON DELETE CASCADE,
+    stato          TEXT    NOT NULL DEFAULT 'presente'
+                   CHECK (stato IN ('presente','assente','giustificato')),
+    registrato_il  TEXT    NOT NULL,
+    registrato_da  INTEGER REFERENCES utenti(id) ON DELETE SET NULL,
+    UNIQUE (lezione_id, utente_id)
+);
+CREATE INDEX IF NOT EXISTS ix_aula_presenza_utente ON aula_presenza(utente_id, stato);
 
 -- -----------------------------------------------------------------------------
 -- 2. CATALOGO MINISTERIALE (read-mostly, condiviso fra tutti i tenant)
