@@ -50,7 +50,74 @@
 @keyframes onda { to { transform: scale(2.6); opacity: 0; } }
 
 .btn:active { transform: translateY(1px); }
-.btn-primary:hover { box-shadow: 0 6px 18px rgba(29, 78, 216, .28); }
+.btn-primary:hover { box-shadow: 0 6px 18px rgba(224, 38, 27, .32); }
+
+/* Riflesso che attraversa il pulsante principale al passaggio del mouse:
+   un tocco di lucido che richiama la carrozzeria, non solo un cambio colore. */
+.btn-primary {
+  background-image: linear-gradient(115deg, transparent 0%, transparent 40%,
+                     rgba(255, 255, 255, .22) 50%, transparent 60%, transparent 100%);
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  transition: background-position .5s ease, background-color .18s ease, border-color .18s ease;
+}
+.btn-primary:hover { background-position: -20% 0; }
+
+/* ---------------------------------------------------------------- logo --- */
+
+/* Il centauro del login ha un alone che respira dietro di se': un tocco
+   di vita sulla prima schermata che l'allievo vede, senza distrarre
+   dal modulo sotto. */
+.logo-alone { position: relative; display: inline-block; }
+.logo-alone::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(228, 45, 34, .55), transparent 72%);
+  animation: alone-respira 2.8s ease-in-out infinite;
+  z-index: -1;
+}
+.logo-alone img { position: relative; filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .35)); }
+@keyframes alone-respira {
+  0%, 100% { transform: scale(.9); opacity: .5; }
+  50%      { transform: scale(1.15); opacity: .95; }
+}
+
+/* Striscia tratteggiata che scorre sotto al titolo: richiama la strada,
+   coerente col mondo dell'autoscuola, senza bisogno di spiegarla. */
+.strada-anima {
+  height: 4px;
+  width: 88px;
+  margin: 16px auto 0;
+  border-radius: 999px;
+  background-image: repeating-linear-gradient(90deg, #fff 0 10px, transparent 10px 22px);
+  background-size: 32px 100%;
+  opacity: .8;
+  animation: strada-scorre 1.1s linear infinite;
+}
+@keyframes strada-scorre { to { background-position: -32px 0; } }
+
+/* Logo della barra di navigazione: piccola vita al passaggio del mouse. */
+.logo-navbar { transition: transform .22s cubic-bezier(.2, .7, .3, 1); }
+.logo-navbar:hover { transform: scale(1.12) rotate(-4deg); }
+
+/* La schermata di login entra con un assestamento morbido invece del
+   semplice dissolvimento generico delle altre schermate. */
+#schermata-login .card-ac {
+  animation: login-card-entra .6s cubic-bezier(.16, .84, .32, 1) .08s both;
+}
+@keyframes login-card-entra {
+  from { opacity: 0; transform: translateY(22px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+#schermata-login .text-center {
+  animation: login-testo-entra .55s cubic-bezier(.16, .84, .32, 1) both;
+}
+@keyframes login-testo-entra {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: none; }
+}
 
 /* --------------------------------------------------------------------- quiz */
 

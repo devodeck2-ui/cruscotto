@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gestione autoscuola - La Centauro</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="/app/styles.css" rel="stylesheet">
-<link href="/app/animazioni.css?v=1" rel="stylesheet">
+<link href="/app/styles.css?v=8" rel="stylesheet">
+<link href="/app/animazioni.css?v=2" rel="stylesheet">
 <style>
   /* Colori presi dal tema comune (styles.css): cosi' questa pagina segue
      chiaro e scuro insieme al resto dell'app, invece di restare bianca. */
@@ -22,19 +22,19 @@
   .col-giorno { background:var(--ac-superficie, #fff);
                 border:1px solid var(--ac-bordo, #e6ebf3); border-radius:14px;
                 padding:8px; min-height:120px; }
-  .fascia { background:var(--ac-blu-chiaro, #eff4ff);
-            border-left:4px solid var(--ac-blu, #1d4ed8); border-radius:9px;
+  .fascia { background:var(--ac-primario-chiaro, #fdeeec);
+            border-left:4px solid var(--ac-primario, #e0261b); border-radius:9px;
             padding:6px 8px; margin-bottom:6px; font-size:.8rem; cursor:pointer;
             color:var(--ac-testo, #0f172a); transition:transform .12s ease; }
   .fascia:hover { transform:translateX(2px); }
   .fascia.rev { background:rgba(217,119,6,.14); border-left-color:#d97706; }
   .fascia.spenta { opacity:.45; }
   .riga-allievo { border-bottom:1px solid var(--ac-bordo, #eef2f7); }
-  .riga-allievo:hover { background:var(--ac-blu-chiaro, #f8fafc); }
+  .riga-allievo:hover { background:var(--ac-primario-chiaro, #f8fafc); }
   .credenziali { font-family:ui-monospace,Consolas,monospace; font-size:1.15rem;
                  background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:12px; }
   .pill { font-size:.7rem; padding:.15rem .5rem; border-radius:999px;
-          background:var(--ac-blu-chiaro, #e2e8f0); color:var(--ac-tenue, #64748b); }
+          background:var(--ac-primario-chiaro, #e2e8f0); color:var(--ac-tenue, #64748b); }
   .barra { height:8px; background:var(--ac-bordo, #e2e8f0); border-radius:999px; overflow:hidden; }
   .barra > span { display:block; height:100%; border-radius:999px; }
   /* Righe delle lezioni: devono sembrare cliccabili, perche' lo sono. */
@@ -42,20 +42,20 @@
     background: var(--ac-superficie, #fff);
     border: 1px solid var(--ac-bordo, #e6ebf3);
     color: var(--ac-testo, #0f172a);
-    border-left: 4px solid var(--ac-blu, #1d4ed8);
+    border-left: 4px solid var(--ac-primario, #e0261b);
     transition: background .16s ease, transform .16s ease, border-color .16s ease;
   }
   .riga-lezione:hover {
-    background: var(--ac-blu-chiaro, #eff4ff);
+    background: var(--ac-primario-chiaro, #fdeeec);
     transform: translateX(3px);
   }
   .riga-lezione.fatta { border-left-color: #059669; }
   .riga-lezione.scelta {
-    background: var(--ac-blu-chiaro, #eff4ff);
-    border-color: var(--ac-blu, #1d4ed8);
+    background: var(--ac-primario-chiaro, #fdeeec);
+    border-color: var(--ac-primario, #e0261b);
   }
   .riga-lezione .apri-presenze {
-    font-size: .72rem; font-weight: 600; color: var(--ac-blu, #1d4ed8);
+    font-size: .72rem; font-weight: 600; color: var(--ac-primario, #e0261b);
   }
   .riga-lezione .freccia {
     font-size: 1.15rem; line-height: 1; color: var(--ac-tenue, #64748b);
@@ -65,7 +65,7 @@
   .navbar { background:var(--ac-superficie, #fff) !important;
             border-bottom:1px solid var(--ac-bordo, #e6ebf3) !important; }
   .nav-pills .nav-link { color:var(--ac-tenue, #64748b); border-radius:999px; font-weight:600; }
-  .nav-pills .nav-link.active { background:var(--ac-blu, #1d4ed8); color:#fff; }
+  .nav-pills .nav-link.active { background:var(--ac-primario, #e0261b); color:#fff; }
   .table { --bs-table-color:var(--ac-testo, #0f172a); --bs-table-bg:transparent;
            --bs-table-border-color:var(--ac-bordo, #e6ebf3); }
   .modal-content, .form-control, .form-select {
@@ -277,6 +277,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/app/gestione.js"></script>
-<script src="/app/animazioni.js?v=1"></script>
+<script src="/app/animazioni.js?v=2"></script>
 </body>
 </html>

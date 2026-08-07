@@ -644,7 +644,7 @@ async function mostraStatistiche() {
     data: {
       labels: serie.map(s => s.giorno.slice(5)),
       datasets: [
-        { label: 'Risposte', data: serie.map(s => s.n_risposte), borderColor: '#0d6efd', tension: .3, yAxisID: 'y' },
+        { label: 'Risposte', data: serie.map(s => s.n_risposte), borderColor: '#d97706', tension: .3, yAxisID: 'y' },
         { label: '% errore', data: serie.map(s => s.tasso_errore_pct), borderColor: '#dc3545', tension: .3, yAxisID: 'y1' },
       ],
     },
@@ -668,7 +668,7 @@ async function mostraStatistiche() {
       <td class="text-end small text-muted">${c.n_domande}</td>
       <td class="text-end small">${c.n_risposte}</td>
       <td class="text-end small">${c.tasso_errore_pct ?? '-'}%</td>
-      <td style="width:120px"><div class="barra-arg"><span style="width:${Math.min(100, 100 * c.n_risposte / Math.max(1, c.n_domande))}%;background:#0d6efd"></span></div></td>
+      <td style="width:120px"><div class="barra-arg"><span style="width:${Math.min(100, 100 * c.n_risposte / Math.max(1, c.n_domande))}%;background:#e0261b"></span></div></td>
     </tr>`).join('')}</tbody></table></div>`;
 }
 
@@ -848,7 +848,7 @@ function montaAssistente() {
     #ass-corpo { padding:12px; max-height:46vh; overflow:auto;
       background:var(--ac-fondo, #f8fafc); color:var(--ac-testo, #0f172a); }
     #ass-corpo .msg { margin-bottom:10px; font-size:.86rem; line-height:1.45; }
-    #ass-corpo .io { background:var(--ac-blu, #1d4ed8); color:#fff;
+    #ass-corpo .io { background:var(--ac-primario, #e0261b); color:#fff;
       border-radius:12px 12px 4px 12px;
       padding:8px 11px; margin-left:auto; width:fit-content; max-width:85%; }
     #ass-corpo .lui { background:var(--ac-superficie, #fff);
