@@ -203,6 +203,29 @@ h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
 .cella-nav.errata   { background: #fee2e2; color: #991b1b; }
 .cella-nav.corrente { border-color: var(--ac-primario); }
 
+/* -------------------------------------------------------------- spiegazioni */
+
+/* Piccolo bottone "?" per capire cosa significa un numero, senza dover
+   ingombrare la scheda con un testo che serve solo a chi se lo chiede. */
+.btn-spiega {
+  width: 16px; height: 16px; line-height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--ac-tenue);
+  background: transparent;
+  color: var(--ac-tenue);
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 0;
+  flex: none;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.btn-spiega:hover, .btn-spiega:focus-visible {
+  background: var(--ac-primario);
+  border-color: var(--ac-primario);
+  color: #fff;
+}
+
 /* ------------------------------------------------------- scheda autoscuola */
 
 /* La scheda con indirizzo, contatti e orari: prima usava lo stesso grigio

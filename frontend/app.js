@@ -1001,6 +1001,9 @@ $('#btn-avvia-esercitazione').addEventListener('click', () => {
   avviaScheda('esercitazione', cap.length ? cap : null, +$('#sel-numero').value).catch(e => avviso(e.message));
 });
 $('#sel-ordina-allievi')?.addEventListener('change', mostraAdmin);
+$('#btn-spiega-prontezza')?.addEventListener('click', () => {
+  $('#spiega-prontezza').classList.toggle('d-none');
+});
 $$('.btn-vf').forEach(b => b.addEventListener('click', () => rispondi(b.dataset.risposta === '1')));
 $('#btn-precedente').addEventListener('click', () => vaiA(S.indice - 1));
 $('#btn-successiva').addEventListener('click', () => vaiA(S.indice + 1));
