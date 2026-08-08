@@ -15,6 +15,13 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
 const GIORNI = ['lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato', 'domenica'];
 const S = { utente: null, listati: [], slot: null, lezione: null, allievo: null, grafici: {} };
 
+// Chart.js di suo scrive assi e legenda in un grigio scuro fisso: col tema
+// scuro del telefono diventava quasi illeggibile sopra le card scure.
+if (window.Chart && matchMedia('(prefers-color-scheme: dark)').matches) {
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.borderColor = 'rgba(148, 163, 184, .25)';
+}
+
 function disegna(id, cfg) {
   const el = $('#' + id);
   if (!el) return;
@@ -312,15 +319,14 @@ async function caricaAllievi() {
         <span class="small text-muted">${c.ore_vendute} ore vendute &middot; ${c.incasso.toFixed(2)} euro incassati</span>
       </div>
       <div class="table-responsive"><table class="table table-sm align-middle mb-0">
-        <thead><tr><th>Allievo</th><th>Contatti</th><th class="text-end">Ore</th>
-          <th class="text-end">Lezioni</th><th class="text-end">Quiz</th><th></th></tr></thead>
+        <thead><tr><th>Allievo</th><th>Contatti</th><th class="text-end">Lezioni fatte</th>
+          <th class="text-end">Quiz</th><th></th></tr></thead>
         <tbody>${c.allievi.map(a => `
           <tr>
             <td><div class="fw-semibold small">${esc(a.cognome)} ${esc(a.nome)}${a.listati_extra ? ` <span class="pill">+${esc(a.listati_extra)}</span>` : ''}</div>
                 <div class="text-muted" style="font-size:.72rem">${esc(a.username || a.email)}</div></td>
             <td class="small">${esc(a.telefono || '-')}<div class="text-muted" style="font-size:.72rem">${esc(a.indirizzo || '')}</div></td>
             <td class="text-end small">${a.ore_frequentate}/${a.ore_acquistate || 0}</td>
-            <td class="text-end small">${a.ore_frequentate}</td>
             <td class="text-end small">${a.schede} schede<div class="text-muted" style="font-size:.72rem">${a.simulazioni_superate} simul. ok</div></td>
             <td class="text-end"><button class="btn btn-sm btn-light" data-mod="${a.id}">Apri</button></td>
           </tr>`).join('')}</tbody>

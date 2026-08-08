@@ -684,6 +684,13 @@ async function mostraStatistiche() {
     </tr>`).join('')}</tbody></table></div>`;
 }
 
+// Chart.js di suo scrive assi e legenda in un grigio scuro fisso: col tema
+// scuro del telefono diventava quasi illeggibile sopra le card scure.
+if (window.Chart && matchMedia('(prefers-color-scheme: dark)').matches) {
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.borderColor = 'rgba(148, 163, 184, .25)';
+}
+
 function disegna(id, cfg) {
   S.grafici[id]?.destroy();
   S.grafici[id] = new Chart($('#' + id), cfg);
@@ -736,17 +743,32 @@ async function mostraAdmin() {
 
 window.dettaglioAllievo = async function (id) {
   const d = await get('/api/admin/allievi/' + id);
+  const serie = [...d.serie].reverse();
+  const haDati = serie.some(s => s.n_risposte > 0);
+
   $('#dettaglio-allievo').innerHTML = `
     <div class="card-ac p-4">
       <div class="d-flex justify-content-between flex-wrap gap-2">
         <div><h3 class="h5 mb-0">${esc(d.profilo.nominativo)}</h3>
-          <p class="text-muted small mb-0">${esc(d.profilo.email)} - listato ${esc(d.profilo.listato_target)}
+          <p class="text-muted small mb-0">${esc(d.profilo.email)} - listato ${esc(d.profilo.listato_target || '-')}
           ${d.profilo.data_esame ? '- esame il ' + d.profilo.data_esame : ''}</p></div>
         <div class="text-end"><div class="h3 mb-0">${d.prontezza.punteggio}%</div>
           <div class="small text-muted">pronto per l'esame</div></div>
       </div>
       <hr>
-      <div class="row g-3">
+      ${haDati ? `
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-lg-7">
+          <h4 class="h6 text-uppercase text-muted">Andamento ultimi 60 giorni</h4>
+          <canvas id="gr-andamento-allievo" height="140"></canvas>
+        </div>
+        <div class="col-12 col-lg-5">
+          <h4 class="h6 text-uppercase text-muted">Tempo di studio</h4>
+          <canvas id="gr-tempo-allievo" height="140"></canvas>
+        </div>
+      </div>` : `
+      <p class="small text-muted">Non ha ancora risposto a nessuna domanda: niente da mostrare nei grafici.</p>`}
+      <div class="row g-3 mb-3">
         <div class="col-md-6"><h4 class="h6 text-uppercase text-muted">Punti deboli</h4>
           ${d.criticita.map(c => `<div class="d-flex justify-content-between small py-1">
             <span>${esc(c.argomento)}</span><span class="badge text-bg-danger">${c.tasso_errore_pct}%</span></div>`).join('') || '<p class="small text-muted">Nessuno.</p>'}</div>
@@ -755,8 +777,43 @@ window.dettaglioAllievo = async function (id) {
             <span class="text-capitalize">${esc(s.tipo)}</span>
             <span>${s.n_errori}/${s.n_domande} ${s.esito ? '<span class="text-success">OK</span>' : ''}</span></div>`).join('') || '<p class="small text-muted">Nessuna.</p>'}</div>
       </div>
+      <h4 class="h6 text-uppercase text-muted">Copertura per capitolo</h4>
+      ${d.capitoli.length ? `
+      <div class="table-responsive"><table class="table table-sm align-middle">
+        <thead><tr><th>Capitolo</th><th class="text-end">Domande</th><th class="text-end">Fatte</th><th class="text-end">Errore</th><th></th></tr></thead>
+        <tbody>${d.capitoli.map(c => `<tr>
+          <td class="small">${esc(c.titolo)}</td>
+          <td class="text-end small text-muted">${c.n_domande}</td>
+          <td class="text-end small">${c.n_risposte}</td>
+          <td class="text-end small">${c.tasso_errore_pct ?? '-'}%</td>
+          <td style="width:120px"><div class="barra-arg"><span style="width:${Math.min(100, 100 * c.n_risposte / Math.max(1, c.n_domande))}%;background:#e0261b"></span></div></td>
+        </tr>`).join('')}</tbody>
+      </table></div>` : '<p class="small text-muted">Nessuna patente assegnata: non c\'e\' un programma da confrontare.</p>'}
     </div>`;
   $('#dettaglio-allievo').scrollIntoView({ behavior: 'smooth' });
+
+  if (haDati) {
+    disegna('gr-andamento-allievo', {
+      type: 'line',
+      data: {
+        labels: serie.map(s => s.giorno.slice(5)),
+        datasets: [
+          { label: 'Risposte', data: serie.map(s => s.n_risposte), borderColor: '#d97706', tension: .3, yAxisID: 'y' },
+          { label: '% errore', data: serie.map(s => s.tasso_errore_pct), borderColor: '#dc3545', tension: .3, yAxisID: 'y1' },
+        ],
+      },
+      options: { responsive: true, interaction: { mode: 'index', intersect: false },
+        scales: { y: { beginAtZero: true }, y1: { position: 'right', beginAtZero: true, max: 100, grid: { drawOnChartArea: false } } } },
+    });
+    disegna('gr-tempo-allievo', {
+      type: 'bar',
+      data: {
+        labels: serie.map(s => s.giorno.slice(5)),
+        datasets: [{ label: 'Minuti', data: serie.map(s => Math.round(s.secondi_app / 60)), backgroundColor: '#198754' }],
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } },
+    });
+  }
 };
 
 /* --------------------------- SCHEDA AUTOSCUOLA --------------------------- */
@@ -860,8 +917,15 @@ async function modificaScuola(s) {
  */
 const ASS = { aperto: false, conversazione: null, occupato: false };
 
-function montaAssistente() {
+async function montaAssistente() {
   if ($('#ass-fab')) return;
+  // Se l'autoscuola non ha ancora configurato una chiave AI, meglio non
+  // mostrare affatto il pulsante: cliccarlo fallirebbe sempre, e sembrerebbe
+  // un pezzo di app rotto invece che una funzione non ancora attivata.
+  try {
+    const stato = await get('/api/assistente/stato');
+    if (!stato.disponibile) return;
+  } catch (e) { return; }
 
   const stile = document.createElement('style');
   stile.textContent = `
@@ -1085,7 +1149,7 @@ addEventListener('offline', () => document.body.classList.add('offline'));
     // Per l'insegnante "Videocorsi" vuol dire gestirli, non guardarli:
     // il link porta dritto alla sezione di caricamento e delle dirette.
     $$('#nav-desktop a[href="#/video"], .tabbar a[href="#/video"]')
-      .forEach(a => a.setAttribute('href', '/app/gestione.html?v=2#video'));
+      .forEach(a => a.setAttribute('href', '/app/gestione.html?v=3#video'));
     // Il vecchio pulsante "Dashboard" (nav desktop) e la voce "Gestione"
     // della tabbar mobile diventano l'unico link alla vera gestione
     // (orario, presenze, allievi, video, analisi) - non se ne crea uno
@@ -1093,11 +1157,11 @@ addEventListener('offline', () => document.body.classList.add('offline'));
     // Il ?v= forza il browser a scaricare la pagina aggiornata invece di
     // tenersi quella vecchia salvata in cache (stesso problema del logo).
     const linkAdmin = $('#link-admin');
-    linkAdmin.setAttribute('href', '/app/gestione.html?v=2');
+    linkAdmin.setAttribute('href', '/app/gestione.html?v=3');
     linkAdmin.textContent = 'Gestione';
     linkAdmin.classList.remove('d-none');
     const tabAdmin = $('#tab-admin');
-    tabAdmin.setAttribute('href', '/app/gestione.html?v=2');
+    tabAdmin.setAttribute('href', '/app/gestione.html?v=3');
     tabAdmin.innerHTML = '<span>&#9881;</span>Gestione';
     tabAdmin.classList.remove('d-none');
     if (!location.hash) location.hash = '#/admin';
