@@ -329,6 +329,9 @@ h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
 .barra-arg { height: 8px; border-radius: 999px; background: #e8edf7; overflow: hidden; }
 .barra-arg > span { display: block; height: 100%; border-radius: 999px; }
 
+.pill { font-size: .7rem; padding: .15rem .5rem; border-radius: 999px;
+        background: var(--ac-primario-chiaro); color: var(--ac-primario-scuro); font-weight: 600; }
+
 .table { --bs-table-border-color: var(--ac-bordo); }
 .table > :not(caption) > * > * { padding: .7rem .6rem; }
 .table thead th {

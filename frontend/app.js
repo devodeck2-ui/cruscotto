@@ -15,6 +15,7 @@ const S = {
   access: localStorage.getItem('ac_access') || null,
   refresh: localStorage.getItem('ac_refresh') || null,
   utente: JSON.parse(localStorage.getItem('ac_utente') || 'null'),
+  corsiVideo: [],        // ultimo elenco corsi caricato, per filtrarlo per patente senza rifare la chiamata
   scheda: null,          // scheda in corso
   indice: 0,
   sessioneId: null,
@@ -583,18 +584,45 @@ async function avvisoLive() {
 /* -------------------------------- VIDEO ---------------------------------- */
 async function mostraVideo() {
   mostra('video');
-  const corsi = await get('/api/video/corsi');
+  const [corsi, mie] = await Promise.all([
+    get('/api/video/corsi'), get('/api/mie-patenti').catch(() => ({ listati: [] })),
+  ]);
+  S.corsiVideo = corsi;
+
+  // Il backend restituisce gia' solo i corsi delle patenti dell'allievo: qui
+  // si aggiungono dei pulsanti per guardarne una alla volta, utile a chi ne
+  // prepara piu' di una insieme (es. AM e B) e non vuole scorrere tutto.
+  const listati = mie.listati || [];
+  const selPatenti = $('#sel-patenti-video');
+  if (listati.length > 1) {
+    selPatenti.innerHTML = [`<button type="button" class="btn btn-sm btn-primary" data-listato="">Tutte</button>`,
+      ...listati.map(l => `<button type="button" class="btn btn-sm btn-outline-primary"
+               data-listato="${esc(l.codice)}">${esc(l.codice)}</button>`)].join('');
+    $$('#sel-patenti-video button').forEach(b => b.addEventListener('click', () => {
+      $$('#sel-patenti-video button').forEach(x => x.classList.replace('btn-primary', 'btn-outline-primary'));
+      b.classList.replace('btn-outline-primary', 'btn-primary');
+      disegnaCorsi(b.dataset.listato);
+    }));
+  } else {
+    selPatenti.innerHTML = '';
+  }
+  disegnaCorsi('');
+}
+
+function disegnaCorsi(listato) {
+  const corsi = listato ? S.corsiVideo.filter(c => c.listato === listato) : S.corsiVideo;
+  const piuDiUnaPatente = !listato && new Set(S.corsiVideo.map(c => c.listato)).size > 1;
   $('#lista-corsi').innerHTML = corsi.length ? corsi.map(c => `
     <div class="col-12 col-md-6 col-lg-4">
       <div class="card-ac p-3 h-100">
-        <h3 class="h6">${esc(c.titolo)}</h3>
+        <h3 class="h6">${esc(c.titolo)} ${piuDiUnaPatente ? `<span class="pill ms-1">${esc(c.listato)}</span>` : ''}</h3>
         <p class="small text-muted">${esc(c.descrizione || '')}</p>
         <div class="d-flex justify-content-between align-items-center">
           <span class="small text-muted">${c.completate || 0}/${c.n_lezioni} lezioni</span>
           <button class="btn btn-sm btn-primary" onclick="apriCorso(${c.id})">Apri</button>
         </div>
       </div>
-    </div>`).join('') : '<p class="text-muted">Nessun videocorso pubblicato.</p>';
+    </div>`).join('') : `<p class="text-muted">Nessun videocorso pubblicato${listato ? ' per questa patente' : ''}.</p>`;
 }
 
 window.apriCorso = async function (id) {
