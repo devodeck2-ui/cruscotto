@@ -648,7 +648,9 @@ window.riproduci = function (lezioneId, url, riprendiDa) {
 /* ----------------------------- STATISTICHE ------------------------------- */
 async function mostraStatistiche() {
   mostra('statistiche');
-  const st = await get('/api/statistiche/riepilogo');
+  const [st, mie] = await Promise.all([
+    get('/api/statistiche/riepilogo'), get('/api/mie-patenti').catch(() => ({ listati: [] })),
+  ]);
   const serie = [...st.serie].reverse();
 
   disegna('gr-andamento', {
@@ -673,15 +675,37 @@ async function mostraStatistiche() {
     options: { responsive: true, scales: { y: { beginAtZero: true } } },
   });
 
+  disegnaTabellaCapitoli(st.capitoli);
+
+  // Chi prepara piu' patenti insieme vede qui dei pulsanti per scegliere
+  // quale controllare: la tabella sopra parte gia' con la principale.
+  const listati = mie.listati || [];
+  const selPatenti = $('#sel-patenti-capitoli');
+  if (listati.length > 1) {
+    selPatenti.innerHTML = listati.map((l, i) =>
+      `<button type="button" class="btn btn-sm ${i === 0 ? 'btn-primary' : 'btn-outline-primary'}"
+               data-listato="${esc(l.codice)}">${esc(l.codice)}</button>`).join('');
+    $$('#sel-patenti-capitoli button').forEach(b => b.addEventListener('click', async () => {
+      $$('#sel-patenti-capitoli button').forEach(x => x.classList.replace('btn-primary', 'btn-outline-primary'));
+      b.classList.replace('btn-outline-primary', 'btn-primary');
+      const r = await get('/api/statistiche/capitoli?listato=' + encodeURIComponent(b.dataset.listato));
+      disegnaTabellaCapitoli(r.capitoli);
+    }));
+  } else {
+    selPatenti.innerHTML = '';
+  }
+}
+
+function disegnaTabellaCapitoli(capitoli) {
   $('#tabella-capitoli').innerHTML = `<div class="table-responsive"><table class="table table-sm align-middle">
     <thead><tr><th>Capitolo</th><th class="text-end">Domande</th><th class="text-end">Fatte</th><th class="text-end">Errore</th><th></th></tr></thead>
-    <tbody>${st.capitoli.map(c => `<tr>
+    <tbody>${capitoli.map(c => `<tr>
       <td class="small">${esc(c.titolo)}</td>
       <td class="text-end small text-muted">${c.n_domande}</td>
       <td class="text-end small">${c.n_risposte}</td>
       <td class="text-end small">${c.tasso_errore_pct ?? '-'}%</td>
       <td style="width:120px"><div class="barra-arg"><span style="width:${Math.min(100, 100 * c.n_risposte / Math.max(1, c.n_domande))}%;background:#e0261b"></span></div></td>
-    </tr>`).join('')}</tbody></table></div>`;
+    </tr>`).join('') || '<tr><td colspan="5" class="text-muted small">Nessun dato.</td></tr>'}</tbody></table></div>`;
 }
 
 // Chart.js di suo scrive assi e legenda in un grigio scuro fisso: col tema
