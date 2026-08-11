@@ -34,7 +34,9 @@ app = FastAPI(title="Autoscuola Cruscotto API", version="1.0.0",
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # in produzione: elenco esplicito dei domini
+    # "*" in sviluppo/demo. In produzione impostare AC_CORS_ORIGINS con il
+    # proprio dominio (es. https://cruscotto.tuaautoscuola.it) - vedi deploy/README.md.
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

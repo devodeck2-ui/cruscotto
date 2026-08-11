@@ -119,7 +119,7 @@ Se la piattaforma scelta non offre volumi, la strada corretta non è forzare SQL
 
 - [ ] `AC_JWT_SECRET` sostituito con 32 byte casuali (il default è pubblico: chiunque potrebbe forgiare token validi)
 - [ ] Password degli utenti demo cambiate o utenti disattivati
-- [ ] `allow_origins` in `backend/app/main.py` ristretto al proprio dominio (ora è `*`)
+- [ ] `AC_CORS_ORIGINS` impostato sul proprio dominio nel file `.env` (di default è `*`, va bene solo in demo)
 - [ ] HTTPS attivo e redirect da HTTP verificato
 - [ ] Backup automatico attivo **e ripristino provato almeno una volta** — un backup mai testato non è un backup
 - [ ] `AC_AI_RATE` calibrato sul budget mensile accettabile

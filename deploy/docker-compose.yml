@@ -22,6 +22,7 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       AC_AI_MODEL: ${AC_AI_MODEL:-claude-sonnet-5}
       AC_AI_RATE: ${AC_AI_RATE:-400}
+      AC_CORS_ORIGINS: ${AC_CORS_ORIGINS:-*}
     volumes:
       # Il database vive su un volume, non nell'immagine: aggiornare
       # l'applicazione non deve toccare i dati degli allievi.

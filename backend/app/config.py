@@ -33,6 +33,14 @@ class Settings:
         self.refresh_ttl_days = _int("AC_REFRESH_TTL_DAYS", 30)
         self.pbkdf2_iterations = _int("AC_PBKDF2_ITER", 260000)
 
+        # Domini che possono chiamare l'API da browser. In sviluppo/demo "*"
+        # va bene; in produzione va ristretto al proprio dominio, altrimenti
+        # un sito qualsiasi puo' fare richieste con le credenziali di chi le
+        # ha (vedi AC_CORS_ORIGINS nel README di deploy/).
+        origini = os.getenv("AC_CORS_ORIGINS", "*").strip()
+        self.cors_origins = ["*"] if origini in ("", "*") else \
+            [o.strip() for o in origini.split(",") if o.strip()]
+
         # --- AI Tutor -------------------------------------------------------
         # Il tutor parla con due fornitori diversi. La scelta e' automatica in
         # base alla chiave presente, e si forza con AC_AI_PROVIDER.
