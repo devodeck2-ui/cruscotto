@@ -1111,10 +1111,6 @@ $('#form-login').addEventListener('submit', async (e) => {
   } finally { btn.disabled = false; btn.textContent = 'Entra'; }
 });
 
-$$('[data-demo]').forEach(b => b.addEventListener('click', () => {
-  $('#in-email').value = b.dataset.demo; $('#in-password').value = 'demo1234';
-}));
-
 $('#btn-logout').addEventListener('click', esci);
 $('#btn-avvia-simulazione').addEventListener('click', () => avviaScheda('simulazione').catch(e => avviso(e.message)));
 $('#btn-avvia-recupero').addEventListener('click', () => avviaScheda('recupero').catch(e => avviso(e.message)));
