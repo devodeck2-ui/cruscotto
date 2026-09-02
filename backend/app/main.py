@@ -24,8 +24,8 @@ from fastapi.staticfiles import StaticFiles
 from . import db
 from .config import settings
 from .routers import (amministrazione, assistente, auth, catalogo, gestione,
-                      patenti, quiz, scuola, sessioni, statistiche, tutoraggio,
-                      video)
+                      notifiche, patenti, quiz, scuola, sessioni, statistiche,
+                      tutoraggio, video)
 
 app = FastAPI(title="Autoscuola Cruscotto API", version="1.0.0",
               description="Gestionale didattico per autoscuole: quiz ministeriali, "
@@ -62,7 +62,8 @@ async def errore_generico(request: Request, exc: Exception):
 
 for r in (auth.router, catalogo.router, quiz.router, statistiche.router,
           tutoraggio.router, amministrazione.router, sessioni.router, video.router,
-          gestione.router, assistente.router, scuola.router, patenti.router):
+          gestione.router, assistente.router, scuola.router, patenti.router,
+          notifiche.router):
     app.include_router(r)
 
 

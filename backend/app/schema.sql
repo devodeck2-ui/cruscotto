@@ -466,6 +466,43 @@ CREATE TABLE IF NOT EXISTS audit_log (
 CREATE INDEX IF NOT EXISTS ix_audit_tenant ON audit_log(autoscuola_id, created_at DESC);
 
 -- -----------------------------------------------------------------------------
+-- 9bis. NOTIFICHE
+-- -----------------------------------------------------------------------------
+-- Due pezzi distinti, deliberatamente disaccoppiati:
+--   push_subscription  la "cassetta delle lettere" di un dispositivo (browser o,
+--                      in futuro, app): un utente puo' averne piu' di una (piu'
+--                      telefoni/PC), e sparisce da sola se il browser la revoca.
+--   notifica           lo storico di cosa e' stato mandato a chi: serve al
+--                      campanellino nell'interfaccia anche per chi nega il
+--                      permesso di notifica del browser o e' su iPhone prima di
+--                      aver installato il sito come app.
+-- Vedi routers\notifiche.py.
+
+CREATE TABLE IF NOT EXISTS push_subscription (
+    id           INTEGER PRIMARY KEY,
+    utente_id    INTEGER NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+    endpoint     TEXT    NOT NULL UNIQUE,             -- URL del servizio push del browser
+    p256dh       TEXT    NOT NULL,                    -- chiave pubblica del dispositivo
+    auth         TEXT    NOT NULL,                    -- segreto di autenticazione
+    user_agent   TEXT,
+    created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE INDEX IF NOT EXISTS ix_push_utente ON push_subscription(utente_id);
+
+CREATE TABLE IF NOT EXISTS notifica (
+    id           INTEGER PRIMARY KEY,
+    utente_id    INTEGER NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+    tipo         TEXT    NOT NULL CHECK (tipo IN ('lezione_programmata','diretta_iniziata')),
+    titolo       TEXT    NOT NULL,
+    corpo        TEXT,
+    url          TEXT,                                -- dove va a finire chi ci clicca
+    letta        INTEGER NOT NULL DEFAULT 0 CHECK (letta IN (0,1)),
+    inviata_push INTEGER NOT NULL DEFAULT 0 CHECK (inviata_push IN (0,1)),
+    created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE INDEX IF NOT EXISTS ix_notifica_utente ON notifica(utente_id, created_at DESC);
+
+-- -----------------------------------------------------------------------------
 -- 10. VISTE DI SERVIZIO
 -- -----------------------------------------------------------------------------
 

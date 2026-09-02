@@ -38,6 +38,32 @@ async function primaLaRete(richiesta, nomeCache) {
   }
 }
 
+// Notifiche push: il payload arriva dal server come JSON semplice
+// ({ titolo, corpo, url }), preparato in backend/app/services/notifiche.py.
+self.addEventListener('push', e => {
+  let dati = {};
+  try { dati = e.data ? e.data.json() : {}; } catch (err) { dati = {}; }
+  const titolo = dati.titolo || 'Autoscuola La Centauro';
+  e.waitUntil(self.registration.showNotification(titolo, {
+    body: dati.corpo || '',
+    icon: '/app/assets/icon-192.png',
+    badge: '/app/assets/icon-192.png',
+    data: { url: dati.url || '/' },
+  }));
+});
+
+// Click sulla notifica: si va alla pagina indicata, riusando una scheda del
+// sito gia' aperta invece di aprirne sempre una nuova.
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const destinazione = new URL(e.notification.data?.url || '/', self.location.origin).href;
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(elenco => {
+    const aperta = elenco.find(c => c.url.startsWith(self.location.origin));
+    if (aperta) return aperta.navigate(destinazione).then(c => c.focus());
+    return clients.openWindow(destinazione);
+  }));
+});
+
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;

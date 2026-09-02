@@ -182,6 +182,35 @@ html { scroll-behavior: smooth; }
 .fascia:hover { transform: translateX(3px); }
 .riga-allievo { transition: background .18s ease; }
 
+/* ------------------------------------------------------------------- avvisi */
+
+/* L'avviso (toast) entra scivolando dall'alto e esce con una dissolvenza
+   morbida invece di sparire di scatto - stessa cura degli altri passaggi. */
+.toast-entra { animation: toast-entra .32s cubic-bezier(.16, .84, .32, 1) both; }
+.toast-esce { animation: toast-esce .25s ease both; }
+@keyframes toast-entra {
+  from { opacity: 0; transform: translate(-50%, -12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes toast-esce {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to   { opacity: 0; transform: translate(-50%, -10px); }
+}
+
+/* Pannello di gestione: gli avvisi sono banner in linea nel flusso (non
+   fissi e centrati come il toast sopra), quindi qui basta una comparsa
+   verticale senza lo scarto orizzontale del -50%. */
+.avviso-entra { animation: avviso-entra .3s cubic-bezier(.16, .84, .32, 1) both; }
+.avviso-esce { animation: avviso-esce .22s ease both; }
+@keyframes avviso-entra {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes avviso-esce {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+
 /* Caricamento: al posto del vuoto, un'ombra che scorre. */
 .scheletro {
   background: linear-gradient(90deg, rgba(148, 163, 184, .12) 25%,

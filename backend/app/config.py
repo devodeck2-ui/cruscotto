@@ -67,6 +67,16 @@ class Settings:
         self.prompt_version = "tutor-v1.2"
         self.ai_rate_limit_ora = _int("AC_AI_RATE", 400)   # chiamate/ora per tenant
 
+        # --- Notifiche push -------------------------------------------------
+        # Chiavi VAPID: identificano il server presso i servizi push dei
+        # browser (Google, Mozilla, Apple...). Si generano una volta sola,
+        # gratis, senza account su nessun servizio esterno - vedi
+        # scripts/genera_chiavi_vapid.py. Senza chiavi, il push viene
+        # saltato e resta solo lo storico in-app (tabella notifica).
+        self.vapid_public_key = os.getenv("AC_VAPID_PUBLIC_KEY", "").strip()
+        self.vapid_private_key = os.getenv("AC_VAPID_PRIVATE_KEY", "").strip()
+        self.vapid_subject = os.getenv("AC_VAPID_SUBJECT", "mailto:info@example.it").strip()
+
         # --- sessioni ---
         self.heartbeat_sec = 30
         self.inattivita_sec = 300   # oltre questa soglia il reaper chiude

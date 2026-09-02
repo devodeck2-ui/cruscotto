@@ -215,6 +215,7 @@ h1, h2, h3, h4, h5 { letter-spacing: -.015em; font-weight: 650; }
   transition: transform .12s ease;
 }
 .cella-nav:hover { transform: scale(1.08); }
+.cella-nav:focus-visible { outline: 2px solid var(--ac-primario); outline-offset: 2px; }
 .cella-nav.risposta { background: #dbe7ff; color: #1e40af; }
 .cella-nav.dubbio   { background: #fef3c7; color: #92400e; }
 .cella-nav.giusta   { background: #d1fae5; color: #065f46; }

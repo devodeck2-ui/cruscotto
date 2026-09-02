@@ -57,6 +57,18 @@ def filtro_sql(utente_id: int, colonna: str) -> tuple[str, list]:
     return f" AND {colonna} IN ({segnaposto})", codici
 
 
+def utenti_con_patente(autoscuola_id: int, codice: str) -> list[int]:
+    """Id degli allievi attivi di una scuola che hanno quella patente, come
+    principale o aggiuntiva. Usata per sapere chi avvisare quando si
+    programma o avvia una diretta su un certo listato."""
+    righe = db.query(
+        "SELECT u.id FROM utenti u JOIN ruoli r ON r.id = u.ruolo_id "
+        "WHERE u.autoscuola_id = ? AND r.codice = 'allievo' AND u.attivo = 1 "
+        "  AND (u.listato_target = ? OR ',' || COALESCE(u.listati_extra,'') || ',' LIKE '%,' || ? || ',%')",
+        (autoscuola_id, codice, codice))
+    return [r["id"] for r in righe]
+
+
 def imposta(utente_id: int, patenti: list[str]) -> list[str]:
     """Salva l'elenco: la prima diventa la principale, le altre le aggiuntive."""
     pulite = []

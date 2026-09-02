@@ -32,6 +32,18 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// Righe segnaposto durante il caricamento: non si conosce il numero reale
+// di righe finche' i dati non arrivano, quindi un numero fisso basta - non
+// vale la pena costruire una stima.
+const scheletroRighe = (n = 5) =>
+  Array.from({ length: n }, () => '<div class="scheletro mb-2" style="height:38px"></div>').join('');
+
+// Stessa cosa ma per <table>: una <div> sciolta dentro <table> viene spostata
+// fuori dal browser (regole di parsing dell'HTML), quindi qui serve <tr><td>.
+const scheletroTabella = (n = 5, colonne = 4) =>
+  Array.from({ length: n }, () =>
+    `<tr><td colspan="${colonne}"><div class="scheletro" style="height:20px"></div></td></tr>`).join('');
+
 const fmtTempo = (sec) => {
   sec = Math.max(0, Math.round(sec));
   const m = String(Math.floor(sec / 60)).padStart(2, '0');
@@ -185,16 +197,21 @@ async function instrada() {
 
 function avviso(msg, tipo = 'danger') {
   const el = document.createElement('div');
-  el.className = `alert alert-${tipo} position-fixed top-0 start-50 translate-middle-x mt-2 shadow`;
+  el.className = `alert alert-${tipo} position-fixed top-0 start-50 translate-middle-x mt-2 shadow toast-entra`;
   el.style.zIndex = 2000;
   el.textContent = msg;
   document.body.appendChild(el);
+  // Esce con la stessa dissolvenza morbida con cui e' entrato, invece di
+  // sparire di scatto - il budget totale (4s) resta invariato.
+  setTimeout(() => el.classList.add('toast-esce'), 3750);
   setTimeout(() => el.remove(), 4000);
 }
 
 /* -------------------------------- HOME ----------------------------------- */
 async function mostraHome() {
   mostra('home');
+  $('#lista-criticita').innerHTML = scheletroRighe(3);
+  $('#tabella-storico').innerHTML = scheletroTabella(4, 4);
   const [st, storico, ripasso, miePatenti] = await Promise.all([
     get('/api/statistiche/riepilogo'), get('/api/quiz/storico?limite=8'),
     get('/api/quiz/da-ripassare'), get('/api/mie-patenti'),
@@ -252,8 +269,8 @@ async function mostraHome() {
   $('#badge-ripasso').innerHTML = ripasso.n_domande
     ? `<span class="badge text-bg-warning">${ripasso.n_domande} da rivedere</span>` : '';
 
-  $('#lista-criticita').innerHTML = st.criticita.length ? st.criticita.slice(0, 6).map(c => `
-    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+  $('#lista-criticita').innerHTML = st.criticita.length ? st.criticita.slice(0, 6).map((c, i) => `
+    <div class="d-flex justify-content-between align-items-center py-2 border-bottom rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
       <div class="me-3">
         <div class="small fw-semibold">${esc(c.argomento)}</div>
         <div class="text-muted" style="font-size:.75rem">${esc(c.capitolo)}</div>
@@ -268,8 +285,8 @@ async function mostraHome() {
 
   $('#tabella-storico').innerHTML = `
     <thead><tr><th>Tipo</th><th>Esito</th><th class="d-none d-md-table-cell">Errori</th><th>Data</th></tr></thead>
-    <tbody>${storico.map(s => `
-      <tr><td class="text-capitalize">${esc(s.tipo)}</td>
+    <tbody>${storico.map((s, i) => `
+      <tr class="rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms"><td class="text-capitalize">${esc(s.tipo)}</td>
       <td>${s.stato === 'in_corso' ? '<span class="badge text-bg-secondary">in corso</span>'
             : s.esito ? '<span class="badge text-bg-success">superata</span>'
                       : '<span class="badge text-bg-danger">non superata</span>'}</td>
@@ -295,6 +312,7 @@ async function mostraEsercitazione() {
 }
 
 async function caricaCapitoli() {
+  $('#lista-capitoli').innerHTML = scheletroRighe(4);
   const capitoli = await get('/api/catalogo/capitoli?listato=' + $('#sel-listato').value);
   $('#lista-capitoli').innerHTML = capitoli.map(c => `
     <div class="col-12 col-md-6 col-lg-4">
@@ -393,7 +411,7 @@ function renderGriglia() {
     else if (d.risposta_data !== null) cls += ' risposta';
     if (d.flag_dubbio) cls += ' dubbio';
     if (i === S.indice) cls += ' corrente';
-    return `<div class="${cls}" data-i="${i}">${i + 1}</div>`;
+    return `<div class="${cls}" data-i="${i}" role="button" tabindex="0" aria-current="${i === S.indice ? 'true' : 'false'}">${i + 1}</div>`;
   }).join('');
   const risp = S.scheda.domande.filter(d => d.risposta_data !== null).length;
   $('#legenda-scheda').textContent =
@@ -584,6 +602,7 @@ async function avvisoLive() {
 /* -------------------------------- VIDEO ---------------------------------- */
 async function mostraVideo() {
   mostra('video');
+  $('#lista-corsi').innerHTML = scheletroRighe(3);
   const [corsi, mie] = await Promise.all([
     get('/api/video/corsi'), get('/api/mie-patenti').catch(() => ({ listati: [] })),
   ]);
@@ -676,6 +695,7 @@ window.riproduci = function (lezioneId, url, riprendiDa) {
 /* ----------------------------- STATISTICHE ------------------------------- */
 async function mostraStatistiche() {
   mostra('statistiche');
+  $('#tabella-capitoli').innerHTML = scheletroRighe(4);
   const [st, mie] = await Promise.all([
     get('/api/statistiche/riepilogo'), get('/api/mie-patenti').catch(() => ({ listati: [] })),
   ]);
@@ -743,6 +763,13 @@ if (window.Chart && matchMedia('(prefers-color-scheme: dark)').matches) {
   Chart.defaults.borderColor = 'rgba(148, 163, 184, .25)';
 }
 
+// Easing coerente con il resto dell'app (le altre transizioni usano
+// cubic-bezier(.2,.7,.3,1)); disattivata per chi ha chiesto meno movimento.
+if (window.Chart) {
+  Chart.defaults.animation = matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? false : { easing: 'easeOutQuart', duration: 500 };
+}
+
 function disegna(id, cfg) {
   S.grafici[id]?.destroy();
   S.grafici[id] = new Chart($('#' + id), cfg);
@@ -752,6 +779,11 @@ function disegna(id, cfg) {
 async function mostraAdmin() {
   if (!['admin', 'istruttore', 'superadmin'].includes(S.utente.ruolo)) { location.hash = '#/home'; return; }
   mostra('admin');
+  $('#kpi-admin').innerHTML = Array.from({ length: 4 },
+    () => '<div class="col-6 col-lg-3"><div class="card-ac p-3"><div class="scheletro" style="height:52px"></div></div></div>').join('');
+  $('#tabella-allievi').innerHTML = scheletroTabella(5, 5);
+  $('#lista-bottleneck').innerHTML = scheletroRighe(3);
+  $('#lista-domande-critiche').innerHTML = scheletroRighe(3);
   const [pan, allievi] = await Promise.all([
     get('/api/admin/panoramica'), get('/api/admin/allievi?ordina=' + $('#sel-ordina-allievi').value)]);
 
@@ -766,7 +798,7 @@ async function mostraAdmin() {
   $('#tabella-allievi').innerHTML = `
     <thead><tr><th>Allievo</th><th class="text-end">Pronto?</th><th class="text-end d-none d-md-table-cell">Ore</th>
     <th class="text-end">Errore</th><th></th></tr></thead>
-    <tbody>${allievi.map(a => `<tr>
+    <tbody>${allievi.map((a, i) => `<tr class="rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
       <td><div class="small fw-semibold">${esc(a.nominativo)}</div>
           <div class="text-muted" style="font-size:.72rem">${esc(a.email)} - ${esc(a.listato_target)}</div></td>
       <td class="text-end"><span class="badge ${a.prontezza.punteggio >= 75 ? 'text-bg-success' : a.prontezza.punteggio >= 50 ? 'text-bg-warning' : 'text-bg-danger'}">${a.prontezza.punteggio}%</span></td>
@@ -777,15 +809,15 @@ async function mostraAdmin() {
 
   schedaScuola('#schermata-admin');
 
-  $('#lista-bottleneck').innerHTML = pan.colli_di_bottiglia.map(b => `
-    <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+  $('#lista-bottleneck').innerHTML = pan.colli_di_bottiglia.map((b, i) => `
+    <div class="d-flex justify-content-between align-items-center py-1 border-bottom rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
       <div class="me-2"><div class="small">${esc(b.argomento)}</div>
         <div class="text-muted" style="font-size:.72rem">${b.allievi_coinvolti} allievi - ${b.n_risposte} risposte</div></div>
       <span class="badge text-bg-danger">${b.tasso_errore_pct}%</span>
     </div>`).join('') || '<p class="small text-muted mb-0">Dati insufficienti.</p>';
 
-  $('#lista-domande-critiche').innerHTML = pan.domande_critiche.slice(0, 8).map(d => `
-    <div class="py-2 border-bottom d-flex gap-2 align-items-start">
+  $('#lista-domande-critiche').innerHTML = pan.domande_critiche.slice(0, 8).map((d, i) => `
+    <div class="py-2 border-bottom d-flex gap-2 align-items-start rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
       ${d.immagine ? `<img src="/media/${d.immagine}" alt="" style="width:38px">` : ''}
       <div class="flex-grow-1"><div class="small">${esc(d.testo)}</div>
         <div class="text-muted" style="font-size:.72rem">${esc(d.capitolo || '')} - ${d.errori}/${d.somministrazioni}</div></div>
@@ -794,6 +826,8 @@ async function mostraAdmin() {
 }
 
 window.dettaglioAllievo = async function (id) {
+  $('#dettaglio-allievo').innerHTML = `<div class="card-ac p-4">${scheletroRighe(4)}</div>`;
+  $('#dettaglio-allievo').scrollIntoView({ behavior: 'smooth' });
   const d = await get('/api/admin/allievi/' + id);
   const serie = [...d.serie].reverse();
   const haDati = serie.some(s => s.n_risposte > 0);
@@ -822,10 +856,10 @@ window.dettaglioAllievo = async function (id) {
       <p class="small text-muted">Non ha ancora risposto a nessuna domanda: niente da mostrare nei grafici.</p>`}
       <div class="row g-3 mb-3">
         <div class="col-md-6"><h4 class="h6 text-uppercase text-muted">Punti deboli</h4>
-          ${d.criticita.map(c => `<div class="d-flex justify-content-between small py-1">
+          ${d.criticita.map((c, i) => `<div class="d-flex justify-content-between small py-1 rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
             <span>${esc(c.argomento)}</span><span class="badge text-bg-danger">${c.tasso_errore_pct}%</span></div>`).join('') || '<p class="small text-muted">Nessuno.</p>'}</div>
         <div class="col-md-6"><h4 class="h6 text-uppercase text-muted">Ultime schede</h4>
-          ${d.schede.slice(0, 8).map(s => `<div class="d-flex justify-content-between small py-1">
+          ${d.schede.slice(0, 8).map((s, i) => `<div class="d-flex justify-content-between small py-1 rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
             <span class="text-capitalize">${esc(s.tipo)}</span>
             <span>${s.n_errori}/${s.n_domande} ${s.esito ? '<span class="text-success">OK</span>' : ''}</span></div>`).join('') || '<p class="small text-muted">Nessuna.</p>'}</div>
       </div>
@@ -833,7 +867,7 @@ window.dettaglioAllievo = async function (id) {
       ${d.capitoli.length ? `
       <div class="table-responsive"><table class="table table-sm align-middle">
         <thead><tr><th>Capitolo</th><th class="text-end">Domande</th><th class="text-end">Fatte</th><th class="text-end">Errore</th><th></th></tr></thead>
-        <tbody>${d.capitoli.map(c => `<tr>
+        <tbody>${d.capitoli.map((c, i) => `<tr class="rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
           <td class="small">${esc(c.titolo)}</td>
           <td class="text-end small text-muted">${c.n_domande}</td>
           <td class="text-end small">${c.n_risposte}</td>
@@ -842,7 +876,6 @@ window.dettaglioAllievo = async function (id) {
         </tr>`).join('')}</tbody>
       </table></div>` : '<p class="small text-muted">Nessuna patente assegnata: non c\'e\' un programma da confrontare.</p>'}
     </div>`;
-  $('#dettaglio-allievo').scrollIntoView({ behavior: 'smooth' });
 
   if (haDati) {
     disegna('gr-andamento-allievo', {
@@ -959,6 +992,70 @@ async function modificaScuola(s) {
     avviso('Scheda aggiornata.', 'success');
     schedaScuola();
   } catch (e) { avviso(e.message); }
+}
+
+/* --------------------------------- NOTIFICHE ------------------------------ */
+/* Due canali che si completano a vicenda: lo storico in-app (campanellino,
+ * sempre disponibile) e la push del browser (popup del sistema operativo
+ * anche a sito chiuso, solo se il browser la supporta e l'utente da' il
+ * permesso). La seconda si aggiunge alla prima, non la sostituisce: chi
+ * nega il permesso o e' su iPhone prima di installare il sito continua a
+ * vedere le notifiche aprendo il campanellino.
+ */
+function base64UrlAUint8Array(base64) {
+  const riempimento = '='.repeat((4 - base64.length % 4) % 4);
+  const sicura = (base64 + riempimento).replace(/-/g, '+').replace(/_/g, '/');
+  const grezzo = atob(sicura);
+  return Uint8Array.from([...grezzo].map(c => c.charCodeAt(0)));
+}
+
+async function caricaNotifiche() {
+  try {
+    const d = await get('/api/notifiche');
+    const badge = $('#badge-notifiche');
+    badge.textContent = d.non_lette > 9 ? '9+' : d.non_lette;
+    badge.classList.toggle('d-none', d.non_lette === 0);
+    $('#lista-notifiche').innerHTML = d.notifiche.length ? d.notifiche.map(n => `
+      <li><a class="dropdown-item py-2 ${n.letta ? '' : 'fw-semibold'}" href="${esc(n.url || '#')}">
+        <div class="small">${esc(n.titolo)}</div>
+        <div class="text-muted" style="font-size:.72rem">${esc(n.corpo || '')}</div>
+      </a></li>`).join('') : '<li><p class="text-muted small p-3 mb-0">Nessuna notifica.</p></li>';
+  } catch (e) { /* niente campanello se non si riesce a caricare: non deve bloccare il resto */ }
+}
+
+$('#btn-notifiche')?.addEventListener('click', () => {
+  // Si segnano come lette all'apertura: il pallino rosso serve ad accorgersi
+  // che c'e' qualcosa di nuovo, non a tenere il conto di chi non ha ancora
+  // cliccato dentro ogni singola voce.
+  if (!$('#badge-notifiche').classList.contains('d-none')) {
+    post('/api/notifiche/segna-lette').catch(() => {});
+    $('#badge-notifiche').classList.add('d-none');
+  }
+});
+
+async function iscrivitAllePush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (typeof Notification === 'undefined' || Notification.permission === 'denied') return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      if (Notification.permission !== 'granted') {
+        const esito = await Notification.requestPermission();
+        if (esito !== 'granted') return;
+      }
+      const { chiave } = await get('/api/notifiche/chiave-pubblica');
+      if (!chiave) return;   // scuola senza chiavi VAPID configurate: solo storico in-app
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true, applicationServerKey: base64UrlAUint8Array(chiave),
+      });
+    }
+    const s = sub.toJSON();
+    await post('/api/notifiche/iscrizione', {
+      endpoint: s.endpoint, p256dh: s.keys.p256dh, auth: s.keys.auth,
+      user_agent: navigator.userAgent,
+    });
+  } catch (e) { /* niente di grave: resta comunque lo storico in-app */ }
 }
 
 /* ------------------------- ASSISTENTE FLUTTUANTE -------------------------- */
@@ -1146,6 +1243,14 @@ $('#btn-consegna').addEventListener('click', () => {
 $('#griglia-nav').addEventListener('click', (e) => {
   const c = e.target.closest('.cella-nav'); if (c) vaiA(+c.dataset.i);
 });
+// Anche da tastiera: chi naviga con Tab deve poter saltare a una domanda
+// della griglia, non solo cliccarla col mouse.
+$('#griglia-nav').addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const c = e.target.closest('.cella-nav'); if (!c) return;
+  e.preventDefault();
+  vaiA(+c.dataset.i);
+});
 
 // Scorciatoie da tastiera: sul PC dell'aula si fanno centinaia di quiz al giorno.
 addEventListener('keydown', (e) => {
@@ -1216,5 +1321,7 @@ addEventListener('offline', () => document.body.classList.add('offline'));
   }
   avviaTracking();
   montaAssistente();
+  caricaNotifiche();
+  iscrivitAllePush();
   instrada();
 })();

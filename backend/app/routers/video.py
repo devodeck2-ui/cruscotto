@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field
 
 from .. import db
 from ..rbac import Principal, current_user, require_staff
-from .patenti import filtro_sql
+from ..services import notifiche
+from .patenti import filtro_sql, utenti_con_patente
 
 router = APIRouter(prefix="/api/video", tags=["video"])
 
@@ -80,6 +81,22 @@ class LiveIn(BaseModel):
 
 @router.post("/lezioni/{lezione_id}/stato-live")
 def stato_live(lezione_id: int, body: LiveIn, p: Principal = Depends(require_staff)):
-    db.execute("UPDATE lezioni_video SET stato_live = ? WHERE id = ? AND tipo = 'live'",
-               (body.stato, lezione_id))
+    # Si verifica che la diretta appartenga alla scuola di chi chiama (o sia
+    # di catalogo globale) prima di toccarla o di avvisare qualcuno: l'id
+    # arriva dall'URL, non ci si puo' fidare che sia dei "propri" allievi.
+    riga = db.query_one(
+        "SELECT v.titolo, l.codice AS listato FROM lezioni_video v "
+        "JOIN corsi c ON c.id = v.corso_id JOIN listati l ON l.id = c.listato_id "
+        "WHERE v.id = ? AND v.tipo = 'live' AND (c.autoscuola_id IS NULL OR c.autoscuola_id = ?)",
+        (lezione_id, p.autoscuola_id))
+    if not riga:
+        raise HTTPException(404, "Diretta non trovata")
+
+    db.execute("UPDATE lezioni_video SET stato_live = ? WHERE id = ?", (body.stato, lezione_id))
+
+    if body.stato == "in_onda":
+        notifiche.notifica_utenti(
+            utenti_con_patente(p.autoscuola_id, riga["listato"]),
+            "diretta_iniziata", f"E\' iniziata: {riga['titolo']}",
+            "Collegati ora dalla sezione Videocorsi.", "/#/video")
     return {"ok": True}

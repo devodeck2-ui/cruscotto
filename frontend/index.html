@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<link href="/app/styles.css?v=13" rel="stylesheet">
-<link href="/app/animazioni.css?v=3" rel="stylesheet">
+<link href="/app/styles.css?v=14" rel="stylesheet">
+<link href="/app/animazioni.css?v=4" rel="stylesheet">
 </head>
 <body>
 
@@ -70,6 +70,17 @@
     </div>
     <div class="ms-auto d-flex align-items-center gap-2">
       <span class="badge text-bg-light border" id="badge-listato">B</span>
+      <div class="dropdown">
+        <button class="btn btn-sm btn-light position-relative" data-bs-toggle="dropdown"
+                id="btn-notifiche" aria-label="Notifiche">
+          &#128276;
+          <span class="badge rounded-pill text-bg-danger position-absolute top-0 start-100 translate-middle d-none"
+                style="font-size:.6rem" id="badge-notifiche"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end p-0" id="lista-notifiche" style="min-width:300px;max-height:360px;overflow:auto">
+          <li><p class="text-muted small p-3 mb-0">Nessuna notifica.</p></li>
+        </ul>
+      </div>
       <div class="dropdown">
         <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" id="btn-utente">Utente</button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -362,7 +373,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="/app/app.js?v=18"></script>
+<script src="/app/app.js?v=19"></script>
 <script src="/app/animazioni.js?v=2"></script>
 </body>
 </html>

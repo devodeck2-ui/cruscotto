@@ -31,7 +31,8 @@ from .. import db
 from ..config import settings
 from ..rbac import Principal, require_admin, require_staff
 from ..security import hash_password
-from .patenti import codici_utente, imposta
+from ..services import notifiche
+from .patenti import codici_utente, imposta, utenti_con_patente
 
 router = APIRouter(prefix="/api/gestione", tags=["gestione"])
 
@@ -571,6 +572,16 @@ def crea_video(body: VideoIn, p: Principal = Depends(require_admin)):
         " ordine, pubblicata) VALUES(?,?,?, 'registrata', ?,?,?,?)",
         (corso_id, body.titolo, body.descrizione, _normalizza_url(body.url),
          body.durata_min * 60, ordine, 1 if body.pubblicata else 0))
+
+    # Stessa logica delle dirette: se la lezione nasce gia' pubblicata, gli
+    # allievi di quella patente vengono avvisati subito, invece di doverla
+    # scoprire per caso riaprendo i Videocorsi. Se nasce nascosta non si
+    # avvisa nessuno: l'avviso partira' quando verra' pubblicata.
+    if body.pubblicata:
+        notifiche.notifica_utenti(
+            utenti_con_patente(p.autoscuola_id, body.listato),
+            "lezione_programmata", f"Nuova videolezione: {body.titolo}",
+            "Disponibile ora nella sezione Videocorsi.", "/#/video")
     return {"id": cur.lastrowid, "url": _normalizza_url(body.url)}
 
 
@@ -621,6 +632,11 @@ async def carica_video(request: Request, titolo: str = Query(...), listato: str 
         "INSERT INTO lezioni_video(corso_id, titolo, descrizione, tipo, url, ordine, pubblicata) "
         "VALUES(?,?,?, 'registrata', ?,?,1)",
         (corso_id, titolo, descrizione, f"/media/video/{nome}", ordine))
+
+    notifiche.notifica_utenti(
+        utenti_con_patente(p.autoscuola_id, listato),
+        "lezione_programmata", f"Nuova videolezione: {titolo}",
+        "Disponibile ora nella sezione Videocorsi.", "/#/video")
     return {"id": cur.lastrowid, "url": f"/media/video/{nome}",
             "megabyte": round(scritti / 1048576, 1)}
 
@@ -642,6 +658,14 @@ def programma_live(body: LiveIn, p: Principal = Depends(require_admin)):
         "INSERT INTO lezioni_video(corso_id, titolo, descrizione, tipo, url, inizio_live,"
         " stato_live, ordine, pubblicata) VALUES(?,?,?, 'live', ?,?, 'programmata', 999, 1)",
         (corso_id, body.titolo, body.descrizione, body.url.strip(), body.inizio))
+
+    # Si avvisano subito gli allievi di quella patente: la diretta e' appena
+    # comparsa in agenda, prima che qualcuno la scopra per caso aprendo l'app.
+    quando = body.inizio.replace("T", " alle ") if "T" in body.inizio else body.inizio
+    notifiche.notifica_utenti(
+        utenti_con_patente(p.autoscuola_id, body.listato),
+        "lezione_programmata", f"Nuova diretta: {body.titolo}",
+        f"Programmata per il {quando}.", "/#/video")
     return {"id": cur.lastrowid}
 
 
@@ -696,6 +720,30 @@ def modifica_video(video_id: int, body: StatoVideoIn, p: Principal = Depends(req
     cur = db.execute(sql, [*campi.values(), video_id, p.autoscuola_id])
     if not cur.rowcount:
         raise HTTPException(404, "Lezione video non trovata")
+
+    # La diretta e' appena passata "in onda": si avvisano gli allievi della
+    # patente interessata, non solo chi ha gia' l'app aperta in quel momento.
+    if body.pubblicata is True:
+        riga = db.query_one(
+            "SELECT v.titolo, v.tipo, l.codice AS listato FROM lezioni_video v "
+            "JOIN corsi c ON c.id = v.corso_id JOIN listati l ON l.id = c.listato_id "
+            "WHERE v.id = ?", (video_id,))
+        if riga and riga["tipo"] == "registrata":
+            notifiche.notifica_utenti(
+                utenti_con_patente(p.autoscuola_id, riga["listato"]),
+                "lezione_programmata", f"Nuova videolezione: {riga['titolo']}",
+                "Disponibile ora nella sezione Videocorsi.", "/#/video")
+
+    if body.stato_live == "in_onda":
+        riga = db.query_one(
+            "SELECT v.titolo, l.codice AS listato FROM lezioni_video v "
+            "JOIN corsi c ON c.id = v.corso_id JOIN listati l ON l.id = c.listato_id "
+            "WHERE v.id = ?", (video_id,))
+        if riga:
+            notifiche.notifica_utenti(
+                utenti_con_patente(p.autoscuola_id, riga["listato"]),
+                "diretta_iniziata", f"E\' iniziata: {riga['titolo']}",
+                "Collegati ora dalla sezione Videocorsi.", "/#/video")
     return {"ok": True}
 
 

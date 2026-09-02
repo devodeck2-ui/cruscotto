@@ -12,6 +12,17 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// Righe segnaposto durante il caricamento: non si conosce il numero reale
+// di righe finche' i dati non arrivano, quindi un numero fisso basta - non
+// vale la pena costruire una stima.
+const scheletroRighe = (n = 5) =>
+  Array.from({ length: n }, () => '<div class="scheletro mb-2" style="height:38px"></div>').join('');
+// Stessa cosa ma per <table>: una <div> sciolta dentro <table> viene spostata
+// fuori dal browser (regole di parsing dell'HTML), quindi qui serve <tr><td>.
+const scheletroTabella = (n = 5, colonne = 4) =>
+  Array.from({ length: n }, () =>
+    `<tr><td colspan="${colonne}"><div class="scheletro" style="height:20px"></div></td></tr>`).join('');
+
 const GIORNI = ['lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato', 'domenica'];
 const S = { utente: null, listati: [], slot: null, lezione: null, allievo: null, grafici: {} };
 
@@ -20,6 +31,13 @@ const S = { utente: null, listati: [], slot: null, lezione: null, allievo: null,
 if (window.Chart && matchMedia('(prefers-color-scheme: dark)').matches) {
   Chart.defaults.color = '#94a3b8';
   Chart.defaults.borderColor = 'rgba(148, 163, 184, .25)';
+}
+
+// Easing coerente con il resto dell'app (le altre transizioni usano
+// cubic-bezier(.2,.7,.3,1)); disattivata per chi ha chiesto meno movimento.
+if (window.Chart) {
+  Chart.defaults.animation = matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? false : { easing: 'easeOutQuart', duration: 500 };
 }
 
 function disegna(id, cfg) {
@@ -75,9 +93,10 @@ async function rinnova() {
 
 function avviso(testo, tipo = 'danger') {
   const el = document.createElement('div');
-  el.className = `alert alert-${tipo} alert-dismissible`;
+  el.className = `alert alert-${tipo} alert-dismissible avviso-entra`;
   el.innerHTML = esc(testo) + '<button class="btn-close" data-bs-dismiss="alert"></button>';
   $('#avvisi').appendChild(el);
+  setTimeout(() => el.classList.add('avviso-esce'), 5750);
   setTimeout(() => el.remove(), 6000);
 }
 
@@ -96,6 +115,7 @@ $$('#menu button').forEach(b => b.addEventListener('click', () => {
 
 /* ------------------------------- ORARIO ---------------------------------- */
 async function caricaOrario() {
+  $('#griglia-orario').innerHTML = scheletroRighe(3);
   const d = await get('/api/gestione/orario');
   $('#griglia-orario').innerHTML = d.settimana.map(g => `
     <div class="col-giorno">
@@ -165,6 +185,7 @@ async function caricaLezioni() {
     d.setDate(d.getDate() + 13);
     $('#lez-al').value = d.toISOString().slice(0, 10);
   }
+  $('#elenco-lezioni').innerHTML = scheletroRighe(4);
   const d = await get(`/api/gestione/lezioni?dal=${$('#lez-dal').value}&al=${$('#lez-al').value}`);
   const perGiorno = {};
   d.lezioni.forEach(l => (perGiorno[l.data] = perGiorno[l.data] || []).push(l));
@@ -172,8 +193,9 @@ async function caricaLezioni() {
   $('#elenco-lezioni').innerHTML = Object.keys(perGiorno).sort().map(data => `
     <div class="mb-2">
       <div class="small fw-semibold text-capitalize text-muted">${fmtData(data)}</div>
-      ${perGiorno[data].map(l => `
-        <button class="btn btn-sm w-100 text-start mb-1 riga-lezione ${l.presenti ? 'fatta' : ''}"
+      ${perGiorno[data].map((l, i) => `
+        <button class="btn btn-sm w-100 text-start mb-1 riga-lezione rivela-riga ${l.presenti ? 'fatta' : ''}"
+                style="animation-delay:${Math.min(i * 40, 240)}ms"
                 data-lez="${l.id}">
           <span class="d-flex justify-content-between align-items-center gap-2">
             <span>
@@ -308,6 +330,7 @@ async function apriLezione(id) {
 /* ------------------------------- ALLIEVI --------------------------------- */
 async function caricaAllievi() {
   const q = $('#cerca-allievo').value.trim();
+  $('#elenco-allievi').innerHTML = scheletroRighe(4);
   const d = await get('/api/gestione/allievi' + (q ? '?cerca=' + encodeURIComponent(q) : ''));
   $('#riassunto-allievi').textContent =
     `${d.totale} allievi attivi in ${d.categorie.length} categorie`;
@@ -321,8 +344,8 @@ async function caricaAllievi() {
       <div class="table-responsive"><table class="table table-sm align-middle mb-0">
         <thead><tr><th>Allievo</th><th>Contatti</th><th class="text-end">Lezioni fatte</th>
           <th class="text-end">Quiz</th><th></th></tr></thead>
-        <tbody>${c.allievi.map(a => `
-          <tr>
+        <tbody>${c.allievi.map((a, i) => `
+          <tr class="rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
             <td><div class="fw-semibold small">${esc(a.cognome)} ${esc(a.nome)}${a.listati_extra ? ` <span class="pill">+${esc(a.listati_extra)}</span>` : ''}</div>
                 <div class="text-muted" style="font-size:.72rem">${esc(a.username || a.email)}</div></td>
             <td class="small">${esc(a.telefono || '-')}<div class="text-muted" style="font-size:.72rem">${esc(a.indirizzo || '')}</div></td>
@@ -424,9 +447,10 @@ $$('#tab-video button').forEach(b => b.addEventListener('click', () => {
 }));
 
 async function caricaVideo() {
+  $('#elenco-video').innerHTML = scheletroRighe(4);
   const v = await get('/api/gestione/video');
-  $('#elenco-video').innerHTML = v.map(x => `
-    <div class="d-flex justify-content-between align-items-start gap-2 py-2 border-bottom">
+  $('#elenco-video').innerHTML = v.map((x, i) => `
+    <div class="d-flex justify-content-between align-items-start gap-2 py-2 border-bottom rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
       <div class="flex-grow-1">
         <div class="small fw-semibold">${esc(x.titolo)}
           ${x.tipo === 'live' ? '<span class="badge text-bg-danger ms-1">diretta</span>' : ''}
@@ -519,18 +543,21 @@ $('#btn-salva-live').addEventListener('click', async () => {
 
 /* -------------------------------- ANALISI -------------------------------- */
 async function caricaAnalisi() {
+  $('#osservazioni').innerHTML = scheletroRighe(3);
+  $('#tab-analisi').innerHTML = scheletroTabella(4, 8);
+  $('#tab-parti').innerHTML = scheletroTabella(3, 7);
   const d = await get('/api/gestione/analisi');
   $('#nota-metodo').textContent = d.nota_metodo;
-  $('#osservazioni').innerHTML = d.osservazioni.map(o =>
-    `<div class="d-flex gap-2 py-1"><span class="text-primary">&bull;</span><span class="small">${esc(o)}</span></div>`).join('');
+  $('#osservazioni').innerHTML = d.osservazioni.map((o, i) =>
+    `<div class="d-flex gap-2 py-1 rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms"><span class="text-primary">&bull;</span><span class="small">${esc(o)}</span></div>`).join('');
 
   const colore = (v) => v === null ? '#cbd5e1' : v > 30 ? '#dc3545' : v > 20 ? '#ffc107' : '#198754';
   $('#tab-analisi').innerHTML = `
     <thead><tr><th>Fascia</th><th>Categoria</th><th class="text-end">Lezioni</th>
       <th class="text-end">Media presenti</th><th class="text-end">Allievi stabili</th>
       <th class="text-end">Errori</th><th class="text-end">Simulazioni ok</th><th></th></tr></thead>
-    <tbody>${d.slot.map(s => `
-      <tr class="${s.attivo ? '' : 'text-muted'}">
+    <tbody>${d.slot.map((s, i) => `
+      <tr class="rivela-riga ${s.attivo ? '' : 'text-muted'}" style="animation-delay:${Math.min(i * 40, 240)}ms">
         <td><span class="fw-semibold small text-capitalize">${esc(s.nome_giorno)}</span>
             <div class="small">${esc(s.fascia)}</div></td>
         <td><span class="pill">${esc(s.listato)}</span></td>
@@ -562,8 +589,8 @@ async function caricaAnalisi() {
       <th class="text-end">Presenze</th><th class="text-end">Media presenti</th>
       <th class="text-end">Allievi</th><th class="text-end">Errori</th>
       <th class="text-end">Ore di studio medie</th></tr></thead>
-    <tbody>${d.per_parte_giornata.map(p => `
-      <tr><td class="text-capitalize small fw-semibold">${esc(p.parte)}</td>
+    <tbody>${d.per_parte_giornata.map((p, i) => `
+      <tr class="rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms"><td class="text-capitalize small fw-semibold">${esc(p.parte)}</td>
         <td class="text-end small">${p.lezioni}</td>
         <td class="text-end small">${p.presenze}</td>
         <td class="text-end small">${p.media_presenti}</td>
