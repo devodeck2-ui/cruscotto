@@ -41,6 +41,22 @@ docker compose -f deploy/docker-compose.yml logs -f
 
 Il certificato viene emesso al primo avvio: se il DNS non è ancora propagato, Caddy riprova finché non ci riesce.
 
+**Il database al primo avvio.** Il volume `dati` nasce vuoto e `data/autoscuola.db`
+non e' nel repository: senza intervento SQLite creerebbe un file vuoto e il
+pannello admin mostrerebbe l'elenco allievi deserto. L'entrypoint
+`deploy/avvio.sh` copia quindi la demo (`/app/seme/autoscuola.demo.db`, un
+amministratore e cinque allievi) la prima volta che il database non c'e'. Ai
+riavvii successivi non tocca nulla: i dati veri restano sul volume.
+
+Per partire invece dai dati di un'installazione esistente, copia il tuo
+`autoscuola.db` nel volume **prima** del primo `up`:
+
+```bash
+docker compose -f deploy/docker-compose.yml create
+docker cp autoscuola.db "$(docker compose -f deploy/docker-compose.yml ps -q applicazione)":/app/data/autoscuola.db
+docker compose -f deploy/docker-compose.yml up -d
+```
+
 **Aggiornare l'applicazione senza toccare i dati:**
 
 ```bash

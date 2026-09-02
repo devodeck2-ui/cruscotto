@@ -11,18 +11,23 @@ ci sono utenti reali e token di sessione. Al suo posto trovi
 `data/autoscuola.demo.db`, con tutte le 27.737 domande, le immagini e i sei
 account dimostrativi, ma senza dati personali.
 
+La copia **avviene da sola**: al primo lancio, se `data/autoscuola.db` non
+esiste, l'avviatore lo crea partendo dalla copia demo. Non c'e' niente da
+copiare a mano. Lo stesso vale per il deploy con Docker: l'entrypoint
+(`deploy/avvio.sh`) prepara il database sul volume al primo avvio.
+
+L'unico passaggio manuale e' la configurazione:
+
 ```bash
-# Windows (PowerShell)
-copy data\autoscuola.demo.db data\autoscuola.db
-
-# macOS / Linux
-cp data/autoscuola.demo.db data/autoscuola.db
-
 cp .env.example .env      # poi inserisci la tua ANTHROPIC_API_KEY
 ```
 
 Poi si procede con l'avvio normale qui sotto. L'ambiente virtuale `.venv/` non e'
 nel repository: l'avviatore lo ricrea da solo al primo lancio.
+
+> Se l'elenco allievi appare vuoto, il database in uso non e' quello demo: la
+> copia demo contiene un amministratore e cinque allievi. Controlla quale file
+> punta `AC_DB` (in locale `data/autoscuola.db`, in Docker il volume `dati`).
 
 ## Avvio
 

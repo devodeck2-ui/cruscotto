@@ -279,10 +279,22 @@ def main() -> int:
         prepara_ambiente()          # non ritorna: sostituisce il processo
 
     risorse, dati = cartella_risorse(), cartella_dati()
-    if not (dati / "autoscuola.db").exists():
-        errore(f"database non trovato in {dati}")
-        errore("ricostruiscilo con:  python3 etl/build_db.py --demo --reset")
-        return 1
+    db_lavoro = dati / "autoscuola.db"
+    if not db_lavoro.exists():
+        # Primo avvio dopo un clone da GitHub. Il database di lavoro non e'
+        # versionato (contiene utenti, password, token e dati degli allievi):
+        # nel repo c'e' solo la copia demo, anonima. Prima questa copia andava
+        # fatta a mano leggendo il README, e chi la saltava si ritrovava un
+        # gestionale che non partiva - o, peggio, in produzione un database
+        # vuoto creato al volo da SQLite, con l'elenco allievi deserto.
+        demo = dati / "autoscuola.demo.db"
+        if demo.exists():
+            passo("primo avvio: creo il database di lavoro da " + demo.name)
+            shutil.copy2(demo, db_lavoro)
+        else:
+            errore(f"database non trovato in {dati}")
+            errore("ricostruiscilo con:  python3 etl/build_db.py --demo --reset")
+            return 1
 
     os.environ.setdefault("AC_DB", str(dati / "autoscuola.db"))
     os.environ.setdefault("AC_MEDIA", str(dati / "media"))

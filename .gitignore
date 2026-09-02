@@ -22,6 +22,22 @@ __pycache__/
 .mypy_cache/
 
 # --- Database di lavoro ------------------------------------
+# Qualunque .db dentro data/ e' una copia di lavoro: contiene utenti,
+# password, token e dati degli allievi. L'unica eccezione e'
+# autoscuola.demo.db, che e' anonimo e serve al primo avvio dopo un clone.
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.db-journal
+!data/autoscuola.demo.db
+
+# File di prova creati durante i test di scrittura
+data/prova-scrittura.txt
+
+# Script che stampa in chiaro le password degli account demo: resta locale.
+# Per reimpostarle: python scripts/gestione_utenti.py reimposta-password ...
+Password demo.bat
+
 # Il DB live contiene utenti, password, token e dati allievi.
 # Nel repo c'e' solo data/autoscuola.demo.db (senza dati personali):
 # il collega lo copia in autoscuola.db al primo avvio.
