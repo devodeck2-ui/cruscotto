@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from .. import db
 from ..rbac import Principal, current_user, require_staff
+from ..security import url_media_firmato
 from ..services import notifiche
 from .patenti import filtro_sql, utenti_con_patente
 
@@ -36,7 +37,7 @@ def lezioni(corso_id: int, p: Principal = Depends(current_user)):
                      (corso_id, p.autoscuola_id))
     if not c:
         raise HTTPException(404, "Corso non disponibile")
-    return db.rows_to_dicts(db.query(
+    righe = db.rows_to_dicts(db.query(
         "SELECT v.id, v.titolo, v.descrizione, v.tipo, v.url, v.durata_sec, v.inizio_live,"
         "       v.stato_live, v.ordine, c.titolo AS capitolo,"
         "       COALESCE(vv.posizione_sec, 0) AS riprendi_da,"
@@ -44,6 +45,12 @@ def lezioni(corso_id: int, p: Principal = Depends(current_user)):
         "FROM lezioni_video v LEFT JOIN capitoli c ON c.id = v.capitolo_id "
         "LEFT JOIN visione_video vv ON vv.lezione_id = v.id AND vv.utente_id = ? "
         "WHERE v.corso_id = ? AND v.pubblicata = 1 ORDER BY v.ordine", (p.utente_id, corso_id)))
+    # I video caricati dalla scuola escono con un link firmato che scade: chi non
+    # ha fatto il login non li scarica, e un indirizzo copiato in chat smette di
+    # funzionare in giornata.
+    for r in righe:
+        r["url"] = url_media_firmato(r["url"])
+    return righe
 
 
 class ProgressoIn(BaseModel):

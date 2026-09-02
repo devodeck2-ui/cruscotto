@@ -33,7 +33,7 @@ from pydantic import BaseModel, Field
 from .. import db
 from ..config import settings
 from ..rbac import Principal, require_admin, require_staff
-from ..security import hash_password
+from ..security import hash_password, url_media_firmato
 from ..services import notifiche
 from .patenti import codici_utente, imposta, utenti_con_patente
 
@@ -555,6 +555,48 @@ def rigenera_password(utente_id: int, p: Principal = Depends(require_admin)):
     return {"username": u["username"], "password": password}
 
 
+@router.delete("/allievi/{utente_id}/definitivo")
+def cancella_allievo(utente_id: int, conferma: str = Query(""),
+                     p: Principal = Depends(require_admin)):
+    """Cancellazione vera e irreversibile dei dati di un allievo.
+
+    Diversa dalla disattivazione, che tiene tutto e nasconde soltanto: qui
+    spariscono anagrafica, accessi, schede, risposte, statistiche, presenze,
+    notifiche e conversazioni col tutor. Serve quando l'allievo esercita il
+    diritto alla cancellazione dei propri dati: in quel caso disattivare non
+    basta, perche' i dati resterebbero comunque nel database.
+
+    Per evitare il clic sbagliato bisogna riscrivere il cognome dell'allievo
+    (`conferma`). Del passaggio resta una riga nel giornale delle operazioni,
+    senza nome: serve a dimostrare quando e da chi la cancellazione e' stata
+    eseguita, non a conservare di nascosto cio' che si e' cancellato.
+    """
+    u = db.query_one("SELECT nome, cognome FROM utenti u JOIN ruoli r ON r.id = u.ruolo_id "
+                     "WHERE u.id = ? AND u.autoscuola_id = ? AND r.codice = 'allievo'",
+                     (utente_id, p.autoscuola_id))
+    if not u:
+        raise HTTPException(404, "Allievo non trovato")
+    if conferma.strip().lower() != (u["cognome"] or "").strip().lower():
+        raise HTTPException(422, "Per cancellare definitivamente scrivi il cognome dell'allievo")
+
+    # Il giornale si scrive prima: dopo la DELETE l'allievo non esiste piu' e
+    # non ci sarebbe piu' nulla a cui agganciare la riga.
+    db.execute("INSERT INTO audit_log(utente_id, autoscuola_id, azione, entita, entita_id, dettagli) "
+               "VALUES(?,?,'cancella_allievo_definitivo','utenti',?,?)",
+               (p.utente_id, p.autoscuola_id, utente_id,
+                '{"motivo": "richiesta di cancellazione dati"}'))
+
+    with db.transaction() as con:
+        # Le tabelle collegate hanno tutte ON DELETE CASCADE: schede, risposte,
+        # statistiche, presenze, notifiche, iscrizioni push e conversazioni AI
+        # se ne vanno con questa sola riga. Il giornale conserva il numero
+        # identificativo, non la persona.
+        con.execute("PRAGMA foreign_keys = ON")
+        con.execute("DELETE FROM utenti WHERE id = ? AND autoscuola_id = ?",
+                    (utente_id, p.autoscuola_id))
+
+    return {"ok": True, "cancellato": f"{u['nome']} {u['cognome']}"}
+
 @router.get("/allievi/{utente_id}/presenze")
 def presenze_allievo(utente_id: int, p: Principal = Depends(require_staff)):
     if not db.query_one("SELECT 1 FROM utenti WHERE id = ? AND autoscuola_id = ?",
@@ -700,7 +742,7 @@ async def carica_video(request: Request, titolo: str = Query(...), listato: str 
         utenti_con_patente(p.autoscuola_id, listato),
         "lezione_programmata", f"Nuova videolezione: {titolo}",
         "Disponibile ora nella sezione Videocorsi.", "/#/video")
-    return {"id": cur.lastrowid, "url": f"/media/video/{nome}",
+    return {"id": cur.lastrowid, "url": url_media_firmato(f"/media/video/{nome}"),
             "megabyte": round(scritti / 1048576, 1)}
 
 
@@ -734,7 +776,7 @@ def programma_live(body: LiveIn, p: Principal = Depends(require_admin)):
 
 @router.get("/video")
 def elenco_video(p: Principal = Depends(require_staff)):
-    return db.rows_to_dicts(db.query(
+    righe = db.rows_to_dicts(db.query(
         "SELECT v.id, v.titolo, v.descrizione, v.tipo, v.url, v.durata_sec, v.inizio_live,"
         "       v.stato_live, v.pubblicata, v.ordine, l.codice AS listato,"
         "  (SELECT COUNT(*) FROM visione_video vv WHERE vv.lezione_id = v.id) AS visualizzazioni,"
@@ -743,6 +785,9 @@ def elenco_video(p: Principal = Depends(require_staff)):
         "JOIN listati l ON l.id = c.listato_id "
         "WHERE c.autoscuola_id = ? ORDER BY l.codice, v.tipo DESC, v.ordine",
         (p.autoscuola_id,)))
+    for r in righe:
+        r["url"] = url_media_firmato(r["url"])
+    return righe
 
 
 @router.delete("/video/{video_id}")

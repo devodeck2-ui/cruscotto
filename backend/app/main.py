@@ -23,6 +23,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import db
 from .config import settings
+from .security import verifica_firma_media
 from .routers import (amministrazione, assistente, auth, catalogo, gestione,
                       notifiche, patenti, quiz, scuola, sessioni, statistiche,
                       tutoraggio, video)
@@ -52,6 +53,25 @@ async def intestazioni_sicurezza(request: Request, call_next):
     resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     resp.headers["X-Tempo-ms"] = f"{(time.perf_counter() - inizio) * 1000:.1f}"
     return resp
+
+
+@app.middleware("http")
+async def protegge_videolezioni(request: Request, call_next):
+    """Le videolezioni caricate dalla scuola si aprono solo con un link firmato.
+
+    Il resto di /media (le figure dei quesiti ministeriali) resta pubblico: e'
+    materiale ufficiale, e serve che il browser possa tenerlo in cache. I video
+    invece sono lavoro della scuola: l'indirizzo da solo non basta piu', serve
+    la firma che l'API allega alla lezione per chi ha fatto il login, e che
+    scade dopo qualche ora.
+    """
+    percorso = request.url.path
+    if percorso.startswith("/media/video/"):
+        firma = request.query_params.get("f", "")
+        if not verifica_firma_media(percorso, firma):
+            return JSONResponse(status_code=403,
+                                content={"detail": "Link scaduto: riapri la lezione dall'app."})
+    return await call_next(request)
 
 
 @app.exception_handler(Exception)

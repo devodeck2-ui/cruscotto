@@ -388,6 +388,7 @@ function apriAllievo(a) {
   $('#a-note').value = a?.note_admin || '';
   $('#box-credenziali').classList.add('d-none');
   $('#btn-nuova-password').classList.toggle('d-none', !a);
+  $('#btn-cancella-allievo').classList.toggle('d-none', !a);
   $('#btn-salva-allievo').textContent = a ? 'Salva modifiche' : 'Registra iscrizione';
   bootstrap.Modal.getOrCreateInstance($('#m-allievo')).show();
 }
@@ -457,6 +458,32 @@ $('#btn-nuova-password').addEventListener('click', async () => {
   if (!S.allievo || !confirm('Generare una nuova password? Quella attuale smettera\' di funzionare.')) return;
   const r = await post(`/api/gestione/allievi/${S.allievo.id}/password`);
   mostraCredenziali(r.username, r.password, S.allievo.email);
+});
+
+/* Cancellazione definitiva: e' la risposta all'allievo che chiede di far
+ * sparire i propri dati, dove disattivare non basta. Si chiede di riscrivere
+ * il cognome perche' non e' un'operazione da fare per sbaglio: schede,
+ * statistiche e presenze se ne vanno con lui e non tornano indietro. */
+$('#btn-cancella-allievo').addEventListener('click', async () => {
+  if (!S.allievo) return;
+  const atteso = (S.allievo.cognome || '').trim();
+  const scritto = prompt(
+    `CANCELLAZIONE DEFINITIVA di ${S.allievo.nome} ${atteso}.\n\n` +
+    'Spariscono anagrafica, accessi, quiz svolti, statistiche e presenze. ' +
+    'Non si torna indietro: se ti serve solo togliere l\'allievo dagli elenchi, ' +
+    'chiudi qui e usa invece la disattivazione.\n\n' +
+    `Per procedere scrivi il cognome dell'allievo (${atteso}):`);
+  if (scritto === null) return;
+  try {
+    const r = await api(
+      `/api/gestione/allievi/${S.allievo.id}/definitivo?conferma=${encodeURIComponent(scritto)}`,
+      { method: 'DELETE' });
+    bootstrap.Modal.getOrCreateInstance($('#m-allievo')).hide();
+    avviso(`Dati di ${r.cancellato} cancellati definitivamente.`, 'success');
+    caricaAllievi();
+  } catch (e) {
+    avviso(e.message);
+  }
 });
 
 function mostraCredenziali(username, password, email) {

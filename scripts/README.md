@@ -10,7 +10,7 @@ AC_DB=/tmp/prova.db python3 scripts/reaper_sessioni.py --dry-run
 
 | Script | Frequenza consigliata | Cosa fa |
 |---|---|---|
-| `backup.py` | notturna | Copia consistente via `VACUUM INTO`, con rotazione e compressione opzionale |
+| `backup.py` | notturna | Copia consistente via `VACUUM INTO`, con rotazione, compressione e cifratura opzionali (`--cifra`, `--decifra`) |
 | `reaper_sessioni.py` | ogni minuto | Chiude le sessioni orfane impostando `fine = ultimo_ping` |
 | `ricostruisci_aggregati.py` | dopo import / settimanale in `--verifica` | Rigenera o controlla gli aggregati statistici |
 | `pregenera_spiegazioni.py` | settimanale | Popola la cache dell'AI Tutor sulle domande piu' sbagliate |

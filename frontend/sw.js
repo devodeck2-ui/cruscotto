@@ -7,7 +7,7 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v122';
+const VERSIONE = 'cruscotto-v123';
 const SHELL = ['/', '/app/index.html', '/app/app.js', '/app/styles.css',
                '/manifest.webmanifest', '/app/assets/icon-192.png?v=2'];
 
@@ -67,6 +67,12 @@ self.addEventListener('notificationclick', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;
+
+  // I video non si mettono in cache: sono file da centinaia di MB, arrivano a
+  // pezzi (richieste Range, che una cache non sa ricomporre) e il loro link e'
+  // firmato e scade - una copia salvata smetterebbe di funzionare senza che si
+  // capisca perche'.
+  if (url.pathname.startsWith('/media/video/')) return;
 
   if (url.pathname.startsWith('/media/')) {
     e.respondWith(caches.open(VERSIONE + '-media').then(async c => {

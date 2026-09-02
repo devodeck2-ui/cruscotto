@@ -17,7 +17,10 @@ PYTHON=/usr/bin/python3
 * * * * * cd $PROGETTO/scripts && $PYTHON reaper_sessioni.py 2>&1 | logger -t cruscotto-reaper
 
 # Backup consistente ogni notte alle 03:15, con rotazione a 14 copie.
-15 3 * * * cd $PROGETTO/scripts && $PYTHON backup.py --comprimi --tieni 14 2>&1 | logger -t cruscotto-backup
+# La password del backup va messa qui sopra (o nell'ambiente di sistema):
+# senza, --cifra la chiede da tastiera e il job resterebbe fermo ad aspettare.
+AC_BACKUP_PASSWORD=metti-qui-una-password-lunga
+15 3 * * * cd $PROGETTO/scripts && $PYTHON backup.py --comprimi --cifra --tieni 14 2>&1 | logger -t cruscotto-backup
 
 # Verifica settimanale della coerenza degli aggregati (lunedi' alle 04:00).
 # Non modifica nulla: segnala soltanto se rollup e ricalcolo divergono.
