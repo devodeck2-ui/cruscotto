@@ -14,6 +14,7 @@ AC_DB=/tmp/prova.db python3 scripts/reaper_sessioni.py --dry-run
 | `reaper_sessioni.py` | ogni minuto | Chiude le sessioni orfane impostando `fine = ultimo_ping` |
 | `ricostruisci_aggregati.py` | dopo import / settimanale in `--verifica` | Rigenera o controlla gli aggregati statistici |
 | `pregenera_spiegazioni.py` | settimanale | Popola la cache dell'AI Tutor sulle domande piu' sbagliate |
+| `promemoria_studio.py` | giornaliera (18:00) | Richiama gli allievi fermi da 2 giorni, max 2 promemoria a settimana |
 | `gestione_utenti.py` | a richiesta | Provisioning di autoscuole e utenti, reset password |
 
 La pianificazione pronta all'uso e' in `manutenzione.crontab`.

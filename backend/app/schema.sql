@@ -492,7 +492,7 @@ CREATE INDEX IF NOT EXISTS ix_push_utente ON push_subscription(utente_id);
 CREATE TABLE IF NOT EXISTS notifica (
     id           INTEGER PRIMARY KEY,
     utente_id    INTEGER NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
-    tipo         TEXT    NOT NULL CHECK (tipo IN ('lezione_programmata','diretta_iniziata')),
+    tipo         TEXT    NOT NULL CHECK (tipo IN ('lezione_programmata','diretta_iniziata','promemoria_studio')),
     titolo       TEXT    NOT NULL,
     corpo        TEXT,
     url          TEXT,                                -- dove va a finire chi ci clicca

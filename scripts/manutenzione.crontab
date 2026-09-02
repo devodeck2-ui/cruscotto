@@ -26,3 +26,7 @@ PYTHON=/usr/bin/python3
 # Pre-generazione notturna delle spiegazioni AI per le domande piu' critiche.
 # Domenica alle 02:00, quando nessuno sta usando la piattaforma.
 0 2 * * 0 cd $PROGETTO/scripts && $PYTHON pregenera_spiegazioni.py --listato B --quante 150 2>&1 | logger -t cruscotto-ai
+
+# Promemoria di studio agli allievi fermi da 2 giorni: ogni sera alle 18:00.
+# Tetto di 2 promemoria a settimana per allievo, gestito dallo script stesso.
+0 18 * * * cd $PROGETTO/scripts && $PYTHON promemoria_studio.py --giorni 2 --max-settimana 2 2>&1 | logger -t cruscotto-promemoria

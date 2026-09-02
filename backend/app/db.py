@@ -78,7 +78,52 @@ def _ensure_schema(con: sqlite3.Connection) -> None:
                     con.execute(f"ALTER TABLE {tabella} ADD COLUMN {nome} {tipo}")
                 except sqlite3.Error as e:
                     print(f"! _ensure_schema: impossibile aggiungere {tabella}.{nome}: {e}")
+    _migra_tipi_notifica(con)
     con.commit()
+
+
+def _migra_tipi_notifica(con: sqlite3.Connection) -> None:
+    """Allarga il vincolo su notifica.tipo quando compaiono tipi nuovi.
+
+    SQLite non sa modificare un CHECK con un ALTER: l'unica strada e'
+    ricostruire la tabella. Si fa solo se il vincolo attuale non conosce
+    ancora l'ultimo tipo introdotto, quindi e' un no-op ad ogni avvio
+    successivo. Lo storico delle notifiche viene ricopiato per intero.
+    """
+    try:
+        riga = con.execute("SELECT sql FROM sqlite_master WHERE type='table' "
+                           "AND name='notifica'").fetchone()
+    except sqlite3.Error:
+        return
+    if not riga or not riga[0] or "promemoria_studio" in riga[0]:
+        return
+    try:
+        con.executescript("""
+            PRAGMA foreign_keys = OFF;
+            BEGIN;
+            CREATE TABLE notifica_nuova (
+                id           INTEGER PRIMARY KEY,
+                utente_id    INTEGER NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+                tipo         TEXT    NOT NULL CHECK (tipo IN ('lezione_programmata','diretta_iniziata','promemoria_studio')),
+                titolo       TEXT    NOT NULL,
+                corpo        TEXT,
+                url          TEXT,
+                letta        INTEGER NOT NULL DEFAULT 0 CHECK (letta IN (0,1)),
+                inviata_push INTEGER NOT NULL DEFAULT 0 CHECK (inviata_push IN (0,1)),
+                created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+            );
+            INSERT INTO notifica_nuova
+                SELECT id, utente_id, tipo, titolo, corpo, url, letta, inviata_push, created_at
+                FROM notifica;
+            DROP TABLE notifica;
+            ALTER TABLE notifica_nuova RENAME TO notifica;
+            CREATE INDEX IF NOT EXISTS ix_notifica_utente ON notifica(utente_id, created_at DESC);
+            COMMIT;
+            PRAGMA foreign_keys = ON;
+        """)
+        print("_ensure_schema: tabella notifica ricostruita per accogliere i promemoria di studio")
+    except sqlite3.Error as e:
+        print(f"! _ensure_schema: ricostruzione di notifica non riuscita (si prosegue): {e}")
 
 
 def get_conn() -> sqlite3.Connection:
