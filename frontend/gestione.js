@@ -392,6 +392,38 @@ function apriAllievo(a) {
   bootstrap.Modal.getOrCreateInstance($('#m-allievo')).show();
 }
 
+/* Export dell'anagrafica: il file si genera sul momento e resta solo nel
+ * computer di chi lo scarica - sul server non viene salvato niente. Serve
+ * una fetch e non un semplice link perche' l'API vuole il token di accesso,
+ * che un link non porta con se'. */
+$('#btn-esporta-allievi')?.addEventListener('click', async (e) => {
+  const bottone = e.currentTarget;
+  const testo = bottone.textContent;
+  bottone.disabled = true;
+  bottone.textContent = 'Preparo...';
+  try {
+    const res = await fetch('/api/gestione/allievi/esporta', {
+      headers: { Authorization: 'Bearer ' + localStorage.getItem('ac_access') },
+    });
+    if (!res.ok) throw new Error('Errore ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), {
+      href: url, download: `allievi-${new Date().toISOString().slice(0, 10)}.csv`,
+    });
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    avviso('Elenco scaricato. Contiene dati personali: conservalo con cura.', 'success');
+  } catch (err) {
+    avviso('Export non riuscito: ' + err.message);
+  } finally {
+    bottone.disabled = false;
+    bottone.textContent = testo;
+  }
+});
+
 $('#btn-nuovo-allievo').addEventListener('click', () => apriAllievo(null));
 
 $('#btn-salva-allievo').addEventListener('click', async () => {

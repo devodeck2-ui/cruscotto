@@ -37,6 +37,7 @@ SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
 # esiste gia', quindi quelle vanno elencate qui ed applicate con ALTER TABLE.
 COLONNE_AGGIUNTE = {
     "utenti": [
+        ("username", "TEXT"),
         ("listati_extra", "TEXT"),
         ("indirizzo", "TEXT"),
         ("ore_acquistate", "INTEGER NOT NULL DEFAULT 0"),

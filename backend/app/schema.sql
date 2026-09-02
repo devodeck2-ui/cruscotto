@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS utenti (
     nome           TEXT    NOT NULL,
     cognome        TEXT    NOT NULL,
     telefono       TEXT,
+    username       TEXT,                              -- nome utente breve generato all'iscrizione (vedi routers/gestione.py)
     codice_fiscale TEXT,
     indirizzo      TEXT,                              -- vedi routers/gestione.py (anagrafica allievo)
     listato_target TEXT    NOT NULL DEFAULT 'B',     -- listato che l'allievo sta preparando
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS utenti (
 );
 -- Login: lookup per email globale (l'app risolve il tenant dallo slug o dall'email)
 CREATE INDEX IF NOT EXISTS ix_utenti_email        ON utenti(email);
+CREATE UNIQUE INDEX IF NOT EXISTS ix_utenti_username ON utenti(username) WHERE username IS NOT NULL;
 CREATE INDEX IF NOT EXISTS ix_utenti_tenant_ruolo ON utenti(autoscuola_id, ruolo_id, attivo);
 
 CREATE TABLE IF NOT EXISTS refresh_token (

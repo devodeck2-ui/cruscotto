@@ -19,12 +19,15 @@ NOTA SULLA FREQUENZA LIBERA
 """
 from __future__ import annotations
 
+import csv
+import io
 import re
 import secrets
 import unicodedata
 from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from .. import db
@@ -432,6 +435,66 @@ def elenco_allievi(categoria: str | None = None, cerca: str | None = None,
                       for c, v in sorted(categorie.items())],
     }
 
+
+@router.get("/allievi/esporta")
+def esporta_allievi(includi_disattivi: bool = False, p: Principal = Depends(require_admin)):
+    """Elenco allievi come foglio di calcolo, generato al momento.
+
+    Deliberatamente non esiste nessun file permanente con le anagrafiche: ogni
+    copia in piu' e' un posto in piu' da cui i dati possono uscire e da tenere
+    aggiornato. Il foglio si crea quando l'autoscuola lo chiede (commercialista,
+    controllo, cambio gestionale) e vive nel computer di chi l'ha scaricato.
+
+    Formato CSV con punto e virgola e BOM: e' quello che Excel in italiano apre
+    con un doppio clic senza chiedere nulla e senza rovinare gli accenti.
+    Riservato all'admin: un istruttore non ha motivo di portarsi via l'elenco.
+    """
+    sql = ("SELECT u.id, u.cognome, u.nome, u.email, u.username, u.telefono, u.codice_fiscale,"
+           "       u.indirizzo, u.listato_target, u.listati_extra, u.ore_acquistate,"
+           "       u.importo_pagato, u.data_iscrizione, u.data_esame, u.attivo, u.note_admin,"
+           "  (SELECT COUNT(*) FROM aula_presenza pr JOIN aula_lezione l ON l.id = pr.lezione_id"
+           "    WHERE pr.utente_id = u.id AND pr.stato = 'presente') AS ore_frequentate "
+           "FROM utenti u JOIN ruoli r ON r.id = u.ruolo_id "
+           "WHERE u.autoscuola_id = ? AND r.codice = 'allievo'")
+    par: list = [p.autoscuola_id]
+    if not includi_disattivi:
+        sql += " AND u.attivo = 1"
+    sql += " ORDER BY u.cognome, u.nome"
+
+    intestazioni = ["Cognome", "Nome", "Email", "Utente", "Telefono", "Codice fiscale",
+                    "Indirizzo", "Patenti", "Ore acquistate", "Ore frequentate",
+                    "Importo pagato", "Data iscrizione", "Data esame", "Stato", "Note"]
+
+    buf = io.StringIO()
+    scrittore = csv.writer(buf, delimiter=";", quoting=csv.QUOTE_MINIMAL,
+                           lineterminator="\r\n")
+    scrittore.writerow(intestazioni)
+    n = 0
+    for r in db.query(sql, par):
+        patenti = ", ".join(codici_utente(r["id"]))
+        # La virgola decimale e' quella che Excel in italiano riconosce come numero.
+        importo = "" if r["importo_pagato"] is None else f"{r['importo_pagato']:.2f}".replace(".", ",")
+        scrittore.writerow([
+            r["cognome"], r["nome"], r["email"], r["username"], r["telefono"] or "",
+            r["codice_fiscale"] or "", r["indirizzo"] or "", patenti,
+            r["ore_acquistate"] or 0, r["ore_frequentate"] or 0, importo,
+            r["data_iscrizione"] or "", r["data_esame"] or "",
+            "attivo" if r["attivo"] else "disattivato", (r["note_admin"] or "").replace("\n", " "),
+        ])
+        n += 1
+
+    # Un export porta fuori l'anagrafica completa: resta traccia di chi l'ha
+    # fatto e quando, cosi' l'autoscuola puo' rispondere a un allievo che
+    # chiede chi ha visto i suoi dati.
+    db.execute("INSERT INTO audit_log(utente_id, autoscuola_id, azione, entita, entita_id) "
+               "VALUES(?,?,'esporta_allievi','utenti',NULL)", (p.utente_id, p.autoscuola_id))
+
+    nome_file = f"allievi-{date.today().isoformat()}.csv"
+    return Response(
+        content="\ufeff" + buf.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{nome_file}"',
+                 "X-Righe-Esportate": str(n)})
 
 class ModificaAllievoIn(BaseModel):
     nome: str | None = None
