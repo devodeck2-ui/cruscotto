@@ -1058,6 +1058,84 @@ async function iscrivitAllePush() {
   } catch (e) { /* niente di grave: resta comunque lo storico in-app */ }
 }
 
+/* ---------------------- INVITO A INSTALLARE L'APP ------------------------- */
+/* Il sito e' gia' installabile, ma quasi nessuno lo sa: su iPhone il
+ * passaggio e' nascosto nel menu Condividi, e senza installazione li' non
+ * esistono proprio le notifiche push. Da qui l'invito esplicito, con due
+ * regole per non diventare fastidioso: mai se l'app e' gia' installata,
+ * e una volta rifiutato non si ripresenta per due settimane.
+ */
+const INSTALLA_RINVIO_GIORNI = 14;
+let promptInstalla = null;      // evento del browser (Android/desktop Chrome)
+
+function appGiaInstallata() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function suIphone() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+         // iPadOS recenti si dichiarano "Macintosh": si riconoscono dal touch
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function installaRinviato() {
+  try {
+    const fino = Number(localStorage.getItem('ac_installa_rinvio') || 0);
+    return fino > Date.now();
+  } catch (e) { return false; }
+}
+
+function rinviaInstalla() {
+  try {
+    localStorage.setItem('ac_installa_rinvio',
+      String(Date.now() + INSTALLA_RINVIO_GIORNI * 86400000));
+  } catch (e) { /* navigazione privata: pazienza, si ripresentera' */ }
+  $('#banner-installa')?.classList.add('d-none');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  // Si blocca il banner automatico del browser per mostrarlo quando serve
+  // a noi: dopo il login, non in mezzo alla schermata di accesso.
+  e.preventDefault();
+  promptInstalla = e;
+});
+
+window.addEventListener('appinstalled', () => {
+  $('#banner-installa')?.classList.add('d-none');
+  avviso('App installata: la trovi fra le tue app.', 'success');
+});
+
+function proponiInstallazione() {
+  const banner = $('#banner-installa');
+  if (!banner || appGiaInstallata() || installaRinviato()) return;
+  // Da PC non ha molto senso: l'utile vero (icona e notifiche) e' sul telefono.
+  const daTelefono = window.matchMedia('(max-width: 820px)').matches || suIphone();
+  if (!daTelefono && !promptInstalla) return;
+  if (!promptInstalla && !suIphone()) return;   // browser che non sa installare
+
+  // Un attimo di respiro dopo il login: l'invito arriva a schermata gia'
+  // caricata, non sovrapposto al primo caricamento.
+  setTimeout(() => banner.classList.remove('d-none'), 2500);
+}
+
+$('#btn-installa-si')?.addEventListener('click', async () => {
+  if (promptInstalla) {
+    $('#banner-installa').classList.add('d-none');
+    promptInstalla.prompt();
+    const esito = await promptInstalla.userChoice.catch(() => null);
+    promptInstalla = null;
+    if (!esito || esito.outcome !== 'accepted') rinviaInstalla();
+    return;
+  }
+  // iPhone: il pulsante non esiste, si spiegano i due passaggi.
+  $('#banner-installa').classList.add('d-none');
+  new bootstrap.Modal($('#modal-installa-ios')).show();
+});
+
+$('#btn-installa-no')?.addEventListener('click', rinviaInstalla);
+$('#btn-installa-dopo')?.addEventListener('click', rinviaInstalla);
+
 /* ------------------------- ASSISTENTE FLUTTUANTE -------------------------- */
 /* Pulsante in basso a destra con la finestrella di chat. Compare ovunque
  * tranne che durante una scheda: mentre si risponde alle domande si e' soli,
@@ -1323,5 +1401,6 @@ addEventListener('offline', () => document.body.classList.add('offline'));
   montaAssistente();
   caricaNotifiche();
   iscrivitAllePush();
+  proponiInstallazione();
   instrada();
 })();

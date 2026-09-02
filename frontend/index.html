@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<link href="/app/styles.css?v=14" rel="stylesheet">
+<link href="/app/styles.css?v=15" rel="stylesheet">
 <link href="/app/animazioni.css?v=4" rel="stylesheet">
 </head>
 <body>
@@ -371,9 +371,67 @@
   </div>
 </div>
 
+<!-- ==================== INVITO A INSTALLARE L'APP ==================== -->
+<!-- Compare solo da telefono, a sito NON gia' installato, dopo il login.
+     Su Android il browser fornisce il pulsante di installazione vero
+     (evento beforeinstallprompt); su iPhone quel pulsante non esiste e
+     l'unica strada e' spiegare i due passaggi del menu Condividi. -->
+<div id="banner-installa" class="banner-installa d-none" role="dialog"
+     aria-labelledby="banner-installa-titolo">
+  <div class="banner-installa-corpo">
+    <img src="/app/assets/icon-192.png?v=2" width="44" height="44" alt="" class="rounded-3">
+    <div class="flex-grow-1">
+      <div id="banner-installa-titolo" class="fw-semibold">Installa l'app sul telefono</div>
+      <div class="small text-muted">Si apre come un'app e ricevi gli avvisi delle lezioni.</div>
+    </div>
+    <button type="button" class="btn-close" id="btn-installa-no" aria-label="Non ora"></button>
+  </div>
+  <div class="d-flex gap-2 mt-2">
+    <button class="btn btn-primary btn-sm flex-grow-1" id="btn-installa-si">Installa</button>
+    <button class="btn btn-outline-secondary btn-sm" id="btn-installa-dopo">Non ora</button>
+  </div>
+</div>
+
+<!-- Istruzioni per iPhone: due passaggi, con le icone vere del menu Safari -->
+<div class="modal fade" id="modal-installa-ios" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Aggiungi l'app alla schermata Home</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+      </div>
+      <div class="modal-body">
+        <ol class="passi-installa mb-3">
+          <li>
+            <span>In fondo allo schermo tocca <strong>Condividi</strong></span>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor"
+                 stroke-width="1.8" aria-hidden="true">
+              <path d="M12 3v13M12 3l-4 4M12 3l4 4"/>
+              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+            </svg>
+          </li>
+          <li>
+            <span>Scorri e tocca <strong>Aggiungi a schermata Home</strong></span>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor"
+                 stroke-width="1.8" aria-hidden="true">
+              <rect x="4" y="4" width="16" height="16" rx="4"/>
+              <path d="M12 8.5v7M8.5 12h7"/>
+            </svg>
+          </li>
+          <li><span>Conferma con <strong>Aggiungi</strong>: l'icona compare fra le tue app.</span></li>
+        </ol>
+        <p class="small text-muted mb-0">
+          Finche&#769; non lo fai, gli avvisi delle lezioni restano visibili solo
+          aprendo il campanellino qui dentro.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="/app/app.js?v=19"></script>
+<script src="/app/app.js?v=20"></script>
 <script src="/app/animazioni.js?v=2"></script>
 </body>
 </html>

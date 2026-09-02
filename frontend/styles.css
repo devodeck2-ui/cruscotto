@@ -391,6 +391,44 @@ body.offline .offline-badge { display: block; }
  * al buio stanca in pochi minuti.
  * ====================================================================== */
 
+/* ------------------- Invito a installare l'app (mobile) ------------------- */
+/* Sta in fondo, sopra la tabbar, e non copre mai il contenuto in modo
+   permanente: si chiude con la X e non torna per due settimane. */
+.banner-installa {
+  position: fixed;
+  left: 12px; right: 12px;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  z-index: 1045;
+  background: var(--ac-superficie);
+  border: 1px solid var(--ac-bordo);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .18);
+  padding: 12px 14px 14px;
+  animation: installa-entra .28s ease-out both;
+}
+.banner-installa-corpo { display: flex; align-items: center; gap: 12px; }
+@keyframes installa-entra {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (min-width: 821px) {
+  .banner-installa { left: auto; right: 20px; bottom: 20px; max-width: 380px; }
+}
+
+.passi-installa { list-style: none; padding: 0; margin: 0; counter-reset: passo; }
+.passi-installa li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--ac-bordo);
+}
+.passi-installa li:last-child { border-bottom: 0; }
+.passi-installa li::before {
+  counter-increment: passo; content: counter(passo);
+  flex: 0 0 26px; height: 26px; border-radius: 50%;
+  background: var(--ac-primario); color: #fff;
+  display: grid; place-items: center; font-size: .8rem; font-weight: 600;
+}
+.passi-installa svg { flex: 0 0 auto; color: var(--ac-primario); }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --ac-fondo: #0b1220;
@@ -460,4 +498,8 @@ body.offline .offline-badge { display: block; }
   .img-quiz { background: #fff; padding: 6px; }  /* i segnali restano leggibili */
 
   .border-bottom, .border-top { border-color: var(--ac-bordo) !important; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .banner-installa { background: #16233c; border-color: var(--ac-bordo); }
 }
