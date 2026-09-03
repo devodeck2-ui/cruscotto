@@ -94,19 +94,24 @@ class NuovoAllievo(BaseModel):
 
 @router.post("/allievi")
 def crea_allievo(body: NuovoAllievo, p: Principal = Depends(require_admin)):
+    # Lo username si genera anche qui: senza, l'allievo creato da questa via
+    # non avrebbe con cosa entrare. Le due funzioni stanno in gestione.py e si
+    # importano dentro la funzione per non incrociare gli import fra router.
+    from .gestione import _slug_nome, _username_libero
     ruolo = db.query_one("SELECT id FROM ruoli WHERE codice = 'allievo'")["id"]
+    username = _username_libero(_slug_nome(body.nome, body.cognome))
     try:
         cur = db.execute(
-            "INSERT INTO utenti(autoscuola_id, ruolo_id, email, password_hash, nome, cognome,"
-            " listato_target, data_esame) VALUES(?,?,?,?,?,?,?,?)",
-            (p.autoscuola_id, ruolo, body.email.lower(), hash_password(body.password),
+            "INSERT INTO utenti(autoscuola_id, ruolo_id, email, username, password_hash, nome,"
+            " cognome, listato_target, data_esame) VALUES(?,?,?,?,?,?,?,?,?)",
+            (p.autoscuola_id, ruolo, body.email.lower(), username, hash_password(body.password),
              body.nome, body.cognome, body.listato_target, body.data_esame))
     except Exception:
         raise HTTPException(409, "Email gia' registrata in questa autoscuola")
     db.execute("INSERT INTO audit_log(utente_id, autoscuola_id, azione, entita, entita_id) "
                "VALUES(?,?,'crea_allievo','utenti',?)",
                (p.utente_id, p.autoscuola_id, cur.lastrowid))
-    return {"id": cur.lastrowid}
+    return {"id": cur.lastrowid, "username": username}
 
 
 @router.delete("/allievi/{utente_id}")

@@ -106,8 +106,49 @@ def _ensure_schema(con: sqlite3.Connection) -> None:
                     con.execute(f"ALTER TABLE {tabella} ADD COLUMN {nome} {tipo}")
                 except sqlite3.Error as e:
                     print(f"! _ensure_schema: impossibile aggiungere {tabella}.{nome}: {e}")
+    _assegna_username(con)
     _migra_tipi_notifica(con)
     con.commit()
+
+
+def _assegna_username(con: sqlite3.Connection) -> None:
+    """Da' un nome utente a chi non ce l'ha ancora.
+
+    Nell'app si entra con lo username, non con l'email. Gli account nati prima
+    che la colonna esistesse - l'admin per primo - resterebbero senza, quindi
+    glielo si costruisce qui con la stessa regola dell'iscrizione: iniziale del
+    nome, punto, cognome, piu' un numero progressivo se il nome e' gia' preso.
+    Gira una volta sola: al secondo avvio non trova piu' nessuno da sistemare.
+    """
+    import re as _re
+    import unicodedata as _ud
+    try:
+        senza = con.execute(
+            "SELECT id, nome, cognome, email FROM utenti "
+            "WHERE username IS NULL OR trim(username) = ''").fetchall()
+        if not senza:
+            return
+        presi = {r[0].lower() for r in con.execute(
+            "SELECT username FROM utenti "
+            "WHERE username IS NOT NULL AND trim(username) <> ''").fetchall()}
+    except sqlite3.Error as e:
+        print(f"! _assegna_username: {e}")
+        return
+    for id_utente, nome, cognome, email in senza:
+        grezzo = (f"{nome[:1]}.{cognome}" if nome and cognome
+                  else (nome or cognome or (email or "").split("@")[0]))
+        grezzo = _ud.normalize("NFKD", grezzo).encode("ascii", "ignore").decode()
+        base = _re.sub(r"[^a-zA-Z0-9.]+", "", grezzo).lower()[:24] or "utente"
+        candidato, n = base, 1
+        while candidato in presi:
+            n += 1
+            candidato = f"{base}{n}"
+        presi.add(candidato)
+        try:
+            con.execute("UPDATE utenti SET username = ? WHERE id = ?", (candidato, id_utente))
+            print(f"  nome utente assegnato: {candidato} (utente {id_utente}, {email})")
+        except sqlite3.Error as e:
+            print(f"! _assegna_username sull'utente {id_utente}: {e}")
 
 
 def _migra_tipi_notifica(con: sqlite3.Connection) -> None:

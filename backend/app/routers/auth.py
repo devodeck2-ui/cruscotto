@@ -5,7 +5,7 @@ import time
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 from .. import db
 from ..config import settings
@@ -15,10 +15,24 @@ from ..security import create_token, hash_opaque, hash_password, verify_password
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
+# Si entra con il nome utente generato all'iscrizione, quello consegnato
+# all'allievo insieme alla password. L'email resta accettata come secondo
+# ingresso: gli account creati prima che gli username esistessero hanno solo
+# quella, e una copia vecchia dell'app (il service worker ne conserva una in
+# cache) continua a spedire il campo chiamandolo "email". Qui valgono
+# entrambi i nomi, cosi' nessuno resta fuori durante il passaggio.
 class LoginIn(BaseModel):
-    email: EmailStr
+    utente: str | None = Field(default=None, max_length=254)
+    email: str | None = Field(default=None, max_length=254)
+    username: str | None = Field(default=None, max_length=254)
     password: str = Field(min_length=4, max_length=128)
-    autoscuola: str | None = None      # slug, per email presenti su piu' tenant
+    autoscuola: str | None = None      # slug, per omonimie fra tenant
+
+    def identificativo(self) -> str:
+        for valore in (self.utente, self.username, self.email):
+            if valore and valore.strip():
+                return valore.strip().lower()
+        raise HTTPException(status_code=422, detail="Indicare nome utente e password")
 
 
 class TokenOut(BaseModel):
@@ -111,15 +125,20 @@ def _emetti(utente: dict, request: Request) -> TokenOut:
 
 @router.post("/login", response_model=TokenOut)
 def login(body: LoginIn, request: Request):
-    sql = ("SELECT u.id, u.autoscuola_id, u.email, u.nome, u.cognome, u.listato_target,"
-           "       u.password_hash, u.attivo, r.codice AS ruolo, a.ragione_sociale, a.slug "
+    chi = body.identificativo()
+    # Le parentesi non sono decorative: senza, il filtro sullo slug si
+    # legherebbe al solo ramo dell'email e lo username scavalcherebbe il tenant.
+    sql = ("SELECT u.id, u.autoscuola_id, u.email, u.username, u.nome, u.cognome,"
+           "       u.listato_target, u.password_hash, u.attivo, r.codice AS ruolo,"
+           "       a.ragione_sociale, a.slug "
            "FROM utenti u JOIN ruoli r ON r.id = u.ruolo_id "
-           "JOIN autoscuole a ON a.id = u.autoscuola_id WHERE u.email = ?")
-    par = [body.email.lower()]
+           "JOIN autoscuole a ON a.id = u.autoscuola_id "
+           "WHERE (lower(u.username) = ? OR lower(u.email) = ?)")
+    par = [chi, chi]
     if body.autoscuola:
         sql += " AND a.slug = ?"
         par.append(body.autoscuola)
-    chiave = _chiave(request, body.email)
+    chiave = _chiave(request, chi)
     _controlla_freno(chiave)
 
     row = db.query_one(sql, par)
@@ -129,7 +148,7 @@ def login(body: LoginIn, request: Request):
     stored = row["password_hash"] if row else hash_password("dummy")
     if not verify_password(body.password, stored) or not row or not row["attivo"]:
         _registra_fallimento(chiave)
-        raise HTTPException(status_code=401, detail="Email o password non corretti")
+        raise HTTPException(status_code=401, detail="Nome utente o password non corretti")
 
     _tentativi.pop(chiave, None)      # accesso riuscito: la lavagna si pulisce
     utente = {k: row[k] for k in row.keys() if k != "password_hash"}

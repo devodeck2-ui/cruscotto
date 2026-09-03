@@ -7,7 +7,7 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v124';
+const VERSIONE = 'cruscotto-v126';
 // Nella shell vanno TUTTI i file dell'interfaccia serviti da noi. Prima ne
 // mancavano quattro (i due file delle animazioni e l'intera pagina di
 // gestione): senza rete la segreteria si ritrovava una pagina bianca, e le

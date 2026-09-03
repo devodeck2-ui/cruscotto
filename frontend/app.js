@@ -70,7 +70,15 @@ async function api(percorso, opzioni = {}, riprova = true) {
   }
   if (!res.ok) {
     let msg = 'Errore ' + res.status;
-    try { msg = (await res.json()).detail || msg; } catch (e) {}
+    try {
+      const d = (await res.json()).detail;
+      // Un errore di validazione (422) porta una LISTA di oggetti, non una
+      // frase: passata cosi' com'e' a new Error() diventava "[object Object]"
+      // e nascondeva il motivo vero del rifiuto.
+      if (typeof d === 'string') msg = d;
+      else if (Array.isArray(d)) msg = d.map(x => x && x.msg ? x.msg : JSON.stringify(x)).join('; ');
+      else if (d) msg = JSON.stringify(d);
+    } catch (e) {}
     throw new Error(msg);
   }
   return res.status === 204 ? null : res.json();
@@ -1291,7 +1299,7 @@ $('#form-login').addEventListener('submit', async (e) => {
   try {
     const d = await api('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email: $('#in-email').value.trim(), password: $('#in-password').value }),
+      body: JSON.stringify({ utente: $('#in-email').value.trim(), password: $('#in-password').value }),
     }, false);
     salvaSessione(d);
     location.reload();
