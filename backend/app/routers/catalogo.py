@@ -1,13 +1,27 @@
 """Catalogo ministeriale: listati, capitoli, ricerca full-text."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query
+import re
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from .. import db
 from ..rbac import Principal, current_user
 from .patenti import filtro_sql
 
 router = APIRouter(prefix="/api/catalogo", tags=["catalogo"])
+
+
+def _espressione_fts(testo: str) -> str:
+    """Trasforma il testo digitato in un'espressione FTS5 innocua.
+
+    FTS5 legge come sintassi anche il trattino, le parentesi e le parole
+    OR/AND/NOT/NEAR: bastava un "precedenza-" o una "OR" in mezzo alla frase
+    perche' la ricerca cadesse con un errore 500. Si estraggono quindi le sole
+    parole e si passa ognuna fra virgolette, come termine letterale.
+    """
+    parole = re.findall(r"\w+", testo, flags=re.UNICODE)
+    return " ".join('"%s"' % p for p in parole)
 
 
 @router.get("/listati")
@@ -47,6 +61,9 @@ def cerca(q: str = Query(min_length=3), listato: str = "B", limite: int = 30,
           _: Principal = Depends(current_user)):
     """Ricerca full-text FTS5: utile all'allievo per rivedere una domanda vista
     in aula e all'istruttore per costruire una spiegazione mirata."""
+    espressione = _espressione_fts(q)
+    if not espressione:
+        return []
     return db.rows_to_dicts(db.query(
         "SELECT d.id, d.testo, d.risposta, c.titolo AS capitolo, i.percorso AS immagine "
         "FROM domande_fts f JOIN domande d ON d.id = f.rowid "
@@ -54,4 +71,4 @@ def cerca(q: str = Query(min_length=3), listato: str = "B", limite: int = 30,
         "LEFT JOIN capitoli c ON c.id = d.capitolo_id "
         "LEFT JOIN immagini i ON i.id = d.immagine_id "
         "WHERE domande_fts MATCH ? ORDER BY rank LIMIT ?",
-        (listato, q.replace('"', ' '), limite)))
+        (listato, espressione, limite)))

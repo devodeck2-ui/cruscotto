@@ -54,7 +54,11 @@ verifica(c.get("/api/auth/me").status_code == 401, "endpoint protetto senza toke
 
 print("\n== 3. Catalogo per l'allievo ==")
 listati = c.get("/api/catalogo/listati", headers=allievo).json()
-verifica(len(listati) == 9, "elenco listati")
+# Il catalogo e' filtrato per patente: l'allievo vede le sue, non tutte.
+verifica([l["codice"] for l in listati] == ["B"],
+         f"listati dell'allievo ({[l['codice'] for l in listati]})")
+tutti = c.get("/api/catalogo/listati", headers=admin).json()
+verifica(len(tutti) == 9, f"catalogo completo per lo staff ({len(tutti)})")
 cap = c.get("/api/catalogo/capitoli?listato=B", headers=allievo).json()
 verifica(len(cap) >= 20, f"capitoli listato B ({len(cap)})")
 ric = c.get("/api/catalogo/cerca?q=precedenza&listato=B", headers=allievo).json()

@@ -114,6 +114,21 @@ def crea_slot(body: SlotIn, p: Principal = Depends(require_admin)):
 def modifica_slot(slot_id: int, body: SlotIn, p: Principal = Depends(require_admin)):
     _ora_valida(body.ora_inizio, "ora_inizio")
     _ora_valida(body.ora_fine, "ora_fine")
+    if body.ora_fine <= body.ora_inizio:
+        raise HTTPException(422, "L'ora di fine deve essere successiva a quella di inizio")
+
+    # Gli stessi controlli della creazione: passando dalla modifica si poteva
+    # salvare una fascia con orario invertito o sovrapposta a un'altra.
+    conflitto = db.query_one(
+        "SELECT id, ora_inizio, ora_fine FROM aula_slot "
+        "WHERE autoscuola_id = ? AND giorno = ? AND attivo = 1 AND id <> ? "
+        "AND IFNULL(aula,'') = IFNULL(?,'') "
+        "AND ora_inizio < ? AND ora_fine > ?",
+        (p.autoscuola_id, body.giorno, slot_id, body.aula, body.ora_fine, body.ora_inizio))
+    if conflitto:
+        raise HTTPException(409, f"Si sovrappone alla lezione {conflitto['ora_inizio']}"
+                                 f"-{conflitto['ora_fine']} nella stessa aula")
+
     cur = db.execute(
         "UPDATE aula_slot SET giorno=?, ora_inizio=?, ora_fine=?, listato=?, aula=?,"
         " docente=?, note=?, attivo=? WHERE id=? AND autoscuola_id=?",
@@ -526,7 +541,21 @@ def modifica_allievo(utente_id: int, body: ModificaAllievoIn,
              "importo_pagato": body.importo_pagato, "data_esame": body.data_esame,
              "note_admin": body.note,
              "attivo": None if body.attivo is None else (1 if body.attivo else 0)}
-    campi = {k: v for k, v in campi.items() if v is not None}
+
+    # Un campo assente dalla richiesta non si tocca; un campo inviato
+    # esplicitamente a null va invece azzerato davvero, altrimenti un dato
+    # sbagliato (un telefono, una data d'esame) non si puo' piu' togliere.
+    # Restano esclusi dallo svuotamento i campi NOT NULL dello schema.
+    inviati = body.model_fields_set
+    da_body = {"nome": "nome", "cognome": "cognome", "telefono": "telefono",
+               "email": "email", "indirizzo": "indirizzo",
+               "codice_fiscale": "codice_fiscale", "listato_target": "listato_target",
+               "ore_acquistate": "ore_acquistate", "importo_pagato": "importo_pagato",
+               "data_esame": "data_esame", "note_admin": "note", "attivo": "attivo"}
+    AZZERABILI = {"telefono", "codice_fiscale", "indirizzo", "importo_pagato",
+                  "data_esame", "note_admin"}
+    campi = {k: v for k, v in campi.items()
+             if v is not None or (k in AZZERABILI and da_body[k] in inviati)}
     if body.patenti:
         imposta(utente_id, body.patenti)
         campi.pop("listato_target", None)

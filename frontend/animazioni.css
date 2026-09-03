@@ -225,6 +225,11 @@ html { scroll-behavior: smooth; }
    subirlo comunque: qui si spegne tutto, comparse comprese. */
 @media (prefers-reduced-motion: reduce) {
   .rivela { opacity: 1 !important; transform: none !important; }
+  /* .rivela-riga parte da opacity:0 e conta sull'animazione per tornare
+     visibile: azzerando ogni animazione qui sotto resterebbe invisibile per
+     sempre. E' cosi' che sparivano le righe di TUTTE le tabelle (allievi,
+     storico, capitoli, fasce orarie) su chi ha "riduci movimento" attivo. */
+  .rivela-riga { opacity: 1 !important; animation: none !important; }
   *, *::before, *::after {
     animation: none !important;
     transition: none !important;

@@ -65,6 +65,9 @@
 
   function conta(el) {
     const testo = (el.textContent || '').trim();
+    // Solo valori puramente numerici: su "23/45" parseFloat legge 23 e poi
+    // l'animazione riscrive tutto il testo, cancellando per sempre il "/45".
+    if (!/^-?[\d.,]+%?$/.test(testo)) return;
     const numero = parseFloat(testo.replace(',', '.').replace('%', ''));
     if (!isFinite(numero) || numero === 0 || el.dataset.contato) return;
     el.dataset.contato = '1';

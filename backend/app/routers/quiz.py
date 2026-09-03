@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from .. import db
 from ..rbac import Principal, current_user
 from ..services import analytics, generatore, srs
+from .patenti import codici_utente
 
 router = APIRouter(prefix="/api/quiz", tags=["quiz"])
 
@@ -25,6 +26,11 @@ def crea(body: NuovaScheda, p: Principal = Depends(current_user)):
     lst = db.query_one("SELECT id FROM listati WHERE codice = ? AND attivo = 1", (body.listato,))
     if not lst:
         raise HTTPException(404, "Listato inesistente")
+    # Il catalogo mostra all'allievo solo le sue patenti, ma finora nulla
+    # impediva di chiedere una scheda di un'altra categoria chiamando l'API
+    # direttamente. Lo staff resta libero: gli serve per preparare le lezioni.
+    if p.ruolo == "allievo" and body.listato not in codici_utente(p.utente_id):
+        raise HTTPException(403, "Questa patente non e' fra le tue")
     try:
         return generatore.crea_scheda(
             p.utente_id, p.autoscuola_id, lst["id"], body.tipo,
@@ -93,6 +99,20 @@ def rispondi(scheda_id: int, body: RispostaIn, p: Principal = Depends(current_us
                                         r["argomento_id"], bool(corretta), body.tempo_ms)
             analytics.aggiorna_difficolta_domanda(con, r["domanda_id"], bool(corretta))
             srs.aggiorna_stato(con, p.utente_id, r["domanda_id"], r["argomento_id"], bool(corretta))
+        else:
+            # L'allievo ha cambiato idea su una domanda gia' risposta. Il
+            # conteggio errori della scheda deve seguirlo, altrimenti il
+            # verdetto finale (superata / non superata, calcolato su n_errori)
+            # non corrisponde alle risposte che si vedono in griglia.
+            # Gli aggregati di lungo periodo restano fermi alla prima risposta:
+            # e' quella che misura davvero cosa sapeva l'allievo.
+            era_corretta = 1 if bool(r["risposta_data"]) == bool(r["risposta"]) else 0
+            if era_corretta != corretta:
+                con.execute(
+                    "UPDATE schede SET n_errori = MAX(0, n_errori + ?) WHERE id = ?",
+                    (-1 if corretta else 1, scheda_id))
+                analytics.correggi_risposta(con, p.utente_id, r["argomento_id"],
+                                            bool(era_corretta), bool(corretta))
 
     # La correttezza non viene rivelata durante la simulazione: il client
     # riceve solo la conferma di salvataggio, come all'esame reale.

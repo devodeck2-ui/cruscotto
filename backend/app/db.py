@@ -48,6 +48,31 @@ COLONNE_AGGIUNTE = {
 }
 
 
+# Regole d'esame corrette per i database creati prima della verifica sulle
+# schede ministeriali. Si aggiornano solo se il valore e' ancora quello vecchio
+# e sbagliato, cosi' un'autoscuola che li avesse gia' sistemati a mano non si
+# vede sovrascrivere la sua configurazione.
+REGOLE_ESAME = {
+    # codice: (vecchio errato, nuovo corretto) su (domande, minuti, errori)
+    "CQC":     ((60, 90, 6), (70, 90, 7)),
+    "REV_CQC": ((60, 90, 6), (70, 90, 7)),
+    "CAP":     ((30, 30, 3), (20, 30, 2)),
+    "AM":      ((30, 20, 3), (30, 25, 3)),
+    "REV_AM":  ((30, 20, 3), (30, 25, 3)),
+}
+
+
+def _allinea_regole_esame(con: sqlite3.Connection) -> None:
+    for codice, (vecchio, nuovo) in REGOLE_ESAME.items():
+        try:
+            con.execute(
+                "UPDATE listati SET domande_esame = ?, minuti_esame = ?, errori_max = ? "
+                "WHERE codice = ? AND domande_esame = ? AND minuti_esame = ? AND errori_max = ?",
+                (*nuovo, codice, *vecchio))
+        except sqlite3.Error as e:
+            print(f"! regole esame per {codice}: {e}")
+
+
 def _ensure_schema(con: sqlite3.Connection) -> None:
     """Allinea un database gia' esistente all'ultima versione di schema.sql.
 
@@ -67,6 +92,8 @@ def _ensure_schema(con: sqlite3.Connection) -> None:
         con.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
     except sqlite3.Error as e:
         print(f"! _ensure_schema: rieseguire schema.sql ha dato un errore (si prosegue comunque): {e}")
+
+    _allinea_regole_esame(con)
 
     for tabella, colonne in COLONNE_AGGIUNTE.items():
         try:

@@ -7,8 +7,18 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v123';
+const VERSIONE = 'cruscotto-v124';
+// Nella shell vanno TUTTI i file dell'interfaccia serviti da noi. Prima ne
+// mancavano quattro (i due file delle animazioni e l'intera pagina di
+// gestione): senza rete la segreteria si ritrovava una pagina bianca, e le
+// righe delle tabelle restavano invisibili perche' animazioni.css non era
+// stato salvato. Restano fuori Bootstrap, Chart.js e il font, che arrivano
+// da CDN esterne: vengono messi in cache solo dopo il primo caricamento
+// riuscito - finche' non li serviremo da qui, l'uso offline al primo avvio
+// resta parziale.
 const SHELL = ['/', '/app/index.html', '/app/app.js', '/app/styles.css',
+               '/app/animazioni.css', '/app/animazioni.js',
+               '/app/gestione.html', '/app/gestione.js',
                '/manifest.webmanifest', '/app/assets/icon-192.png?v=2'];
 
 self.addEventListener('install', e => {

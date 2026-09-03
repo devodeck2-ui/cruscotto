@@ -28,16 +28,19 @@ SCHEMA = ROOT / "backend" / "app" / "schema.sql"
 MEDIA = Path(__import__("os").getenv("AC_MEDIA_BUILD", str(ROOT / "data" / "media")))
 
 # Regole d'esame per listato (fonte: DM 40T/2011 e successive circolari MIT)
+# Codice, nome, domande della scheda, minuti, errori ammessi.
+# I valori seguono le regole d'esame ministeriali vigenti: CQC 70/90/7,
+# CAP (KA/KB) 20/30/2 come da scheda del MIT, AM 30 domande in 25 minuti.
 LISTATI = [
     ("B",      "Patente B",                          30, 20, 3),
-    ("AM",     "Patentino AM (ciclomotori)",         30, 20, 3),
+    ("AM",     "Patentino AM (ciclomotori)",         30, 25, 3),
     ("SUP",    "Patenti superiori C-D-E",            40, 40, 4),
-    ("CQC",    "Carta di Qualificazione del Conducente", 60, 90, 6),
-    ("CAP",    "Certificato di Abilitazione Professionale", 30, 30, 3),
+    ("CQC",    "Carta di Qualificazione del Conducente", 70, 90, 7),
+    ("CAP",    "Certificato di Abilitazione Professionale", 20, 30, 2),
     ("REV_AB", "Revisione patente A/B",              30, 20, 3),
-    ("REV_AM", "Revisione patentino AM",             30, 20, 3),
+    ("REV_AM", "Revisione patentino AM",             30, 25, 3),
     ("REV_SUP","Revisione patenti superiori",        40, 40, 4),
-    ("REV_CQC","Revisione CQC",                      60, 90, 6),
+    ("REV_CQC","Revisione CQC",                      70, 90, 7),
 ]
 
 RUOLI = [

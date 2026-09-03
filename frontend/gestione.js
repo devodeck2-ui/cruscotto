@@ -434,7 +434,15 @@ $('#btn-salva-allievo').addEventListener('click', async () => {
     email: $('#a-email').value.trim() || null,
     indirizzo: $('#a-indirizzo').value.trim() || null,
     codice_fiscale: $('#a-cf').value.trim() || null,
-    patenti: [...$('#a-listato').selectedOptions].map(o => o.value),
+    patenti: (() => {
+      // selectedOptions segue l'ordine del menu, non quello dei clic: senza
+      // questo, riaprire la scheda di un allievo e salvare poteva cambiargli
+      // la patente principale (quella che comanda simulazione e scadenze).
+      const scelte = [...$('#a-listato').selectedOptions].map(o => o.value);
+      const principale = S.allievo?.listato_target;
+      return principale && scelte.includes(principale)
+        ? [principale, ...scelte.filter(x => x !== principale)] : scelte;
+    })(),
     ore_acquistate: +$('#a-ore').value || 0,
     importo_pagato: parseFloat($('#a-importo').value) || null,
     data_esame: $('#a-esame').value || null,

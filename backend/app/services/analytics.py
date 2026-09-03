@@ -57,6 +57,28 @@ def registra_risposta(con, utente_id: int, listato_id: int, capitolo_id: int | N
         (utente_id, giorno, err, err))
 
 
+def correggi_risposta(con, utente_id: int, argomento_id: int | None,
+                      era_corretta: bool, ora_corretta: bool) -> None:
+    """Aggiusta gli aggregati quando una risposta gia' data viene cambiata.
+
+    L'invariante del progetto e' che gli aggregati coincidano sempre con il
+    ricalcolo dalle risposte: senza questa correzione, un allievo che tornava
+    indietro e cambiava idea lasciava un errore fantasma in
+    stat_utente_argomento, e la dashboard admin mostrava un tasso d'errore piu'
+    alto del reale.
+
+    Restano fermi di proposito la media mobile (ema_errore), che misura
+    l'andamento nel tempo e non un saldo, e la serie giornaliera, che racconta
+    che cosa e' successo in quel giorno.
+    """
+    if era_corretta == ora_corretta or not argomento_id:
+        return
+    delta = -1 if ora_corretta else 1
+    con.execute(
+        "UPDATE stat_utente_argomento SET n_errori = MAX(0, n_errori + ?) "
+        "WHERE utente_id = ? AND argomento_id = ?", (delta, utente_id, argomento_id))
+
+
 def registra_scheda_conclusa(con, utente_id: int, tipo: str, superata: bool) -> None:
     col = {"esercitazione": "schede_eserc", "simulazione": "schede_simul",
            "recupero": "schede_recup"}[tipo]
@@ -177,13 +199,20 @@ def indice_prontezza(utente_id: int) -> dict:
         "AND stato = 'completata' ORDER BY conclusa_il DESC LIMIT 5", (utente_id,))
     s_sim = (sum(1 for r in sim if r["esito"]) / len(sim)) if sim else 0.0
 
+    # Numeratore e denominatore devono parlare della stessa patente: prima il
+    # numeratore contava le domande viste su TUTTI i listati e il denominatore
+    # solo quelle della principale, cosi' chi preparava due patenti risultava
+    # coperto piu' del 100% del programma.
+    lst = db.query_one("SELECT l.id FROM utenti u JOIN listati l ON l.codice = u.listato_target "
+                       "WHERE u.id = ?", (utente_id,))
+    listato_id = lst["id"] if lst else None
     cop = db.query_one(
-        "SELECT (SELECT COUNT(DISTINCT domanda_id) FROM risposte WHERE utente_id = ? "
-        "        AND corretta IS NOT NULL) AS viste,"
-        "       (SELECT COUNT(*) FROM domande d JOIN utenti u ON u.id = ? "
-        "        JOIN listati l ON l.codice = u.listato_target "
-        "        WHERE d.listato_id = l.id AND d.attiva = 1) AS totali",
-        (utente_id, utente_id))
+        "SELECT (SELECT COUNT(DISTINCT r.domanda_id) FROM risposte r "
+        "        JOIN domande d ON d.id = r.domanda_id "
+        "        WHERE r.utente_id = ? AND r.corretta IS NOT NULL "
+        "          AND d.listato_id = ?) AS viste,"
+        "       (SELECT COUNT(*) FROM domande WHERE listato_id = ? AND attiva = 1) AS totali",
+        (utente_id, listato_id, listato_id))
     s_cop = min(1.0, (cop["viste"] / cop["totali"])) if cop and cop["totali"] else 0.0
     s_cop = min(1.0, s_cop / 0.35)      # coprire il 35% del listato vale gia' 100%
 
@@ -198,7 +227,20 @@ def indice_prontezza(utente_id: int) -> dict:
 
     score = 100 * (0.45 * s_sim + 0.25 * s_cop + 0.20 * s_err + 0.10 * s_cost)
     livello = "pronto" if score >= 75 else "quasi" if score >= 50 else "in formazione"
-    return {"punteggio": round(score, 1), "livello": livello,
+
+    # Stato mostrato all'allievo: tre soli esiti, nessuna percentuale e nessuna
+    # data. Chi non risponde a una domanda da piu' di una settimana non e'
+    # "non pronto": e' fermo, ed e' un'informazione diversa sia per lui sia
+    # per la segreteria. Il punteggio resta per lo staff, che sull'elenco
+    # allievi ha bisogno di ordinare e di vedere le sfumature.
+    att7 = db.query_one(
+        "SELECT COUNT(*) AS g FROM stat_utente_giorno WHERE utente_id = ? "
+        "AND giorno >= date('now','-7 day') AND n_risposte > 0", (utente_id,))
+    si_esercita = bool(att7 and att7["g"])
+    stato = ("non_si_esercita" if not si_esercita
+             else "pronto" if score >= 75 else "non_pronto")
+
+    return {"punteggio": round(score, 1), "livello": livello, "stato": stato,
             "dettaglio": {"simulazioni": round(s_sim, 2), "copertura": round(s_cop, 2),
                           "accuratezza": round(s_err, 2), "costanza": round(s_cost, 2)}}
 

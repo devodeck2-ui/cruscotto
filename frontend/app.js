@@ -77,6 +77,7 @@ async function api(percorso, opzioni = {}, riprova = true) {
 }
 const get  = (p) => api(p);
 const post = (p, body) => api(p, { method: 'POST', body: JSON.stringify(body || {}) });
+const put  = (p, body) => api(p, { method: 'PUT',  body: JSON.stringify(body || {}) });
 
 async function rinnovaToken() {
   try {
@@ -226,12 +227,18 @@ async function mostraHome() {
   $('#sotto-saluto').textContent =
     `${p.risposte_totali || 0} risposte date - ${p.schede_simulazione || 0} simulazioni svolte`;
 
+  // Tre stati e nessuna percentuale: all'allievo serve sapere se e' pronto,
+  // non un punteggio da interpretare. La data dell'esame resta della segreteria.
   const pr = st.prontezza;
-  $('#kpi-prontezza').textContent = pr.punteggio;
-  $('#barra-prontezza').style.width = pr.punteggio + '%';
-  $('#barra-prontezza').className = 'progress-bar ' +
-    (pr.punteggio >= 75 ? 'bg-success' : pr.punteggio >= 50 ? 'bg-warning' : 'bg-danger');
-  $('#kpi-livello').textContent = { pronto: 'Sei pronto per l\'esame', quasi: 'Ci sei quasi', 'in formazione': 'Continua ad allenarti' }[pr.livello];
+  const STATI = {
+    pronto:          ['Pronto',      'text-success',   'Sei pronto per l\'esame'],
+    non_pronto:      ['Non ancora',  'text-warning',   'Continua ad allenarti: non sei ancora pronto'],
+    non_si_esercita: ['Fermo',       'text-secondary', 'Non ti eserciti da piu\' di una settimana'],
+  };
+  const [etichetta, classe, frase] = STATI[pr.stato] || STATI.non_pronto;
+  $('#kpi-prontezza').textContent = etichetta;
+  $('#kpi-prontezza').className = 'h4 mb-0 ' + classe;
+  $('#kpi-livello').textContent = frase;
   $('#kpi-simulazioni').textContent = p.simulazioni_superate || 0;
   $('#kpi-simulazioni-tot').textContent = `su ${p.schede_simulazione || 0} svolte`;
   $('#kpi-errore').textContent = (p.tasso_errore_pct ?? '-') + '%';
@@ -425,7 +432,15 @@ async function rispondi(valore) {
   try {
     const r = await post(`/api/quiz/schede/${S.scheda.scheda.id}/rispondi`,
       { posizione: d.posizione, risposta: valore, tempo_ms: tempo, dubbio: !!d.flag_dubbio });
-    if ('corretta' in r) { d.corretta = r.corretta ? 1 : 0; d.risposta_corretta = valore === !!r.corretta ? (valore ? 1 : 0) : (valore ? 0 : 1); mostraEsitoImmediato(d); }
+    if ('corretta' in r) {
+      d.corretta = r.corretta ? 1 : 0;
+      // Se la risposta data era giusta, l'esatta e' quella; se era sbagliata,
+      // l'esatta e' l'opposto. La formula precedente restituiva sempre FALSO
+      // quando si sbagliava rispondendo FALSO, cioe' insegnava il contrario
+      // della verita' ministeriale.
+      d.risposta_corretta = r.corretta ? (valore ? 1 : 0) : (valore ? 0 : 1);
+      mostraEsitoImmediato(d);
+    }
   } catch (e) { avviso('Risposta non salvata: ' + e.message); }
   renderGriglia();
   $('#barra-avanzamento').style.width =
