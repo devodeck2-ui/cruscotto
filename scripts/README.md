@@ -16,6 +16,7 @@ AC_DB=/tmp/prova.db python3 scripts/reaper_sessioni.py --dry-run
 | `pregenera_spiegazioni.py` | settimanale | Popola la cache dell'AI Tutor sulle domande piu' sbagliate |
 | `promemoria_studio.py` | giornaliera (18:00) | Richiama gli allievi fermi da 2 giorni, max 2 promemoria a settimana |
 | `gestione_utenti.py` | a richiesta | Provisioning di autoscuole e utenti, reset password |
+| `ricataloga_catalogo.py` | una volta, sui database creati prima di settembre 2026 | Ricostruisce capitoli e argomenti dei listati importati dai PDF |
 
 La pianificazione pronta all'uso e' in `manutenzione.crontab`.
 
@@ -28,6 +29,15 @@ silenziosamente incompleto, perche' le transazioni recenti stanno nel file `-wal
 
 **Il reset password revoca tutte le sessioni.** Se si reimposta una password per un
 sospetto accesso abusivo, lasciare vivi i refresh token vanificherebbe l'operazione.
+
+**`ricataloga_catalogo.py` va lanciato una volta sui database vecchi.** L'importazione
+metteva 5.406 domande CQC su 5.416 in un capitolo unico, e creava un solo argomento per
+capitolo in tutti i listati importati dai PDF: la ripetizione mirata degli errori, che e'
+il cuore dell'applicazione, non aveva su cosa lavorare. Lo script rilegge `data/raw/`, rifa
+la gerarchia (capitolo = tipologia ministeriale, argomento = singolo quesito) e ricalcola
+gli aggregati. Non crea ne' cancella domande, quindi le risposte gia' date restano valide;
+`--prova` mostra cosa farebbe senza scrivere. I database creati da qui in avanti nascono
+gia' corretti.
 
 **La pre-generazione richiede storico d'uso.** Ordina per difficolta' osservata: su
 un'installazione appena avviata non ha dati su cui lavorare e lo dichiara. Usare

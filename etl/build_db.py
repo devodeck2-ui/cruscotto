@@ -93,8 +93,12 @@ class Loader:
         self._cap[key] = cid
         return cid
 
-    def argomento(self, capitolo_id: int, titolo: str, ordine: int = 0) -> int:
-        slug = slugify(titolo)
+    def argomento(self, capitolo_id: int, titolo: str, ordine: int = 0,
+                  slug: str | None = None) -> int:
+        # Lo slug puo' essere imposto dal chiamante: per i quesiti dei PDF si
+        # usa il codice ministeriale, cosi' due gruppi che iniziano con la
+        # stessa frase restano due argomenti distinti invece di fondersi.
+        slug = slug or slugify(titolo)
         key = (capitolo_id, slug)
         if key in self._arg:
             return self._arg[key]
@@ -170,14 +174,66 @@ def import_json_b(loader: Loader, path: Path, img_src: Path) -> int:
     return n
 
 
+# I 16 raggruppamenti della CQC nel file hanno solo il numero di tipologia:
+# dopo il prefisso resta "CQC - DL 30 LUGLIO 2021" per tutti. Questi nomi sono
+# ricavati dal contenuto reale di ciascun gruppo. Copia identica in
+# scripts/ricataloga_catalogo.py, che rimette a posto i database gia' esistenti.
+TIPOLOGIE_CQC = {
+    "01": "Motore, coppia e trasmissione",
+    "02": "Sistemi elettronici di sicurezza",
+    "03": "Uso del cambio e guida economica",
+    "04": "Frenata, aderenza e ingombri del veicolo",
+    "05": "Sicurezza sul lavoro e psicologia del traffico",
+    "06": "Tempi di guida e di riposo",
+    "07": "Prevenzione della criminalita' e del traffico di clandestini",
+    "08": "Immagine dell'azienda e qualita' del servizio",
+    "09": "Ergonomia, postura e salute del conducente",
+    "10": "Alimentazione, alcol e condizioni psicofisiche",
+    "11": "Merci, imballaggi e unita' di carico",
+    "12": "Disciplina dell'autotrasporto di merci",
+    "13": "Mercato dei trasporti, ADR e sostenibilita'",
+    "14": "Guida sicura e comportamento del conducente",
+    "15": "Forze, energia e dinamica del veicolo",
+    "16": "Trasporto di persone e servizio alla clientela",
+}
+TIPOLOGIE = {"CQC": TIPOLOGIE_CQC, "REV_CQC": TIPOLOGIE_CQC}
+PREFISSO_QUESITO = re.compile(r"^(\d+)##(\w+)\s*")
+
+
+def etichetta_argomento(q: dict) -> str:
+    """I quesiti dei PDF non hanno un titolo proprio: si usa la loro prima
+    affermazione, accorciata. Senza questo l'argomento resterebbe uno solo per
+    capitolo e le statistiche per argomento non direbbero nulla."""
+    testo = re.sub(r"\s+", " ", (q["domande"][0]["testo"] if q.get("domande") else "")).strip()
+    if len(testo) <= 70:
+        return testo or f"Quesito {q.get('codice', '?')}"
+    return testo[:70].rsplit(" ", 1)[0] + "..."
+
+
 def import_pdf_json(loader: Loader, path: Path, codice_listato: str) -> int:
     data = json.loads(path.read_text(encoding="utf-8"))
     lid = loader.listato(codice_listato)
+
+    # Il prefisso "NN##tipologiaNN" si toglie solo se cio' che resta distingue
+    # davvero i capitoli. Per la CQC no: 17 titoli grezzi diventano 2, e le
+    # 5.416 domande finirebbero tutte in un capitolo unico, rendendo inutile la
+    # ripetizione per capitolo degli errori. In quel caso comanda il numero.
+    grezzi = {q["titolo"] for q in data["quesiti"]}
+    puliti = {PREFISSO_QUESITO.sub("", t).strip() for t in grezzi}
+    usa_numero = len(puliti) * 2 <= len(grezzi)
+    nomi = TIPOLOGIE.get(codice_listato, {})
+
     n = 0
     for iq, q in enumerate(data["quesiti"]):
-        titolo = re.sub(r"^\d+##\w+\s*", "", q["titolo"]).strip() or "Non classificato"
-        cid = loader.capitolo(lid, titolo, iq)
-        aid = loader.argomento(cid, titolo, 0)
+        m = PREFISSO_QUESITO.match(q["titolo"])
+        if usa_numero and m:
+            titolo = nomi.get(m.group(1)) or f"Tipologia {int(m.group(1))}"
+            ordine_cap = int(m.group(1))
+        else:
+            titolo = PREFISSO_QUESITO.sub("", q["titolo"]).strip() or "Non classificato"
+            ordine_cap = iq
+        cid = loader.capitolo(lid, titolo, ordine_cap)
+        aid = loader.argomento(cid, etichetta_argomento(q), iq, slug=f"q-{q['codice']}")
         img = next((d["immagine"] for d in q["domande"] if d.get("immagine")), None)
         img_id = loader.immagine("pdf/" + img) if img else None
         qid = loader.quesito(lid, cid, aid, q["codice"], None, img_id)

@@ -198,6 +198,51 @@ verifica("^-?[\\d.,]+%?$" in anim,
          "i contatori animati non troncano piu' i valori tipo «23/45»")
 
 
+print("\n== Catalogo: capitoli e argomenti reali, non un blocco unico ==")
+con = sqlite3.connect(TMP)
+con.row_factory = sqlite3.Row
+struttura = {r["codice"]: (r["cap"], r["arg"], r["dom"]) for r in con.execute("""
+    SELECT l.codice,
+           (SELECT COUNT(*) FROM capitoli c WHERE c.listato_id = l.id) cap,
+           (SELECT COUNT(*) FROM argomenti a JOIN capitoli c ON c.id = a.capitolo_id
+            WHERE c.listato_id = l.id) arg,
+           (SELECT COUNT(*) FROM domande d WHERE d.listato_id = l.id) dom
+    FROM listati l ORDER BY l.codice""")}
+for codice, (cap, arg, dom) in struttura.items():
+    print(f"       {codice:8} {cap:4} capitoli  {arg:5} argomenti  {dom:6} domande")
+
+verifica(struttura["CQC"][0] >= 16,
+         f"la CQC ha i suoi raggruppamenti ministeriali ({struttura['CQC'][0]} capitoli)")
+verifica(struttura["CQC"][1] >= 300,
+         f"la CQC ha argomenti veri su cui misurare gli errori ({struttura['CQC'][1]})")
+degeneri = [c for c, (cap, arg, _) in struttura.items() if arg <= cap]
+verifica(not degeneri, f"nessun listato con un argomento solo per capitolo ({degeneri})")
+
+verifica(con.execute("SELECT COUNT(*) FROM domande").fetchone()[0] == 27737,
+         "nessuna domanda persa nella ricatalogazione")
+verifica(con.execute("""SELECT COUNT(*) FROM domande d
+    WHERE (d.capitolo_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM capitoli c WHERE c.id=d.capitolo_id))
+       OR (d.argomento_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM argomenti a WHERE a.id=d.argomento_id))
+    """).fetchone()[0] == 0, "nessuna domanda orfana")
+verifica(con.execute("""SELECT COUNT(*) FROM domande d JOIN argomenti a ON a.id = d.argomento_id
+    WHERE a.capitolo_id <> d.capitolo_id""").fetchone()[0] == 0,
+         "ogni domanda sta nel capitolo del suo argomento")
+verifica(con.execute("""SELECT COUNT(*) FROM risposte r WHERE r.argomento_id IS NOT NULL
+    AND NOT EXISTS(SELECT 1 FROM argomenti a WHERE a.id = r.argomento_id)""").fetchone()[0] == 0,
+         "le risposte gia' date puntano ad argomenti esistenti")
+con.close()
+
+# Una simulazione CQC deve ora pescare da piu' capitoli, non da uno solo.
+sim = c.post("/api/quiz/schede", headers=admin, json={"tipo": "simulazione", "listato": "CQC"})
+verifica(sim.status_code == 200, "simulazione CQC creata", sim.text[:160])
+if sim.status_code == 200:
+    dom = c.get(f"/api/quiz/schede/{sim.json()['scheda_id']}", headers=admin).json()["domande"]
+    capitoli_estratti = {d["capitolo"] for d in dom}
+    verifica(len(capitoli_estratti) >= 5,
+             f"la simulazione CQC spazia su {len(capitoli_estratti)} capitoli")
+    verifica(len(dom) == 70, f"scheda CQC da 70 domande ({len(dom)})")
+
+
 ok = sum(1 for e, _ in esiti if e)
 print(f"\n{'='*58}\nRISULTATO: {ok}/{len(esiti)} verifiche superate")
 for e, d in esiti:
