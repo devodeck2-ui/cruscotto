@@ -218,8 +218,22 @@ verifica(struttura["CQC"][1] >= 300,
 degeneri = [c for c, (cap, arg, _) in struttura.items() if arg <= cap]
 verifica(not degeneri, f"nessun listato con un argomento solo per capitolo ({degeneri})")
 
-verifica(con.execute("SELECT COUNT(*) FROM domande").fetchone()[0] == 27737,
-         "nessuna domanda persa nella ricatalogazione")
+# 27.737 era il totale finche' il CAP perdeva 119 alternative nella deduplica
+# (stesso testo sotto quesiti diversi). Reimportato per quesito ne ha 1.505
+# invece di 1.389: il totale sale a 27.853 e non deve piu' scendere.
+_tot = con.execute("SELECT COUNT(*) FROM domande").fetchone()[0]
+verifica(_tot == 27853, f"nessuna domanda persa nella ricatalogazione ({_tot})")
+_cap_senza_tronco = con.execute(
+    "SELECT COUNT(*) FROM domande d LEFT JOIN quesiti q ON q.id = d.quesito_id "
+    "JOIN listati l ON l.id = d.listato_id "
+    "WHERE l.codice = 'CAP' AND COALESCE(q.tronco, '') = ''").fetchone()[0]
+verifica(_cap_senza_tronco == 0,
+         f"ogni riga CAP porta con se' la domanda che la regge ({_cap_senza_tronco} senza)")
+_cap_monchi = con.execute(
+    "SELECT COUNT(*) FROM (SELECT d.quesito_id FROM domande d JOIN listati l ON l.id = d.listato_id "
+    "WHERE l.codice = 'CAP' AND d.attiva = 1 AND d.quesito_id IS NOT NULL "
+    "GROUP BY d.quesito_id HAVING SUM(d.risposta) = 0 OR COUNT(*) < 2)").fetchone()[0]
+verifica(_cap_monchi == 0, f"nessun quesito CAP monco fra quelli attivi ({_cap_monchi})")
 verifica(con.execute("""SELECT COUNT(*) FROM domande d
     WHERE (d.capitolo_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM capitoli c WHERE c.id=d.capitolo_id))
        OR (d.argomento_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM argomenti a WHERE a.id=d.argomento_id))

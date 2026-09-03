@@ -135,14 +135,24 @@ class Loader:
             (listato_id, codice_min)).fetchone()[0]
 
     def domanda(self, listato_id, quesito_id, capitolo_id, argomento_id, img_id,
-                codice_min, testo, risposta) -> None:
+                codice_min, testo, risposta, chiave_dedup: str | None = None) -> None:
+        """chiave_dedup: cosa rende due righe "la stessa domanda".
+
+        Di norma e' il testo: la stessa affermazione ripetuta in due punti del
+        listato e' la stessa domanda, e va tenuta una volta sola. Non vale
+        pero' dove il testo e' solo un'alternativa di risposta e la domanda sta
+        nel tronco: li' "DEBBONO ESSERE RICOSTRUITI" compare sotto quesiti
+        diversi, e deduplicarlo sul solo testo cancella l'alternativa dal
+        secondo quesito - a volte proprio quella esatta, lasciando un quesito
+        senza risposta giusta. In quel caso la chiave include il quesito.
+        """
         testo = norm_testo(testo)
         self.con.execute(
             "INSERT INTO domande(listato_id, quesito_id, capitolo_id, argomento_id, immagine_id,"
             " codice_min, testo, risposta, hash_testo) VALUES(?,?,?,?,?,?,?,?,?) "
             "ON CONFLICT(listato_id, hash_testo) DO NOTHING",
             (listato_id, quesito_id, capitolo_id, argomento_id, img_id,
-             codice_min, testo, 1 if risposta else 0, hash_testo(testo)))
+             codice_min, testo, 1 if risposta else 0, hash_testo(chiave_dedup or testo)))
 
 
 # --------------------------------------------------------------------------- #
@@ -200,6 +210,15 @@ TIPOLOGIE = {"CQC": TIPOLOGIE_CQC, "REV_CQC": TIPOLOGIE_CQC}
 PREFISSO_QUESITO = re.compile(r"^(\d+)##(\w+)\s*")
 
 
+# Listati in cui il titolo del quesito non e' un argomento ma la DOMANDA vera e
+# propria, e le righe sotto sono le sue alternative di risposta ("GLI PNEUMATICI
+# CON LESIONI SUI FIANCHI: / si devono sostituire / debbono essere ricostruiti").
+# Per questi il titolo va salvato come tronco - senza, l'allievo si vede
+# chiedere "DEBBONO ESSERE RICOSTRUITI: vero o falso?" senza sapere cosa - e la
+# deduplica delle righe deve tenere conto del quesito di appartenenza.
+LISTATI_A_TRONCO = {"CAP"}
+
+
 def etichetta_argomento(q: dict) -> str:
     """I quesiti dei PDF non hanno un titolo proprio: si usa la loro prima
     affermazione, accorciata. Senza questo l'argomento resterebbe uno solo per
@@ -236,10 +255,14 @@ def import_pdf_json(loader: Loader, path: Path, codice_listato: str) -> int:
         aid = loader.argomento(cid, etichetta_argomento(q), iq, slug=f"q-{q['codice']}")
         img = next((d["immagine"] for d in q["domande"] if d.get("immagine")), None)
         img_id = loader.immagine("pdf/" + img) if img else None
-        qid = loader.quesito(lid, cid, aid, q["codice"], None, img_id)
+        a_tronco = codice_listato in LISTATI_A_TRONCO
+        tronco = norm_testo(q["titolo"]) if a_tronco else None
+        qid = loader.quesito(lid, cid, aid, q["codice"], tronco, img_id)
         for d in q["domande"]:
             di = loader.immagine("pdf/" + d["immagine"]) if d.get("immagine") else img_id
-            loader.domanda(lid, qid, cid, aid, di, d.get("codice"), d["testo"], d["corretta"])
+            chiave = f"{q['codice']}|{norm_testo(d['testo'])}" if a_tronco else None
+            loader.domanda(lid, qid, cid, aid, di, d.get("codice"), d["testo"],
+                           d["corretta"], chiave)
             n += 1
     return n
 

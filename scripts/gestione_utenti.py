@@ -71,16 +71,21 @@ def main() -> int:
             return 1
         ruolo = db.query_one("SELECT id FROM ruoli WHERE codice = ?", (args.ruolo,))["id"]
         pwd = args.password or password_casuale()
+        # Nell'app si entra con il nome utente: se non lo si genera qui, l'utente
+        # appena creato non avrebbe con cosa accedere finche' non riparte il server.
+        from app.routers.gestione import _slug_nome, _username_libero
+        username = _username_libero(_slug_nome(args.nome, args.cognome))
         try:
             db.execute(
-                "INSERT INTO utenti(autoscuola_id, ruolo_id, email, password_hash, nome,"
-                " cognome, listato_target) VALUES(?,?,?,?,?,?,?)",
-                (t["id"], ruolo, args.email.lower(), hash_password(pwd),
+                "INSERT INTO utenti(autoscuola_id, ruolo_id, email, username, password_hash,"
+                " nome, cognome, listato_target) VALUES(?,?,?,?,?,?,?,?)",
+                (t["id"], ruolo, args.email.lower(), username, hash_password(pwd),
                  args.nome, args.cognome, args.listato))
         except Exception as exc:
             log(f"impossibile creare l'utente: {exc}")
             return 1
         log(f"utente creato: {args.email} ({args.ruolo})")
+        log(f"nome utente: {username}   <-- si entra con questo, non con l'email")
         if not args.password:
             log(f"password generata: {pwd}   <-- comunicala e falla cambiare al primo accesso")
         return 0
@@ -92,6 +97,9 @@ def main() -> int:
         if not cur.rowcount:
             log(f"nessun utente con email {args.email}")
             return 1
+        chi = db.query_one("SELECT username FROM utenti WHERE email = ?", (args.email.lower(),))
+        if chi and chi["username"]:
+            log(f"nome utente: {chi['username']}   <-- si entra con questo, non con l'email")
         # Tutte le sessioni attive vengono invalidate: se la password e' stata
         # reimpostata per un sospetto accesso abusivo, lasciare vivi i refresh
         # token vanificherebbe l'operazione.

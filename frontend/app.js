@@ -698,7 +698,7 @@ window.riproduci = function (lezioneId, url, riprendiDa) {
     v.src = url;
   } else {
     const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js';
+    s.src = '/app/vendor/hls.min.js';   // servito da noi: nessuna CDN esterna
     s.onload = () => { const h = new Hls(); h.loadSource(url); h.attachMedia(v); };
     document.head.appendChild(s);
   }

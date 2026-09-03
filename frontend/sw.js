@@ -7,18 +7,20 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v126';
-// Nella shell vanno TUTTI i file dell'interfaccia serviti da noi. Prima ne
-// mancavano quattro (i due file delle animazioni e l'intera pagina di
-// gestione): senza rete la segreteria si ritrovava una pagina bianca, e le
-// righe delle tabelle restavano invisibili perche' animazioni.css non era
-// stato salvato. Restano fuori Bootstrap, Chart.js e il font, che arrivano
-// da CDN esterne: vengono messi in cache solo dopo il primo caricamento
-// riuscito - finche' non li serviremo da qui, l'uso offline al primo avvio
-// resta parziale.
+const VERSIONE = 'cruscotto-v127';
+// Nella shell vanno TUTTI i file dell'interfaccia. Bootstrap, Chart.js e il
+// font ora stanno in /app/vendor/ e non piu' su CDN esterne: prima erano
+// l'unico pezzo che la shell non poteva salvare, e senza rete al primo avvio
+// l'app si apriva senza stili ne' grafici, nonostante il README prometta il
+// contrario. Il font va elencato con i due woff2, altrimenti il CSS c'e' ma
+// i caratteri no.
 const SHELL = ['/', '/app/index.html', '/app/app.js', '/app/styles.css',
                '/app/animazioni.css', '/app/animazioni.js',
                '/app/gestione.html', '/app/gestione.js',
+               '/app/vendor/bootstrap.min.css', '/app/vendor/bootstrap.bundle.min.js',
+               '/app/vendor/chart.umd.js', '/app/vendor/bebas-neue.css',
+               '/app/vendor/bebas-neue-latin-400-normal.woff2',
+               '/app/vendor/bebas-neue-latin-ext-400-normal.woff2',
                '/manifest.webmanifest', '/app/assets/icon-192.png?v=2'];
 
 self.addEventListener('install', e => {

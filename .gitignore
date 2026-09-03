@@ -78,3 +78,7 @@ desktop.ini
 
 # cartella di lavoro dell'assistente
 .claude/
+
+# Cartella di scarico: ci finisce cio' che va cancellato a mano (la sessione
+# remota non ha il permesso di eliminare file nelle cartelle condivise).
+_da_cancellare/

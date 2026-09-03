@@ -57,12 +57,22 @@ L'avviatore crea l'ambiente virtuale se manca, installa le dipendenze, sceglie u
 
 ### Accessi dimostrativi
 
-| Email | Ruolo |
-|---|---|
-| `marco@demo.it` | Allievo |
-| `admin@demo.it` | Amministratore autoscuola |
+Si entra con il **nome utente**, non con l'email. Il database demo contiene un
+amministratore (Giulia Ferrari) e cinque allievi; al primo avvio l'app assegna a
+ciascuno un nome utente nella forma `iniziale.cognome` e lo stampa a video:
 
-Password: `demo1234`
+```
+  nome utente assegnato: g.ferrari (utente 1, admin@demo.it)
+  nome utente assegnato: m.rossi  (utente 2, marco@demo.it)
+```
+
+La password non e' scritta qui apposta: questo repository e' pubblico, e finche'
+le credenziali demo restavano nel README chiunque poteva entrare in
+un'installazione appena messa online. Per impostarne una:
+
+```
+python3 scripts/gestione_utenti.py reimposta-password --email admin@demo.it
+```
 
 ### Attivare l'AI Tutor
 
@@ -145,4 +155,4 @@ Per PDF di oltre ~120 pagine il parsing accetta un intervallo (`0:95`) e i framm
 
 Documento completo in [`docs/ARCHITETTURA.md`](docs/ARCHITETTURA.md): schema relazionale motivato, integrazione LLM con system prompt in chiaro, logica di analytics e spaced repetition, user flow, roadmap.
 
-Backend Python/FastAPI, SQLite in WAL, frontend HTML/CSS/JS con Bootstrap 5 come PWA installabile e funzionante offline.
+Backend Python/FastAPI, SQLite in WAL, frontend HTML/CSS/JS con Bootstrap 5 come PWA installabile e funzionante offline: Bootstrap, Chart.js, hls.js e il font sono serviti da `frontend/vendor/`, non da CDN esterne, quindi l'app si apre anche senza rete al primo avvio.
