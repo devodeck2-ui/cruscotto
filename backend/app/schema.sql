@@ -542,3 +542,38 @@ SELECT s.utente_id,
 FROM stat_utente_argomento s
 JOIN argomenti a ON a.id = s.argomento_id
 JOIN capitoli  c ON c.id = s.capitolo_id;
+
+-- -----------------------------------------------------------------------------
+-- 12. CLASSI
+-- -----------------------------------------------------------------------------
+-- Una classe e' il gruppo con cui l'allievo segue il corso: "Serale B ottobre",
+-- "CQC sabato mattina". Serve a due cose che prima non si potevano fare:
+--   * raggruppare gli allievi in elenco e nelle statistiche;
+--   * decidere CHI vede una videolezione o una diretta - prima ogni video era
+--     visibile a tutti gli allievi di quella patente, senza eccezioni.
+--
+-- Un allievo sta in una classe sola per volta (utenti.classe_id, aggiunta come
+-- colonna in db.py): e' come funziona in aula, e tiene semplici sia la
+-- segreteria sia i conteggi. Una lezione invece puo' essere aperta a piu'
+-- classi insieme, perche' la stessa registrazione serve spesso a due corsi:
+-- da qui la tabella di collegamento.
+
+CREATE TABLE IF NOT EXISTS classi (
+    id             INTEGER PRIMARY KEY,
+    autoscuola_id  INTEGER NOT NULL REFERENCES autoscuole(id) ON DELETE CASCADE,
+    nome           TEXT    NOT NULL,
+    descrizione    TEXT,
+    listato_target TEXT,                             -- patente prevalente, informativa
+    colore         TEXT,                             -- per distinguerla a colpo d'occhio
+    attiva         INTEGER NOT NULL DEFAULT 1 CHECK (attiva IN (0,1)),
+    created_at     TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    UNIQUE (autoscuola_id, nome)
+);
+
+CREATE TABLE IF NOT EXISTS video_classe (
+    lezione_id INTEGER NOT NULL REFERENCES lezioni_video(id) ON DELETE CASCADE,
+    classe_id  INTEGER NOT NULL REFERENCES classi(id)        ON DELETE CASCADE,
+    PRIMARY KEY (lezione_id, classe_id)
+) WITHOUT ROWID;
+
+CREATE INDEX IF NOT EXISTS ix_video_classe_classe ON video_classe(classe_id);

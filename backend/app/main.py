@@ -24,7 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from . import db
 from .config import settings
 from .security import verifica_firma_media
-from .routers import (amministrazione, assistente, auth, catalogo, gestione,
+from .routers import (amministrazione, assistente, auth, catalogo, classi, gestione,
                       notifiche, patenti, quiz, scuola, sessioni, statistiche,
                       tutoraggio, video)
 
@@ -83,7 +83,7 @@ async def errore_generico(request: Request, exc: Exception):
 for r in (auth.router, catalogo.router, quiz.router, statistiche.router,
           tutoraggio.router, amministrazione.router, sessioni.router, video.router,
           gestione.router, assistente.router, scuola.router, patenti.router,
-          notifiche.router):
+          notifiche.router, classi.router):
     app.include_router(r)
 
 

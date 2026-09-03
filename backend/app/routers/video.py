@@ -8,9 +8,28 @@ from .. import db
 from ..rbac import Principal, current_user, require_staff
 from ..security import url_media_firmato
 from ..services import notifiche
+from .classi import classe_di
 from .patenti import filtro_sql, utenti_con_patente
 
 router = APIRouter(prefix="/api/video", tags=["video"])
+
+
+def _visibile_all_allievo(p: Principal) -> tuple[str, list]:
+    """Frammento di WHERE: quali lezioni puo' vedere chi sta chiedendo.
+
+    Lo staff vede tutto. L'allievo vede solo le lezioni assegnate alla SUA
+    classe: una lezione senza classe non la vede nessuno, ed e' voluto - meglio
+    un video che resta nascosto finche' non lo si assegna, che un video finito
+    per sbaglio davanti a un altro corso. Un allievo ancora senza classe non
+    vede videolezioni: e' il segnale che la segreteria deve assegnarlo.
+    """
+    if p.ruolo != "allievo":
+        return "", []
+    mia = classe_di(p.utente_id)
+    if not mia:
+        return " AND 0", []
+    return (" AND EXISTS(SELECT 1 FROM video_classe vc "
+            "            WHERE vc.lezione_id = v.id AND vc.classe_id = ?)", [mia])
 
 
 @router.get("/corsi")
@@ -19,15 +38,21 @@ def corsi(p: Principal = Depends(current_user)):
     dove, par = ("", [])
     if p.ruolo == "allievo":
         dove, par = filtro_sql(p.utente_id, "l.codice")
+    # Il filtro sulla classe va nella JOIN, non nella WHERE: se finisse nella
+    # WHERE, un corso di cui l'allievo non vede nessuna lezione sparirebbe
+    # dall'elenco invece di comparire con "0 lezioni", e la segreteria non
+    # capirebbe perche' l'allievo "non ha il corso".
+    dove_classe, par_classe = _visibile_all_allievo(p)
     return db.rows_to_dicts(db.query(
         "SELECT c.id, c.titolo, c.descrizione, c.copertina, l.codice AS listato,"
         "       COUNT(v.id) AS n_lezioni,"
         "       SUM(CASE WHEN vv.completata = 1 THEN 1 ELSE 0 END) AS completate "
         "FROM corsi c JOIN listati l ON l.id = c.listato_id "
-        "LEFT JOIN lezioni_video v ON v.corso_id = c.id AND v.pubblicata = 1 "
+        "LEFT JOIN lezioni_video v ON v.corso_id = c.id AND v.pubblicata = 1" + dove_classe + " "
         "LEFT JOIN visione_video vv ON vv.lezione_id = v.id AND vv.utente_id = ? "
         "WHERE c.pubblicato = 1 AND (c.autoscuola_id IS NULL OR c.autoscuola_id = ?)"
-        + dove + " GROUP BY c.id ORDER BY c.ordine", [p.utente_id, p.autoscuola_id, *par]))
+        + dove + " GROUP BY c.id ORDER BY c.ordine",
+        [*par_classe, p.utente_id, p.autoscuola_id, *par]))
 
 
 @router.get("/corsi/{corso_id}/lezioni")
@@ -37,6 +62,7 @@ def lezioni(corso_id: int, p: Principal = Depends(current_user)):
                      (corso_id, p.autoscuola_id))
     if not c:
         raise HTTPException(404, "Corso non disponibile")
+    dove_classe, par_classe = _visibile_all_allievo(p)
     righe = db.rows_to_dicts(db.query(
         "SELECT v.id, v.titolo, v.descrizione, v.tipo, v.url, v.durata_sec, v.inizio_live,"
         "       v.stato_live, v.ordine, c.titolo AS capitolo,"
@@ -44,7 +70,8 @@ def lezioni(corso_id: int, p: Principal = Depends(current_user)):
         "       COALESCE(vv.completata, 0) AS completata "
         "FROM lezioni_video v LEFT JOIN capitoli c ON c.id = v.capitolo_id "
         "LEFT JOIN visione_video vv ON vv.lezione_id = v.id AND vv.utente_id = ? "
-        "WHERE v.corso_id = ? AND v.pubblicata = 1 ORDER BY v.ordine", (p.utente_id, corso_id)))
+        "WHERE v.corso_id = ? AND v.pubblicata = 1" + dove_classe +
+        " ORDER BY v.ordine", (p.utente_id, corso_id, *par_classe)))
     # I video caricati dalla scuola escono con un link firmato che scade: chi non
     # ha fatto il login non li scarica, e un indirizzo copiato in chat smette di
     # funzionare in giornata.

@@ -260,4 +260,41 @@ def ricostruisci_aggregati() -> dict:
             "WHERE r.corretta IS NOT NULL AND r.argomento_id IS NOT NULL "
             "GROUP BY r.utente_id, r.argomento_id")
         n = con.execute("SELECT COUNT(*) FROM stat_utente_argomento").fetchone()[0]
-    return {"righe_ricostruite": n}
+
+        # La serie giornaliera va rifatta insieme all'altra. Restava indietro:
+        # e' alimentata solo dalle risposte che passano dall'app, quindi dopo
+        # un import, un ripristino o una riparazione del catalogo risultava
+        # vuota - e con la serie vuota l'indice di prontezza legge zero giorni
+        # di attivita' e dichiara "non si esercita" anche un allievo che si e'
+        # allenato tutti i giorni. I secondi in app e i minuti di video non si
+        # possono ricavare dalle risposte e restano quelli gia' registrati.
+        vecchi = {(r[0], r[1]): (r[2], r[3]) for r in con.execute(
+            "SELECT utente_id, giorno, secondi_app, minuti_video FROM stat_utente_giorno")}
+        con.execute("DELETE FROM stat_utente_giorno")
+        con.execute(
+            "INSERT INTO stat_utente_giorno(utente_id, giorno, n_risposte, n_errori) "
+            "SELECT r.utente_id, substr(r.risposto_il, 1, 10), COUNT(*),"
+            "       SUM(CASE WHEN r.corretta = 0 THEN 1 ELSE 0 END) "
+            "FROM risposte r WHERE r.corretta IS NOT NULL AND r.risposto_il IS NOT NULL "
+            "GROUP BY r.utente_id, substr(r.risposto_il, 1, 10)")
+        con.execute(
+            "INSERT INTO stat_utente_giorno(utente_id, giorno, schede_eserc, schede_simul,"
+            " schede_recup, simul_superate) "
+            "SELECT s.utente_id, substr(COALESCE(s.conclusa_il, s.iniziata_il), 1, 10),"
+            "       SUM(s.tipo = 'esercitazione'), SUM(s.tipo = 'simulazione'),"
+            "       SUM(s.tipo = 'recupero'),"
+            "       SUM(CASE WHEN s.tipo = 'simulazione' AND s.esito = 1 THEN 1 ELSE 0 END) "
+            "FROM schede s WHERE s.stato = 'completata' "
+            "GROUP BY s.utente_id, substr(COALESCE(s.conclusa_il, s.iniziata_il), 1, 10) "
+            "ON CONFLICT(utente_id, giorno) DO UPDATE SET "
+            "  schede_eserc = excluded.schede_eserc, schede_simul = excluded.schede_simul,"
+            "  schede_recup = excluded.schede_recup, simul_superate = excluded.simul_superate")
+        for (uid, giorno), (sec, minuti) in vecchi.items():
+            if sec or minuti:
+                con.execute(
+                    "INSERT INTO stat_utente_giorno(utente_id, giorno, secondi_app, minuti_video) "
+                    "VALUES(?,?,?,?) ON CONFLICT(utente_id, giorno) DO UPDATE SET "
+                    "  secondi_app = excluded.secondi_app, minuti_video = excluded.minuti_video",
+                    (uid, giorno, sec, minuti))
+        g = con.execute("SELECT COUNT(*) FROM stat_utente_giorno").fetchone()[0]
+    return {"righe_ricostruite": n, "giorni_ricostruiti": g}

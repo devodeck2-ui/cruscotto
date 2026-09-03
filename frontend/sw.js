@@ -7,7 +7,7 @@
  *      il nome del file e' costruito sul contenuto: non cambiano mai
  *  chiamate API             -> prima la rete, cache come riserva
  */
-const VERSIONE = 'cruscotto-v127';
+const VERSIONE = 'cruscotto-v128';
 // Nella shell vanno TUTTI i file dell'interfaccia. Bootstrap, Chart.js e il
 // font ora stanno in /app/vendor/ e non piu' su CDN esterne: prima erano
 // l'unico pezzo che la shell non poteva salvare, e senza rete al primo avvio

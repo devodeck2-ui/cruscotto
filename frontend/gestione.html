@@ -91,6 +91,7 @@
     <li class="nav-item"><button class="nav-link active" data-sez="orario">Orario lezioni</button></li>
     <li class="nav-item"><button class="nav-link" data-sez="presenze">Presenze</button></li>
     <li class="nav-item"><button class="nav-link" data-sez="allievi">Allievi</button></li>
+    <li class="nav-item"><button class="nav-link" data-sez="classi">Classi</button></li>
     <li class="nav-item"><button class="nav-link" data-sez="video">Videocorsi e dirette</button></li>
     <li class="nav-item"><button class="nav-link" data-sez="analisi">Analisi classi</button></li>
   </ul>
@@ -150,6 +151,27 @@
     <div id="elenco-allievi"></div>
   </section>
 
+  <!-- ============ CLASSI ============ -->
+  <section id="sez-classi" class="sezione">
+    <div class="row g-3">
+      <div class="col-12 col-lg-4">
+        <div class="card-ac p-3">
+          <h2 class="h6">Nuova classe</h2>
+          <input class="form-control form-control-sm mb-2" id="c-nome" placeholder="Es. Serale B - ottobre">
+          <input class="form-control form-control-sm mb-2" id="c-descrizione" placeholder="Giorni e orario (facoltativo)">
+          <select class="form-select form-select-sm mb-2" id="c-listato"></select>
+          <button class="btn btn-primary btn-sm w-100" id="btn-salva-classe">Crea classe</button>
+          <p class="text-muted mb-0 mt-2" style="font-size:.75rem">
+            Un allievo sta in una classe sola. Le videolezioni e le dirette si assegnano
+            alle classi: quelle senza classe non le vede nessuno.</p>
+        </div>
+      </div>
+      <div class="col-12 col-lg-8">
+        <div id="elenco-classi"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ VIDEO ============ -->
   <section id="sez-video" class="sezione">
     <div class="row g-3">
@@ -174,6 +196,10 @@
             </div>
             <p class="text-muted" style="font-size:.75rem">Il file resta sul computer dell'autoscuola. Limite 2 GB.</p>
           </div>
+          <label class="form-label small mb-1">Chi la vede</label>
+          <select class="form-select form-select-sm mb-2" id="v-classi" multiple size="3"></select>
+          <p class="text-muted mb-2" style="font-size:.72rem">CTRL per sceglierne più di una.
+            Senza classi selezionate la lezione resta nascosta a tutti gli allievi.</p>
           <button class="btn btn-primary btn-sm w-100" id="btn-salva-video">Salva lezione</button>
         </div>
         <div class="card-ac p-3">
@@ -182,6 +208,8 @@
           <select class="form-select form-select-sm mb-2" id="l-listato"></select>
           <input type="datetime-local" class="form-control form-control-sm mb-2" id="l-inizio">
           <input class="form-control form-control-sm mb-2" id="l-url" placeholder="Link Meet, Zoom o YouTube Live">
+          <label class="form-label small mb-1">Chi la vede (e chi riceve l\'avviso)</label>
+          <select class="form-select form-select-sm mb-2" id="l-classi" multiple size="3"></select>
           <button class="btn btn-outline-primary btn-sm w-100" id="btn-salva-live">Programma</button>
         </div>
       </div>
@@ -258,6 +286,8 @@
       <div class="col-md-6"><label class="form-label small">Patenti
         <span class="text-muted" style="font-size:.72rem">(CTRL per sceglierne piu' di una)</span></label>
         <select class="form-select" id="a-listato" multiple size="4"></select></div>
+      <div class="col-md-6"><label class="form-label small">Classe</label>
+        <select class="form-select" id="a-classe"></select></div>
       <div class="col-md-4"><label class="form-label small">Ore acquistate</label>
         <input type="number" class="form-control" id="a-ore" value="0"></div>
       <div class="col-md-4"><label class="form-label small">Importo pagato</label>

@@ -118,7 +118,7 @@ $$('#menu button').forEach(b => b.addEventListener('click', () => {
   $$('.sezione').forEach(s => s.classList.remove('attiva'));
   $('#sez-' + b.dataset.sez).classList.add('attiva');
   ({ orario: caricaOrario, presenze: caricaLezioni, allievi: caricaAllievi,
-     video: caricaVideo, analisi: caricaAnalisi })[b.dataset.sez]();
+     classi: caricaClassi, video: caricaVideo, analisi: caricaAnalisi })[b.dataset.sez]();
 }));
 
 /* ------------------------------- ORARIO ---------------------------------- */
@@ -335,6 +335,159 @@ async function apriLezione(id) {
   });
 }
 
+/* -------------------------------- CLASSI ---------------------------------
+ * Una classe e' il gruppo con cui l'allievo segue il corso. Serve a due cose:
+ * raggruppare gli allievi, e decidere chi vede una videolezione o una diretta.
+ * Un allievo sta in una classe sola; una lezione puo' essere aperta a piu'
+ * classi insieme.
+ * ------------------------------------------------------------------------ */
+async function elencoClassi() {
+  const d = await get('/api/gestione/classi');
+  S.classi = d.classi;
+  S.senzaClasse = d.senza_classe;
+  return d;
+}
+
+// I menu a tendina delle classi compaiono in quattro punti diversi: si
+// riempiono tutti da qui, cosi' una classe appena creata e' subito scegliibile
+// senza ricaricare la pagina.
+function riempiTendineClassi() {
+  const opzioni = (S.classi || []).filter(c => c.attiva)
+    .map(c => `<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+  ['#v-classi', '#l-classi'].forEach(sel => { if ($(sel)) $(sel).innerHTML = opzioni; });
+  if ($('#a-classe')) {
+    $('#a-classe').innerHTML = '<option value="">— nessuna classe —</option>' + opzioni;
+  }
+}
+
+async function caricaClassi() {
+  $('#elenco-classi').innerHTML = scheletroRighe(3);
+  const d = await elencoClassi();
+  riempiTendineClassi();
+  if ($('#c-listato') && !$('#c-listato').innerHTML) {
+    $('#c-listato').innerHTML = '<option value="">Patente prevalente (facoltativa)</option>'
+      + (S.listati || []).map(l => `<option value="${l.codice}">${esc(l.codice)} - ${esc(l.nome)}</option>`).join('');
+  }
+
+  // Gli allievi non ancora assegnati si mostrano per primi: e' la cosa da
+  // sistemare, e finche' restano li' non vedono nessuna videolezione.
+  const senza = d.senza_classe
+    ? `<div class="card-ac p-3 mb-3 border border-warning">
+         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+           <div><strong class="small">${d.senza_classe} allievi senza classe</strong>
+             <div class="text-muted" style="font-size:.75rem">Finche' non hanno una classe non vedono videolezioni ne' dirette.</div></div>
+           <button class="btn btn-sm btn-warning" id="btn-assegna-senza">Assegnali ora</button>
+         </div></div>` : '';
+
+  $('#elenco-classi').innerHTML = senza + (d.classi.map((c, i) => `
+    <div class="card-ac p-3 mb-3 rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+        <div>
+          <h3 class="h6 mb-0">${esc(c.nome)}
+            ${c.listato_target ? `<span class="pill ms-1">${esc(c.listato_target)}</span>` : ''}
+            ${c.attiva ? '' : '<span class="badge text-bg-secondary ms-1">archiviata</span>'}</h3>
+          <div class="text-muted" style="font-size:.75rem">${esc(c.descrizione || '')}</div>
+        </div>
+        <div class="d-flex gap-1">
+          <span class="pill">${c.n_allievi} allievi</span>
+          <span class="pill">${c.n_lezioni} lezioni</span>
+          <button class="btn btn-sm btn-light" data-apri="${c.id}">Allievi</button>
+          <button class="btn btn-sm btn-outline-danger" data-elimina="${c.id}"
+                  title="Elimina la classe. Gli allievi non si perdono: restano senza classe.">Elimina</button>
+        </div>
+      </div>
+      <div class="d-none" id="cl-${c.id}"></div>
+    </div>`).join('') || '<p class="text-muted small">Nessuna classe. Creane una qui a fianco.</p>');
+
+  if ($('#btn-assegna-senza')) {
+    $('#btn-assegna-senza').addEventListener('click', () => apriAssegnazione(null));
+  }
+  $$('#elenco-classi button[data-apri]').forEach(b => b.addEventListener('click', () =>
+    apriAssegnazione(+b.dataset.apri)));
+  $$('#elenco-classi button[data-elimina]').forEach(b => b.addEventListener('click', async () => {
+    const c = S.classi.find(x => x.id === +b.dataset.elimina);
+    if (!confirm(`Eliminare la classe "${c.nome}"?\n\n`
+      + `I ${c.n_allievi} allievi NON vengono cancellati: restano senza classe, con tutti i loro quiz e statistiche.`)) return;
+    try {
+      const r = await api('/api/gestione/classi/' + c.id, { method: 'DELETE' });
+      avviso(`Classe eliminata. ${r.allievi_senza_classe} allievi ora senza classe.`, 'success');
+      caricaClassi();
+    } catch (e) { avviso(e.message); }
+  }));
+}
+
+/* Pannello di assegnazione: a sinistra chi c'e' gia', a destra chi si puo'
+ * aggiungere. Passando classe = null si parte da chi non ha nessuna classe. */
+async function apriAssegnazione(classeId) {
+  const box = classeId ? $('#cl-' + classeId) : null;
+  const nome = classeId ? S.classi.find(c => c.id === classeId).nome : null;
+  const dentro = classeId ? await get(`/api/gestione/classi/${classeId}/allievi`) : [];
+  const tutti = (await get('/api/gestione/allievi')).categorie.flatMap(c => c.allievi);
+  const fuori = tutti.filter(a => a.classe_id !== classeId);
+
+  const html = `
+    <hr class="my-2">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label small mb-1">${classeId ? 'In questa classe' : 'Allievi'}</label>
+        <div class="border rounded p-2" style="max-height:220px;overflow:auto">
+          ${dentro.length ? dentro.map(a => `<div class="small py-1">${esc(a.cognome)} ${esc(a.nome)}
+             <span class="text-muted" style="font-size:.72rem">${esc(a.listato_target)}</span></div>`).join('')
+            : '<p class="text-muted small mb-0">Nessun allievo.</p>'}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small mb-1">Da aggiungere ${classeId ? '' : '(scegli poi la classe)'}</label>
+        <select class="form-select form-select-sm" id="sel-agg" multiple size="8">
+          ${fuori.map(a => `<option value="${a.id}">${esc(a.cognome)} ${esc(a.nome)}`
+            + ` — ${esc(a.classe || 'senza classe')}</option>`).join('')}
+        </select>
+        <div class="d-flex gap-2 mt-2">
+          ${classeId ? '' : `<select class="form-select form-select-sm" id="sel-dest">
+              ${(S.classi || []).filter(c => c.attiva).map(c => `<option value="${c.id}">${esc(c.nome)}</option>`).join('')}
+            </select>`}
+          <button class="btn btn-sm btn-primary" id="btn-fai-assegna">Sposta qui</button>
+        </div>
+      </div>
+    </div>`;
+
+  if (box) {
+    box.innerHTML = html;
+    box.classList.remove('d-none');
+  } else {
+    // Senza una classe di partenza si apre in cima, sopra l'elenco.
+    const tmp = document.createElement('div');
+    tmp.className = 'card-ac p-3 mb-3';
+    tmp.innerHTML = '<h3 class="h6">Assegna allievi a una classe</h3>' + html;
+    $('#elenco-classi').prepend(tmp);
+  }
+
+  $('#btn-fai-assegna').addEventListener('click', async () => {
+    const ids = [...$('#sel-agg').selectedOptions].map(o => +o.value);
+    if (!ids.length) return avviso('Scegli almeno un allievo.');
+    const dest = classeId || +$('#sel-dest').value;
+    try {
+      const r = await post(`/api/gestione/classi/${dest}/allievi`, { utenti: ids });
+      avviso(`${r.spostati} allievi spostati in "${nome || S.classi.find(c => c.id === dest).nome}".`, 'success');
+      caricaClassi();
+    } catch (e) { avviso(e.message); }
+  });
+}
+
+$('#btn-salva-classe').addEventListener('click', async () => {
+  const nome = $('#c-nome').value.trim();
+  if (!nome) return avviso('Serve il nome della classe.');
+  try {
+    await post('/api/gestione/classi', {
+      nome, descrizione: $('#c-descrizione').value.trim() || null,
+      listato_target: $('#c-listato').value || null,
+    });
+    $('#c-nome').value = ''; $('#c-descrizione').value = '';
+    avviso('Classe creata.', 'success');
+    caricaClassi();
+  } catch (e) { avviso(e.message); }
+});
+
 /* ------------------------------- ALLIEVI --------------------------------- */
 async function caricaAllievi() {
   const q = $('#cerca-allievo').value.trim();
@@ -350,13 +503,14 @@ async function caricaAllievi() {
         <span class="small text-muted">${c.ore_vendute} ore vendute &middot; ${c.incasso.toFixed(2)} euro incassati</span>
       </div>
       <div class="table-responsive"><table class="table table-sm align-middle mb-0">
-        <thead><tr><th>Allievo</th><th>Contatti</th><th class="text-end">Lezioni fatte</th>
+        <thead><tr><th>Allievo</th><th>Classe</th><th class="text-end">Lezioni fatte</th>
           <th class="text-end">Quiz</th><th></th></tr></thead>
         <tbody>${c.allievi.map((a, i) => `
           <tr class="rivela-riga" style="animation-delay:${Math.min(i * 40, 240)}ms">
             <td><div class="fw-semibold small">${esc(a.cognome)} ${esc(a.nome)}${a.listati_extra ? ` <span class="pill">+${esc(a.listati_extra)}</span>` : ''}</div>
                 <div class="text-muted" style="font-size:.72rem">${esc(a.username || a.email)}</div></td>
-            <td class="small">${esc(a.telefono || '-')}<div class="text-muted" style="font-size:.72rem">${esc(a.indirizzo || '')}</div></td>
+            <td class="small">${a.classe ? esc(a.classe) : '<span class="text-warning">senza classe</span>'}
+                <div class="text-muted" style="font-size:.72rem">${esc(a.telefono || '-')}</div></td>
             <td class="text-end small">${a.ore_frequentate}/${a.ore_acquistate || 0}</td>
             <td class="text-end small">${a.schede} schede<div class="text-muted" style="font-size:.72rem">${a.simulazioni_superate} simul. ok</div></td>
             <td class="text-end"><button class="btn btn-sm btn-light" data-mod="${a.id}">Apri</button></td>
@@ -390,6 +544,8 @@ function apriAllievo(a) {
   const sue = a ? [a.listato_target, ...String(a.listati_extra || '').split(',')]
       .map(x => (x || '').trim()).filter(Boolean) : ['B'];
   [...$('#a-listato').options].forEach(o => { o.selected = sue.includes(o.value); });
+  riempiTendineClassi();
+  $('#a-classe').value = a?.classe_id || '';
   $('#a-ore').value = a?.ore_acquistate || 0;
   $('#a-importo').value = a?.importo_pagato || '';
   $('#a-esame').value = a?.data_esame || '';
@@ -451,6 +607,7 @@ $('#btn-salva-allievo').addEventListener('click', async () => {
       return principale && scelte.includes(principale)
         ? [principale, ...scelte.filter(x => x !== principale)] : scelte;
     })(),
+    classe_id: +$('#a-classe').value || null,
     ore_acquistate: +$('#a-ore').value || 0,
     importo_pagato: parseFloat($('#a-importo').value) || null,
     data_esame: $('#a-esame').value || null,
@@ -537,6 +694,11 @@ async function caricaVideo() {
           ${x.inizio_live ? ' &middot; ' + esc(x.inizio_live.replace('T', ' ')) : ''}
           &middot; ${x.visualizzazioni} visualizzazioni, ${x.completate} completate
         </div>
+        <div style="font-size:.72rem">${x.classi_nomi
+          ? 'Visibile a: <strong>' + esc(x.classi_nomi) + '</strong>'
+          : '<span class="text-warning">Nessuna classe: non la vede nessun allievo</span>'}
+          <button class="btn btn-link btn-sm p-0 ms-1" style="font-size:.72rem"
+                  data-classi="${x.id}" data-sel="${(x.classi || []).join(',')}">cambia</button></div>
         <div class="text-muted text-truncate" style="font-size:.7rem;max-width:420px">${esc(x.url || '')}</div>
       </div>
       <div class="d-flex gap-1">
@@ -550,6 +712,28 @@ async function caricaVideo() {
           ${x.pubblicata ? 'Nascondi' : 'Pubblica'}</button>
       </div>
     </div>`).join('') || '<p class="text-muted small">Nessun materiale pubblicato.</p>';
+
+  // Cambiare le classi di una lezione gia' pubblicata: capita di doverla
+  // aprire a un secondo corso, e ricrearla da zero perderebbe le visualizzazioni.
+  $$('#elenco-video button[data-classi]').forEach(b => b.addEventListener('click', () => {
+    if (!(S.classi || []).length) return avviso('Prima crea almeno una classe.');
+    const gia = (b.dataset.sel || '').split(',').filter(Boolean).map(Number);
+    const scelta = prompt(
+      'A quali classi e\' destinata questa lezione?\n\n'
+      + S.classi.filter(c => c.attiva).map((c, i) => `${i + 1}) ${c.nome}`).join('\n')
+      + '\n\nScrivi i numeri separati da virgola (vuoto = nessuna classe).',
+      S.classi.filter(c => c.attiva).map((c, i) => gia.includes(c.id) ? i + 1 : null)
+        .filter(Boolean).join(','));
+    if (scelta === null) return;
+    const attive = S.classi.filter(c => c.attiva);
+    const ids = scelta.split(',').map(x => attive[parseInt(x, 10) - 1])
+      .filter(Boolean).map(c => c.id);
+    put('/api/gestione/video/' + b.dataset.classi, { classi: ids })
+      .then(() => { avviso(ids.length ? 'Visibilita\' aggiornata.'
+        : 'Lezione tolta a tutte le classi: ora non la vede nessuno.',
+        ids.length ? 'success' : 'warning'); caricaVideo(); })
+      .catch(e => avviso(e.message));
+  }));
 
   $$('#elenco-video button[data-pub]').forEach(b => b.addEventListener('click', async () => {
     await put('/api/gestione/video/' + b.dataset.pub, { pubblicata: b.dataset.val === '1' });
@@ -593,11 +777,14 @@ $('#btn-salva-video').addEventListener('click', async () => {
       setTimeout(() => barra.classList.add('d-none'), 800);
       avviso(`Caricati ${r.megabyte} MB.`, 'success');
     } else {
+      const classi = [...$('#v-classi').selectedOptions].map(o => +o.value);
       await post('/api/gestione/video', {
         titolo, listato: $('#v-listato').value, url: $('#v-url').value.trim(),
-        durata_min: +$('#v-durata').value || 0,
+        durata_min: +$('#v-durata').value || 0, classi,
       });
-      avviso('Videolezione aggiunta.', 'success');
+      avviso(classi.length ? 'Videolezione aggiunta.'
+        : 'Videolezione aggiunta, ma senza classi: per ora non la vede nessuno.',
+        classi.length ? 'success' : 'warning');
     }
     $('#v-titolo').value = ''; $('#v-url').value = ''; $('#v-durata').value = '';
     if ($('#v-file')) $('#v-file').value = '';
@@ -607,11 +794,14 @@ $('#btn-salva-video').addEventListener('click', async () => {
 
 $('#btn-salva-live').addEventListener('click', async () => {
   try {
+    const classi = [...$('#l-classi').selectedOptions].map(o => +o.value);
     await post('/api/gestione/live', {
       titolo: $('#l-titolo').value.trim(), listato: $('#l-listato').value,
-      url: $('#l-url').value.trim(), inizio: $('#l-inizio').value,
+      url: $('#l-url').value.trim(), inizio: $('#l-inizio').value, classi,
     });
-    avviso('Diretta programmata.', 'success');
+    avviso(classi.length ? 'Diretta programmata: avviso inviato alle classi scelte.'
+      : 'Diretta programmata, ma senza classi: non la vede nessuno e non parte nessun avviso.',
+      classi.length ? 'success' : 'warning');
     $('#l-titolo').value = ''; $('#l-url').value = '';
     caricaVideo();
   } catch (e) { avviso(e.message); }
@@ -706,6 +896,9 @@ async function caricaAnalisi() {
   $('#chi').textContent = `${S.utente.nome} ${S.utente.cognome || ''} - ${S.utente.ragione_sociale || ''}`;
 
   S.listati = await get('/api/catalogo/listati');
+  // Le tendine delle classi servono in tre sezioni diverse: si caricano una
+  // volta all'avvio, non a ogni cambio di scheda.
+  try { await elencoClassi(); riempiTendineClassi(); } catch (e) { S.classi = []; }
   ['#v-listato', '#l-listato'].forEach(sel => {
     $(sel).innerHTML = S.listati.map(l =>
       `<option value="${l.codice}">${esc(l.codice)} - ${esc(l.nome)}</option>`).join('');

@@ -45,7 +45,8 @@ def main() -> int:
         return 1 if divergenze else 0
 
     esito = analytics.ricostruisci_aggregati()
-    log(f"aggregati ricostruiti: {esito['righe_ricostruite']} righe")
+    log(f"aggregati ricostruiti: {esito['righe_ricostruite']} righe per argomento, "
+        f"{esito.get('giorni_ricostruiti', 0)} giornate")
 
     from app import db as _db
     _db.execute("ANALYZE")

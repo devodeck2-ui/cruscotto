@@ -34,6 +34,7 @@ from .. import db
 from ..config import settings
 from ..rbac import Principal, require_admin, require_staff
 from ..security import hash_password, url_media_firmato
+from .classi import _verifica_classi, utenti_di_classi
 from ..services import notifiche
 from .patenti import codici_utente, imposta, utenti_con_patente
 
@@ -365,6 +366,7 @@ class AllievoIn(BaseModel):
     importo_pagato: float | None = None
     data_esame: str | None = None
     note: str | None = None
+    classe_id: int | None = None
 
 
 @router.post("/allievi")
@@ -393,12 +395,13 @@ def iscrivi_allievo(body: AllievoIn, p: Principal = Depends(require_admin)):
     cur = db.execute(
         "INSERT INTO utenti(autoscuola_id, ruolo_id, email, username, password_hash, nome,"
         " cognome, telefono, codice_fiscale, indirizzo, listato_target, ore_acquistate,"
-        " importo_pagato, data_esame, note_admin, data_iscrizione, attivo) "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)",
+        " importo_pagato, data_esame, note_admin, data_iscrizione, classe_id, attivo) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)",
         (p.autoscuola_id, ruolo["id"], email_login, username, hash_password(password),
          body.nome.strip(), body.cognome.strip(), body.telefono, body.codice_fiscale,
          body.indirizzo, body.listato_target, body.ore_acquistate, body.importo_pagato,
-         body.data_esame, body.note, date.today().isoformat()))
+         body.data_esame, body.note, date.today().isoformat(),
+         (_verifica_classi(p.autoscuola_id, [body.classe_id]) or [None])[0]))
 
     if body.patenti:
         imposta(cur.lastrowid, body.patenti)
@@ -414,18 +417,20 @@ def iscrivi_allievo(body: AllievoIn, p: Principal = Depends(require_admin)):
 
 @router.get("/allievi")
 def elenco_allievi(categoria: str | None = None, cerca: str | None = None,
+                   classe: int | None = None, senza_classe: bool = False,
                    includi_disattivi: bool = False, p: Principal = Depends(require_staff)):
     """Anagrafica raggruppata per categoria di patente."""
     sql = ("SELECT u.id, u.nome, u.cognome, u.email, u.username, u.telefono, u.indirizzo,"
            "       u.codice_fiscale, u.listato_target, u.ore_acquistate, u.importo_pagato,"
            "       u.data_iscrizione, u.data_esame, u.attivo, u.ultimo_accesso, u.note_admin,"
-           "       u.listati_extra,"
+           "       u.listati_extra, u.classe_id, cl.nome AS classe,"
            "  (SELECT COUNT(*) FROM aula_presenza pr JOIN aula_lezione l ON l.id = pr.lezione_id"
            "    WHERE pr.utente_id = u.id AND pr.stato = 'presente') AS ore_frequentate,"
            "  (SELECT COUNT(*) FROM schede s WHERE s.utente_id = u.id AND s.stato = 'completata') AS schede,"
            "  (SELECT COUNT(*) FROM schede s WHERE s.utente_id = u.id AND s.tipo = 'simulazione'"
            "    AND s.esito = 1) AS simulazioni_superate "
            "FROM utenti u JOIN ruoli r ON r.id = u.ruolo_id "
+           "LEFT JOIN classi cl ON cl.id = u.classe_id "
            "WHERE u.autoscuola_id = ? AND r.codice = 'allievo'")
     par: list = [p.autoscuola_id]
     if not includi_disattivi:
@@ -433,6 +438,14 @@ def elenco_allievi(categoria: str | None = None, cerca: str | None = None,
     if categoria:
         sql += " AND u.listato_target = ?"
         par.append(categoria)
+    # La classe filtra da sola; "senza_classe" serve alla schermata di
+    # assegnazione, che deve mostrare proprio chi non e' ancora stato messo
+    # da nessuna parte.
+    if classe:
+        sql += " AND u.classe_id = ?"
+        par.append(classe)
+    elif senza_classe:
+        sql += " AND u.classe_id IS NULL"
     if cerca:
         sql += " AND (u.nome LIKE ? OR u.cognome LIKE ? OR u.telefono LIKE ? OR u.email LIKE ?)"
         par += [f"%{cerca}%"] * 4
@@ -525,6 +538,7 @@ class ModificaAllievoIn(BaseModel):
     data_esame: str | None = None
     note: str | None = None
     attivo: bool | None = None
+    classe_id: int | None = None
 
 
 @router.put("/allievi/{utente_id}")
@@ -540,7 +554,10 @@ def modifica_allievo(utente_id: int, body: ModificaAllievoIn,
              "listato_target": body.listato_target, "ore_acquistate": body.ore_acquistate,
              "importo_pagato": body.importo_pagato, "data_esame": body.data_esame,
              "note_admin": body.note,
-             "attivo": None if body.attivo is None else (1 if body.attivo else 0)}
+             "attivo": None if body.attivo is None else (1 if body.attivo else 0),
+             # classe_id inviato a null significa "toglilo dalla classe", non
+             # "lascia com'e'": e' fra gli AZZERABILI qui sotto.
+             "classe_id": (_verifica_classi(p.autoscuola_id, [body.classe_id]) or [None])[0]}
 
     # Un campo assente dalla richiesta non si tocca; un campo inviato
     # esplicitamente a null va invece azzerato davvero, altrimenti un dato
@@ -551,9 +568,10 @@ def modifica_allievo(utente_id: int, body: ModificaAllievoIn,
                "email": "email", "indirizzo": "indirizzo",
                "codice_fiscale": "codice_fiscale", "listato_target": "listato_target",
                "ore_acquistate": "ore_acquistate", "importo_pagato": "importo_pagato",
-               "data_esame": "data_esame", "note_admin": "note", "attivo": "attivo"}
+               "data_esame": "data_esame", "note_admin": "note", "attivo": "attivo",
+               "classe_id": "classe_id"}
     AZZERABILI = {"telefono", "codice_fiscale", "indirizzo", "importo_pagato",
-                  "data_esame", "note_admin"}
+                  "data_esame", "note_admin", "classe_id"}
     campi = {k: v for k, v in campi.items()
              if v is not None or (k in AZZERABILI and da_body[k] in inviati)}
     if body.patenti:
@@ -671,6 +689,7 @@ class VideoIn(BaseModel):
     descrizione: str | None = None
     durata_min: int = Field(default=0, ge=0, le=600)
     pubblicata: bool = True
+    classi: list[int] | None = None      # chi la vede; vuoto = nessuno
 
 
 def _normalizza_url(url: str) -> str:
@@ -693,6 +712,21 @@ def _normalizza_url(url: str) -> str:
     return u
 
 
+def _assegna_classi(lezione_id: int, autoscuola_id: int, classi: list[int] | None) -> list[int]:
+    """Riscrive a quali classi e' destinata una lezione.
+
+    Una lezione senza nessuna classe non la vede nessun allievo. E' voluto:
+    meglio un video che non compare finche' non lo si assegna, che un video
+    finito per sbaglio davanti a tutta la scuola.
+    """
+    validi = _verifica_classi(autoscuola_id, classi or [])
+    db.execute("DELETE FROM video_classe WHERE lezione_id = ?", (lezione_id,))
+    for cid in validi:
+        db.execute("INSERT INTO video_classe(lezione_id, classe_id) VALUES(?,?)",
+                   (lezione_id, cid))
+    return validi
+
+
 @router.post("/video")
 def crea_video(body: VideoIn, p: Principal = Depends(require_admin)):
     """Registra una lezione video a partire da un link esterno."""
@@ -711,12 +745,16 @@ def crea_video(body: VideoIn, p: Principal = Depends(require_admin)):
     # allievi di quella patente vengono avvisati subito, invece di doverla
     # scoprire per caso riaprendo i Videocorsi. Se nasce nascosta non si
     # avvisa nessuno: l'avviso partira' quando verra' pubblicata.
-    if body.pubblicata:
+    classi = _assegna_classi(cur.lastrowid, p.autoscuola_id, body.classi)
+    if body.pubblicata and classi:
+        # Si avvisano SOLO gli allievi delle classi a cui la lezione e'
+        # destinata: prima l'avviso partiva a tutti quelli della patente,
+        # compresi quelli di un corso che con questa lezione non c'entra.
         notifiche.notifica_utenti(
-            utenti_con_patente(p.autoscuola_id, body.listato),
+            utenti_di_classi(p.autoscuola_id, classi),
             "lezione_programmata", f"Nuova videolezione: {body.titolo}",
             "Disponibile ora nella sezione Videocorsi.", "/#/video")
-    return {"id": cur.lastrowid, "url": _normalizza_url(body.url)}
+    return {"id": cur.lastrowid, "url": _normalizza_url(body.url), "classi": classi}
 
 
 @router.post("/video/carica")
@@ -781,6 +819,7 @@ class LiveIn(BaseModel):
     url: str
     inizio: str                      # AAAA-MM-GGTHH:MM
     descrizione: str | None = None
+    classi: list[int] | None = None      # chi la vede; vuoto = nessuno
 
 
 @router.post("/live")
@@ -796,11 +835,12 @@ def programma_live(body: LiveIn, p: Principal = Depends(require_admin)):
     # Si avvisano subito gli allievi di quella patente: la diretta e' appena
     # comparsa in agenda, prima che qualcuno la scopra per caso aprendo l'app.
     quando = body.inizio.replace("T", " alle ") if "T" in body.inizio else body.inizio
+    classi = _assegna_classi(cur.lastrowid, p.autoscuola_id, body.classi)
     notifiche.notifica_utenti(
-        utenti_con_patente(p.autoscuola_id, body.listato),
+        utenti_di_classi(p.autoscuola_id, classi),
         "lezione_programmata", f"Nuova diretta: {body.titolo}",
         f"Programmata per il {quando}.", "/#/video")
-    return {"id": cur.lastrowid}
+    return {"id": cur.lastrowid, "classi": classi}
 
 
 @router.get("/video")
@@ -809,13 +849,17 @@ def elenco_video(p: Principal = Depends(require_staff)):
         "SELECT v.id, v.titolo, v.descrizione, v.tipo, v.url, v.durata_sec, v.inizio_live,"
         "       v.stato_live, v.pubblicata, v.ordine, l.codice AS listato,"
         "  (SELECT COUNT(*) FROM visione_video vv WHERE vv.lezione_id = v.id) AS visualizzazioni,"
-        "  (SELECT COUNT(*) FROM visione_video vv WHERE vv.lezione_id = v.id AND vv.completata = 1) AS completate "
+        "  (SELECT COUNT(*) FROM visione_video vv WHERE vv.lezione_id = v.id AND vv.completata = 1) AS completate,"
+        "  (SELECT GROUP_CONCAT(cl.nome, ', ') FROM video_classe vc JOIN classi cl ON cl.id = vc.classe_id"
+        "    WHERE vc.lezione_id = v.id) AS classi_nomi,"
+        "  (SELECT GROUP_CONCAT(vc.classe_id) FROM video_classe vc WHERE vc.lezione_id = v.id) AS classi_ids "
         "FROM lezioni_video v JOIN corsi c ON c.id = v.corso_id "
         "JOIN listati l ON l.id = c.listato_id "
         "WHERE c.autoscuola_id = ? ORDER BY l.codice, v.tipo DESC, v.ordine",
         (p.autoscuola_id,)))
     for r in righe:
         r["url"] = url_media_firmato(r["url"])
+        r["classi"] = [int(x) for x in (r.pop("classi_ids") or "").split(",") if x]
     return righe
 
 
@@ -837,6 +881,7 @@ class StatoVideoIn(BaseModel):
     stato_live: str | None = Field(default=None, pattern="^(programmata|in_onda|conclusa)$")
     titolo: str | None = None
     url: str | None = None
+    classi: list[int] | None = None      # se presente, riscrive chi la vede
 
 
 @router.put("/video/{video_id}")
@@ -850,6 +895,12 @@ def modifica_video(video_id: int, body: StatoVideoIn, p: Principal = Depends(req
         campi["titolo"] = body.titolo
     if body.url:
         campi["url"] = _normalizza_url(body.url)
+    mia = db.query_one("SELECT v.id FROM lezioni_video v JOIN corsi c ON c.id = v.corso_id "
+                       "WHERE v.id = ? AND c.autoscuola_id = ?", (video_id, p.autoscuola_id))
+    if not mia:
+        raise HTTPException(404, "Lezione video non trovata")
+    if body.classi is not None:
+        _assegna_classi(video_id, p.autoscuola_id, body.classi)
     if not campi:
         return {"ok": True}
     sql = ("UPDATE lezioni_video SET " + ", ".join(f"{k} = ?" for k in campi) +
@@ -857,6 +908,10 @@ def modifica_video(video_id: int, body: StatoVideoIn, p: Principal = Depends(req
     cur = db.execute(sql, [*campi.values(), video_id, p.autoscuola_id])
     if not cur.rowcount:
         raise HTTPException(404, "Lezione video non trovata")
+    destinatari = utenti_di_classi(
+        p.autoscuola_id,
+        [r["classe_id"] for r in db.query(
+            "SELECT classe_id FROM video_classe WHERE lezione_id = ?", (video_id,))])
 
     # La diretta e' appena passata "in onda": si avvisano gli allievi della
     # patente interessata, non solo chi ha gia' l'app aperta in quel momento.
@@ -867,7 +922,7 @@ def modifica_video(video_id: int, body: StatoVideoIn, p: Principal = Depends(req
             "WHERE v.id = ?", (video_id,))
         if riga and riga["tipo"] == "registrata":
             notifiche.notifica_utenti(
-                utenti_con_patente(p.autoscuola_id, riga["listato"]),
+                destinatari,
                 "lezione_programmata", f"Nuova videolezione: {riga['titolo']}",
                 "Disponibile ora nella sezione Videocorsi.", "/#/video")
 
@@ -878,7 +933,7 @@ def modifica_video(video_id: int, body: StatoVideoIn, p: Principal = Depends(req
             "WHERE v.id = ?", (video_id,))
         if riga:
             notifiche.notifica_utenti(
-                utenti_con_patente(p.autoscuola_id, riga["listato"]),
+                destinatari,
                 "diretta_iniziata", f"E\' iniziata: {riga['titolo']}",
                 "Collegati ora dalla sezione Videocorsi.", "/#/video")
     return {"ok": True}

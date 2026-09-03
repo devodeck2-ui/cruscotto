@@ -44,6 +44,9 @@ COLONNE_AGGIUNTE = {
         ("importo_pagato", "REAL"),
         ("note_admin", "TEXT"),
         ("data_iscrizione", "TEXT"),
+        # Classe di appartenenza: un allievo per volta ne ha una sola, e puo'
+        # non averne (iscritto ma non ancora assegnato). Vedi routers/classi.py.
+        ("classe_id", "INTEGER REFERENCES classi(id) ON DELETE SET NULL"),
     ],
 }
 
